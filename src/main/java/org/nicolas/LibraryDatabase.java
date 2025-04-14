@@ -112,6 +112,29 @@ public class LibraryDatabase {
         }
     }
 
+    public static String selectUsers() {
+        String sql = "SELECT * FROM user";
+        StringBuilder builder = new StringBuilder();
+        //using StringBuilder to build (or append) String
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String role = rs.getString("role");
+                builder.append(String.format("ID: %d, Name: %s, Age: %d%n",id, name, role));
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
     //Testing connectivity
     public static void main(String[] args) {
 
