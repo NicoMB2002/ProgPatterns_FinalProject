@@ -97,6 +97,21 @@ public class LibraryDatabase {
         }
     }
 
+    public static void dropTable(String tableName) {
+
+        String sql = "DROP TABLE IF EXISTS " + tableName;
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql); // Drop the table
+            System.out.println("Table " + tableName + " dropped successfully.");
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     //Testing connectivity
     public static void main(String[] args) {
 
