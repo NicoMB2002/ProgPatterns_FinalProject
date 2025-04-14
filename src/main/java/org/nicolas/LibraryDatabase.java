@@ -69,6 +69,19 @@ public class LibraryDatabase {
         }
     }
 
+    public static void addColumn(String tableName, String columnName, String columnType) {
+        String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnType;
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql); // Alter the table to add a new column
+            System.out.println("Column " + columnName + " added successfully to table " + tableName + ".");
+        } catch (SQLException e) {
+            System.out.println("Failed to add column: " + e.getMessage());
+        }
+    }
+
     //Testing connectivity
     public static void main(String[] args) {
 
