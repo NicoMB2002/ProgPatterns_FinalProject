@@ -82,6 +82,21 @@ public class LibraryDatabase {
         }
     }
 
+    public static void insertIntoUser(String name, String role, String password) {
+        String sql = "INSERT INTO user VALUES(?, ?, ?)"; //Insert query with '?' placeholders
+
+        try {
+            Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            pstmt.setString(2, role);
+            pstmt.setString(3, password);
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     //Testing connectivity
     public static void main(String[] args) {
 
