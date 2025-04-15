@@ -91,6 +91,7 @@ public class LibraryDatabase {
             pstmt.setString(1, name);
             pstmt.setString(2, role);
             pstmt.setString(3, password);
+            pstmt.executeUpdate(); //execute insert
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -98,9 +99,9 @@ public class LibraryDatabase {
     }
 
     public static void insertIntoBooks(String isbn, String title, String author,
-                                       int NoCopies, int borrowedBooks, int availableCopies) {
+                                       int no_Copies, int borrowed_Books, int available_Copies) {
 
-        String sql = "INSERT INTO user VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
+        String sql = "INSERT INTO books VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
 
         try {
             Connection conn = connect();
@@ -108,9 +109,11 @@ public class LibraryDatabase {
             pstmt.setString(1, isbn);
             pstmt.setString(2, title);
             pstmt.setString(3, author);
-            pstmt.setInt(4, NoCopies);
-            pstmt.setInt(5, borrowedBooks);
-            pstmt.setInt(6, availableCopies);
+            pstmt.setInt(4, no_Copies);
+            pstmt.setInt(5, borrowed_Books);
+            pstmt.setInt(6, available_Copies);
+            pstmt.executeUpdate(); //execute insert
+
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -155,17 +158,53 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
-    //Testing connectivity
-    public static void main(String[] args) {
+    public static String selectBooks() {
+        String sql = "SELECT * FROM Books";
+        StringBuilder builder = new StringBuilder();
+        //using StringBuilder to build (or append) String
 
         try {
             Connection conn = connect();
-            if (conn != null) {
-                System.out.println("Connection to SQLite has been established!");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                String isbn = rs.getString("isbn");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                int noCopies = rs.getInt("no_copies");
+                int borrowedBooks = rs.getInt("borrowed_books");
+                int booksAvailable = noCopies - borrowedBooks;
+
+                builder.append(String.format("ISBN: %s, Title: %s%nAuthor: %s, Number of copies: %d, " +
+                        "Borrowed Books: %d, Available Books: %d%n",isbn, title, author, noCopies, borrowedBooks, booksAvailable));
             }
         }
-        catch (Exception e) {
-            System.out.println("Failed to connect: " + e.getMessage());
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
+        return builder.toString();
+    }
+
+    //Testing connectivity
+    public static void main(String[] args) {
+
+//        try {
+//            Connection conn = connect();
+//            if (conn != null) {
+//                System.out.println("Connection to SQLite has been established!");
+//            }
+//        }
+//        catch (Exception e) {
+//            System.out.println("Failed to connect: " + e.getMessage());
+//        }
+
+        createTables();
+//        dropTable("Books");
+
+        insertIntoBooks("9781566199094", "Alice in Wonderland", "Lewis Carrol", 10, 0, 10);
+        System.out.println(selectBooks());
+
+//        dropTable("borrowed_books");
     }
 }

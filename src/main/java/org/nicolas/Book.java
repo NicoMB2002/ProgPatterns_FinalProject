@@ -22,8 +22,8 @@ public class Book {
     }
 
     private String ISBNChecker(String inputISBN) throws InvalidISBNException {
-        if (inputISBN.length() != 10 && inputISBN.length() != 13) {
-            throw new InvalidISBNException("ISBN must be 10 or 13 characters long.");
+        if (inputISBN.length() != 13 || inputISBN.length() != 17) {
+            throw new InvalidISBNException("ISBN must be 13 characters long. Or 17 characters long counting '-'.");
         }
 
         for (int i = 0; i < inputISBN.length(); i++) {
