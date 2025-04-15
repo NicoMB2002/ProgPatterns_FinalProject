@@ -97,6 +97,26 @@ public class LibraryDatabase {
         }
     }
 
+    public static void insertIntoBooks(String isbn, String title, String author,
+                                       int NoCopies, int borrowedBooks, int availableCopies) {
+
+        String sql = "INSERT INTO user VALUES(?, ?, ?)"; //Insert query with '?' placeholders
+
+        try {
+            Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, isbn);
+            pstmt.setString(2, title);
+            pstmt.setString(3, author);
+            pstmt.setInt(4, NoCopies);
+            pstmt.setInt(5, borrowedBooks);
+            pstmt.setInt(6, availableCopies);
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void dropTable(String tableName) {
 
         String sql = "DROP TABLE IF EXISTS " + tableName;
