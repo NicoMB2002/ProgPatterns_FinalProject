@@ -100,7 +100,7 @@ public class LibraryDatabase {
     public static void insertIntoBooks(String isbn, String title, String author,
                                        int NoCopies, int borrowedBooks, int availableCopies) {
 
-        String sql = "INSERT INTO user VALUES(?, ?, ?)"; //Insert query with '?' placeholders
+        String sql = "INSERT INTO user VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
 
         try {
             Connection conn = connect();
