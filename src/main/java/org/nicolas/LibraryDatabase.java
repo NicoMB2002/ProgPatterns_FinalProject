@@ -178,7 +178,7 @@ public class LibraryDatabase {
         }
     }
 
-    public static String selectUsers() {
+    public static String selectAllUsers() {
         String sql = "SELECT * FROM user";
         StringBuilder builder = new StringBuilder();
         //using StringBuilder to build (or append) String
@@ -191,8 +191,8 @@ public class LibraryDatabase {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
-                String role = rs.getString("role");
-                builder.append(String.format("ID: %d, Name: %s, Age: %d%n",id, name, role));
+//                String password = rs.getString("password"); //To be decided
+                builder.append(String.format("ID: %d%n, Name: %s%n", id, name));
             }
         }
         catch (SQLException e) {
@@ -201,7 +201,7 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
-    public static String selectBooks() {
+    public static String selectAllBooks() {
         String sql = "SELECT * FROM Books";
         StringBuilder builder = new StringBuilder();
         //using StringBuilder to build (or append) String
@@ -219,8 +219,8 @@ public class LibraryDatabase {
                 int borrowedBooks = rs.getInt("borrowed_books");
                 int booksAvailable = noCopies - borrowedBooks;
 
-                builder.append(String.format("ISBN: %s, Title: %s%nAuthor: %s, Number of copies: %d, " +
-                        "Borrowed Books: %d, Available Books: %d%n",isbn, title, author, noCopies, borrowedBooks, booksAvailable));
+                builder.append(String.format("ISBN: %s%nTitle: %s%nAuthor: %s%nNumber of copies: %d%n" +
+                        "Borrowed Books: %d%nAvailable Books: %d%n",isbn, title, author, noCopies, borrowedBooks, booksAvailable));
             }
         }
         catch (SQLException e) {
@@ -228,6 +228,36 @@ public class LibraryDatabase {
         }
         return builder.toString();
     }
+
+    public static String selectAllBorrowedBooks() {
+        String sql = "SELECT * FROM BorrowedBooks";
+        StringBuilder builder = new StringBuilder();
+        //using StringBuilder to build (or append) String
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int borrowedBookId = rs.getInt("borrowedBook_id");
+                int userId = rs.getInt("user_id");
+                String isbn = rs.getString("isbn");
+                String borrowDate = rs.getString("borrow_date");
+                String returnDate = rs.getString("return_date");
+                String returnStatus = rs.getString("return_status");
+
+                builder.append(String.format("Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%nBorrow Date: %s%n" +
+                        "Return Date: %s%nReturn Status: %s%n",borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
+
 
     //Testing connectivity
     public static void main(String[] args) {
@@ -245,8 +275,8 @@ public class LibraryDatabase {
 //        createBooksTable();
 //        dropTable("BorrowedBooks");
 
-        insertIntoBooks("9781566199094", "Alice in Wonderland", "Lewis Carrol", 10, 0, 10);
-        System.out.println(selectBooks());
+//        insertIntoBooks("9781566199094", "Alice in Wonderland", "Lewis Carrol", 10, 0, 10);
+        System.out.println(selectAllBooks());
 
 //        dropTable("borrowed_books");
     }
