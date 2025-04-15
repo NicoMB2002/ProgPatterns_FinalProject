@@ -21,7 +21,7 @@ public class LibraryDatabase {
         return connection;
     }
 
-    public static void createTables() {
+    public static void createUserTable() {
         String userTable = """
         CREATE TABLE IF NOT EXISTS User (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,6 +31,19 @@ public class LibraryDatabase {
         );
         """;
 
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            //execute the Create table statement
+            stmt.execute(userTable);
+            System.out.println("\nUser Table created successfully.\n");
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void createBooksTable() {
         String booksTable = """
         CREATE TABLE IF NOT EXISTS Books (
             isbn TEXT PRIMARY KEY,
@@ -41,28 +54,37 @@ public class LibraryDatabase {
             available_copies INTEGER NOT NULL
         );
         """;
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            //execute the Create table statement
+            stmt.execute(booksTable);
+            System.out.println("\nBooks Table created successfully.\n");
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
+    public static void createBorrowedBooksTable() {
         String borrowedBooksTable = """
         CREATE TABLE IF NOT EXISTS BorrowedBooks (
             borrowedBook_id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
-            book_id TEXT,
+            isbn TEXT,
             borrow_date TEXT,
             return_date TEXT,
             return_status TEXT,
             FOREIGN KEY(user_id) REFERENCES User(user_id),
-            FOREIGN KEY(book_id) REFERENCES Books(isbn)
+            FOREIGN KEY(isbn) REFERENCES Books(isbn)
         );
         """;
-
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
-            //execute the Create table statements
-            stmt.execute(userTable);
-            stmt.execute(booksTable);
+            //execute the Create table statement
             stmt.execute(borrowedBooksTable);
-            System.out.println("\nTables created successfully.\n");
+            System.out.println("\nBorrowedBooks Table created successfully.\n");
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -118,6 +140,27 @@ public class LibraryDatabase {
         catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static void insertIntoBorrowedBooks(String borrowedBookID, String userID, String isbn,
+                                               Date borrow_date, Date return_date, String return_status) {
+        String sql = "INSERT INTO borrowedBooks VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
+
+        try {
+            Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, borrowedBookID);
+            pstmt.setString(2, userID);
+            pstmt.setString(3, isbn);
+            pstmt.setString(4, borrow_date.toString());
+            pstmt.setString(5, return_date.toString());
+            pstmt.setString(6, return_status);
+            pstmt.executeUpdate(); //execute insert
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     public static void dropTable(String tableName) {
@@ -199,8 +242,8 @@ public class LibraryDatabase {
 //            System.out.println("Failed to connect: " + e.getMessage());
 //        }
 
-        createTables();
-//        dropTable("Books");
+//        createBooksTable();
+//        dropTable("BorrowedBooks");
 
         insertIntoBooks("9781566199094", "Alice in Wonderland", "Lewis Carrol", 10, 0, 10);
         System.out.println(selectBooks());
