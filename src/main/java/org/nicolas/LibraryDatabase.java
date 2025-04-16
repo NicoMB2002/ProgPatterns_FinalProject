@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Calendar;
 
 public class LibraryDatabase {
 
@@ -234,6 +233,10 @@ public class LibraryDatabase {
 
     //SELECT * STATEMENTS///////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * selects the entire user table
+     * @return the id, name, and role of the user (not their password)
+     */
     public static String selectAllUsers() {
         String sql = "SELECT * FROM user";
         StringBuilder builder = new StringBuilder();
@@ -259,6 +262,10 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * selects the entirety of the books table
+     * @return books with their isbn, title, author, no of copies total, no of borrowed copies, and no of copies available
+     */
     public static String selectAllBooks() {
         String sql = "SELECT * FROM Books";
         StringBuilder builder = new StringBuilder();
@@ -277,8 +284,7 @@ public class LibraryDatabase {
                 int borrowedBooks = rs.getInt("borrowed_books");
                 int booksAvailable = noCopies - borrowedBooks;
 
-                builder.append(String.format("ISBN: %s%nTitle: %s%nAuthor: %s%nNumber of copies: %d%n" +
-                        "Borrowed Books: %d%nAvailable Books: %d%n",
+                builder.append(String.format("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
                         isbn, title, author, noCopies, borrowedBooks, booksAvailable));
             }
         }
@@ -288,6 +294,10 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * selects the entirety of the borrowed books table
+     * @return the borrowed book ID, userID, book's ISBN, borrowDate, returnDate, returnStatus
+     */
     public static String selectAllBorrowedBooks() {
         String sql = "SELECT * FROM BorrowedBooks";
         StringBuilder builder = new StringBuilder();
@@ -319,10 +329,22 @@ public class LibraryDatabase {
 
     //SPECIALIZED STATEMENTS////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * searches through the database for books matching filters
+     * @param isbnFilter the isbn filter (if no information is provided, contains '---')
+     * @param titleFilter the title filter (if no information is provided, contains '---')
+     * @param authorFilter the author filter (if no information is provided, contains '---')
+     * @return
+     */
     public static String getFilteredBooks (String isbnFilter, String titleFilter, String authorFilter) {
+        //TODO check in the library system and implement a value for null strings
+        isbnFilter = (isbnFilter.isEmpty() || isbnFilter.isBlank() || isbnFilter == null) ? "---" : isbnFilter;
+        titleFilter = (titleFilter.isEmpty() || titleFilter.isBlank() || titleFilter == null) ? "---" : titleFilter;
+        authorFilter = (authorFilter.isEmpty() || authorFilter.isBlank() || authorFilter == null) ? "---" : authorFilter;
+
+        //TODO would it be select *distinct* to not have duplicates??
         String sqlQuery = "SELECT * FROM Books WHERE isbn = '" + isbnFilter + "' OR title = '" + titleFilter
                 + "' OR author = '" + authorFilter + "'";
-        //TODO check in the library system and implement a value for null strings
 
         StringBuilder builder = new StringBuilder();
 
@@ -347,6 +369,11 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * filter the users by a specified role
+     * @param role the role to filter for
+     * @return the user_id, name, and role of the filtered users
+     */
     public static String getUserListFromRole (String role) {
         String sqlQuery = "SELECT * FROM user WHERE role = '" + role.toUpperCase() + "'";
         StringBuilder builder = new StringBuilder();
@@ -371,6 +398,11 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * gets the entirety of the information for a specified user
+     * @param userId the input user_id
+     * @return the user_id, name, role, and password of the input user
+     */
     public static String getUserFullInfo (int userId) {
         String sqlQuery = "SELECT * FROM user WHERE user_id = " + userId;
         StringBuilder builder = new StringBuilder();
@@ -394,6 +426,11 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * gets a specific book through the isbn
+     * @param inputISBN the book's isbn
+     * @return the book's information (isbn, title, author, no_copies, borrowed_copies, available_copies)
+     */
     public static String getBookThroughISBN (String inputISBN) {
         String sqlQuery = "SELECT * FROM Book WHERE isbn = " + inputISBN;
         StringBuilder builder = new StringBuilder();
@@ -411,7 +448,7 @@ public class LibraryDatabase {
                 int borrowedCopies = rs.getInt("borrowed_books");
                 int availableCopies = rs.getInt("available_copies");
 
-                builder.append(String.format("%s  %s  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+                builder.append(String.format("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
                         isbn, title, author, totalCopies, borrowedCopies, availableCopies));
             }
         } catch (SQLException e) {
@@ -420,6 +457,11 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * updates the role of a specified user
+     * @param userID the user to modify
+     * @param newRole the new role of the input user
+     */
     public static void updateUserRole (int userID, String newRole) {
         String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET role = '" + newRole + "'";
         //TODO check if the update statement is correct
@@ -435,6 +477,11 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * updates the name of a specified user
+     * @param userID the user's id
+     * @param newName the new name to update
+     */
     public static void updateUserName (int userID, String newName) {
         String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET name = '" + newName + "'";
         //TODO check if the update statement is correct
@@ -450,6 +497,11 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * updates a specified user's password
+     * @param userID the input user's id
+     * @param newPassword the new password to update
+     */
     public static void updateUserPassword (int userID, String newPassword) {
         String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET password = '" + newPassword + "'";
         //TODO check if the update statement is correct
