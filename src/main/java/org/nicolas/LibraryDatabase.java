@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.Calendar;
 
 public class LibraryDatabase {
 
@@ -23,6 +25,9 @@ public class LibraryDatabase {
 
     //CREATING DB TABLES////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * creates the table user if it is not already created
+     */
     public static void createUserTable() {
         // USER_ID | name | role | password
         String userTable = """
@@ -46,6 +51,9 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * creates the table Books if it is not already created
+     */
     public static void createBooksTable() {
         // ISBN | title | author | no_copies | borrowed_books | available_copies
         String booksTable = """
@@ -70,6 +78,9 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * creates the table BorrowedBooks if it is not already created
+     */
     public static void createBorrowedBooksTable() {
         // BB_ID | USER_ID | ISBN | borrow_date | return_date | return_status
         String borrowedBooksTable = """
@@ -98,6 +109,12 @@ public class LibraryDatabase {
 
     //MODIFY TABLES/////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * adds a column to a specified table
+     * @param tableName the table to update
+     * @param columnName the new column's name
+     * @param columnType the data type of the new column
+     */
     public static void addColumn(String tableName, String columnName, String columnType) {
         String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnType;
 
@@ -111,6 +128,11 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * Removes a table from the database
+     * ! This action is unchangable : proceed with caution
+     * @param tableName the table to remove
+     */
     public static void dropTable(String tableName) {
 
         String sql = "DROP TABLE IF EXISTS " + tableName;
@@ -128,6 +150,12 @@ public class LibraryDatabase {
 
     //INSERT STATEMENTS/////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * inserts a new record with a new user
+     * @param name the new user's name
+     * @param role the user's role within the system
+     * @param password the user's password
+     */
     public static void insertIntoUser(String name, String role, String password) {
         String sql = "INSERT INTO user VALUES(?, ?, ?)"; //Insert query with '?' placeholders
 
@@ -144,10 +172,17 @@ public class LibraryDatabase {
         }
     }
 
-    public static void insertIntoBooks(String isbn, String title, String author,
-                                       int no_Copies, int borrowed_Books, int available_Copies) {
-
+    /**
+     * inserts a new record with a new book
+     * @param isbn the book's ISBN (as a PK)
+     * @param title the book's title
+     * @param author the author of the book
+     * @param no_Copies the number of copies in the system
+     */
+    public static void insertIntoBooks(String isbn, String title, String author, int no_Copies) {
         String sql = "INSERT INTO books VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
+        int borrowed_Books = 0; //sets the value to 0 to avoid any error (because nobody could have borrowed the book)
+        int available_Copies = no_Copies; //simple check : it should always initialize == no_Copies
 
         try {
             Connection conn = connect();
@@ -166,14 +201,24 @@ public class LibraryDatabase {
         }
     }
 
-    public static void insertIntoBorrowedBooks(String borrowedBookID, String userID, String isbn,
-                                               Date borrow_date, Date return_date, String return_status) {
+    /**
+     * inserts a book into the borrowed books table when a user borrows it
+     * @param borrowedBookID the borrow ID
+     * @param userID the user that borrowed the book
+     * @param isbn the book's unique identifier
+     * @param borrow_date the borrow date
+     */
+    public static void insertIntoBorrowedBooks(String borrowedBookID, String userID, String isbn, LocalDate borrow_date) {
         String sql = "INSERT INTO borrowedBooks VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
+
+        LocalDate return_date = borrow_date;
+        return_date.plusWeeks(2); //automatically sets the return date to two weeks from the borrow date
+        String return_status = "Borrowed";   //automatically sets the status to borrowed
 
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, borrowedBookID);
+            pstmt.setString(1, borrowedBookID); //TODO check if its not already taken care of by the autoincrement
             pstmt.setString(2, userID);
             pstmt.setString(3, isbn);
             pstmt.setString(4, borrow_date.toString());
@@ -199,11 +244,13 @@ public class LibraryDatabase {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
+            int counter = 0;
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
-//                String password = rs.getString("password"); //To be decided
-                builder.append(String.format("ID: %d%n, Name: %s%n", id, name));
+                String role = rs.getString("role");
+                builder.append(String.format("%d.  %d  %s  ROLE : %s", counter, id, name, role));
+                counter++;
             }
         }
         catch (SQLException e) {
@@ -231,7 +278,8 @@ public class LibraryDatabase {
                 int booksAvailable = noCopies - borrowedBooks;
 
                 builder.append(String.format("ISBN: %s%nTitle: %s%nAuthor: %s%nNumber of copies: %d%n" +
-                        "Borrowed Books: %d%nAvailable Books: %d%n",isbn, title, author, noCopies, borrowedBooks, booksAvailable));
+                        "Borrowed Books: %d%nAvailable Books: %d%n",
+                        isbn, title, author, noCopies, borrowedBooks, booksAvailable));
             }
         }
         catch (SQLException e) {
@@ -259,7 +307,8 @@ public class LibraryDatabase {
                 String returnStatus = rs.getString("return_status");
 
                 builder.append(String.format("Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%nBorrow Date: %s%n" +
-                        "Return Date: %s%nReturn Status: %s%n",borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
+                        "Return Date: %s%nReturn Status: %s%n",
+                        borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
             }
         }
         catch (SQLException e) {
@@ -322,6 +371,29 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    public static String getUserFullInfo (int userId) {
+        String sqlQuery = "SELECT * FROM user WHERE user_id = " + userId;
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            while (rs.next()) {
+                int userID = rs.getInt("user_id");
+                String name = rs.getString("name");
+                String role = rs.getString("role");
+                String password = rs.getString("password");
+
+                builder.append(String.format("%d.  %d  %s  %s  PASSWORD : %s", userID, name, role, password));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
     public static String getBookThroughISBN (String inputISBN) {
         String sqlQuery = "SELECT * FROM Book WHERE isbn = " + inputISBN;
         StringBuilder builder = new StringBuilder();
@@ -346,6 +418,51 @@ public class LibraryDatabase {
             System.out.println(e.getMessage());
         }
         return builder.toString();
+    }
+
+    public static void updateUserRole (int userID, String newRole) {
+        String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET role = '" + newRole + "'";
+        //TODO check if the update statement is correct
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+            System.out.println("User role update successfully");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void updateUserName (int userID, String newName) {
+        String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET name = '" + newName + "'";
+        //TODO check if the update statement is correct
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+            System.out.println("User name update successfully");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void updateUserPassword (int userID, String newPassword) {
+        String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET password = '" + newPassword + "'";
+        //TODO check if the update statement is correct
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+            System.out.println("User password update successfully");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 
