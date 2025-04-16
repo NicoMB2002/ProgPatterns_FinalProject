@@ -12,7 +12,7 @@ public class Book {
         try {
             this.ISBN = ISBNChecker(ISBN);
         } catch (InvalidISBNException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         this.title = title;
         this.author = author;
@@ -49,9 +49,6 @@ public class Book {
 
         return 0;
     }
-
-
-
 
     public String getISBN() {
         return ISBN;
