@@ -322,6 +322,32 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    public static String getBookThroughISBN (String inputISBN) {
+        String sqlQuery = "SELECT * FROM Book WHERE isbn = " + inputISBN;
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            while (rs.next()) {
+                String isbn = rs.getString("isbn");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                int totalCopies = rs.getInt("no_copies");
+                int borrowedCopies = rs.getInt("borrowed_books");
+                int availableCopies = rs.getInt("available_copies");
+
+                builder.append(String.format("%s  %s  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+                        isbn, title, author, totalCopies, borrowedCopies, availableCopies));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
 
 
     //Testing connectivity
