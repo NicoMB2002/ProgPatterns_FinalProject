@@ -21,7 +21,10 @@ public class LibraryDatabase {
         return connection;
     }
 
+    //CREATING DB TABLES////////////////////////////////////////////////////////////////////////////////////////////////
+
     public static void createUserTable() {
+        // USER_ID | name | role | password
         String userTable = """
         CREATE TABLE IF NOT EXISTS User (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +47,7 @@ public class LibraryDatabase {
     }
 
     public static void createBooksTable() {
+        // ISBN | title | author | no_copies | borrowed_books | available_copies
         String booksTable = """
         CREATE TABLE IF NOT EXISTS Books (
             isbn TEXT PRIMARY KEY,
@@ -67,6 +71,7 @@ public class LibraryDatabase {
     }
 
     public static void createBorrowedBooksTable() {
+        // BB_ID | USER_ID | ISBN | borrow_date | return_date | return_status
         String borrowedBooksTable = """
         CREATE TABLE IF NOT EXISTS BorrowedBooks (
             borrowedBook_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,6 +96,8 @@ public class LibraryDatabase {
         }
     }
 
+    //MODIFY TABLES/////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public static void addColumn(String tableName, String columnName, String columnType) {
         String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnType;
 
@@ -103,6 +110,23 @@ public class LibraryDatabase {
             System.out.println("Failed to add column: " + e.getMessage());
         }
     }
+
+    public static void dropTable(String tableName) {
+
+        String sql = "DROP TABLE IF EXISTS " + tableName;
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql); // Drop the table
+            System.out.println("Table " + tableName + " dropped successfully.");
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    //INSERT STATEMENTS/////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void insertIntoUser(String name, String role, String password) {
         String sql = "INSERT INTO user VALUES(?, ?, ?)"; //Insert query with '?' placeholders
@@ -163,20 +187,7 @@ public class LibraryDatabase {
 
     }
 
-    public static void dropTable(String tableName) {
-
-        String sql = "DROP TABLE IF EXISTS " + tableName;
-
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(sql); // Drop the table
-            System.out.println("Table " + tableName + " dropped successfully.");
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+    //SELECT * STATEMENTS///////////////////////////////////////////////////////////////////////////////////////////////
 
     public static String selectAllUsers() {
         String sql = "SELECT * FROM user";
@@ -252,6 +263,36 @@ public class LibraryDatabase {
             }
         }
         catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
+    //SPECIALIZED STATEMENTS////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static String getFilteredBooks (String isbnFilter, String titleFilter, String authorFilter) {
+        String sqlQuery = "SELECT * FROM Books WHERE isbn = '" + isbnFilter + "' OR title = '" + titleFilter
+                + "' OR author = '" + authorFilter + "'";
+        //TODO check in the library system and implement a value for null strings
+
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            int counter = 0; //counter to create a list to later be able to select a book
+            while (rs.next()) {
+                String isbn = rs.getString("isbn");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                int copies = rs.getInt("no_copies");
+
+                builder.append(String.format("%d.  %s  %s  %s  COPIES : %d", counter, isbn, title, author, copies));
+                counter++;
+            }
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return builder.toString();
