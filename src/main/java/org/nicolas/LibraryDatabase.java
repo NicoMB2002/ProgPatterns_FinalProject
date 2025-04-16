@@ -298,6 +298,30 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    public static String getUserListFromRole (String role) {
+        String sqlQuery = "SELECT * FROM user WHERE role = '" + role.toUpperCase() + "'";
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            int counter = 0; //counter to create a list to later be able to select a book
+            while (rs.next()) {
+                int userID = rs.getInt("user_id");
+                String name = rs.getString("name");
+                String role1 = rs.getString("role");
+
+                builder.append(String.format("%d.  %d  %s  %s", userID, name, role1));
+                counter++;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
 
 
     //Testing connectivity
