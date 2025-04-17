@@ -1,7 +1,7 @@
 package org.nicolas;
 
 public class Book {
-    private final String ISBN;
+    private String ISBN;
     private String title;
     private String author;
     private int copies;
@@ -21,7 +21,7 @@ public class Book {
         this.borrowedCopies = borrowedCopies;
     }
 
-    private String ISBNChecker(String inputISBN) throws InvalidISBNException {
+    private String ISBNChecker(String inputISBN) throws InvalidISBNException { //TODO change the checking for '-' and remove them if there is
         if (inputISBN.length() != 13 || inputISBN.length() != 17) {
             throw new InvalidISBNException("ISBN must be 13 characters long. Or 17 characters long counting '-'.");
         }
@@ -48,6 +48,18 @@ public class Book {
         int numOfAvCopies;
 
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "ISBN='" + ISBN + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", copies=" + copies +
+                ", availableCopies=" + availableCopies +
+                ", borrowedCopies=" + borrowedCopies +
+                '}';
     }
 
     public String getISBN() {

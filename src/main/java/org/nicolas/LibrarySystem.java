@@ -8,18 +8,12 @@ public class LibrarySystem {
 
     public void addBook (String ISBN, String title, String author, int copies) {
         Scanner console = new Scanner(System.in);
-
-        ArrayList<Book> booksFound = searchBook(ISBN, title, author);
+        ArrayList<Book> booksFound = LibraryDatabase.getFilteredBooks(ISBN, title, author); //TODO check the return type and if it needs to be changed
 
         if (booksFound.size() == 0 || booksFound.isEmpty()) {
-            Book newBook = new Book(ISBN, title, author, copies, copies, 0);
+            LibraryDatabase.insertIntoBooks(ISBN, title, author, copies);
         } else {
             System.out.println("The book you want to add already seems to exist. Is it one of those books?");
-            int counter = 0;
-            for (Book books : booksFound) {
-                System.out.println(counter + ".  " + booksFound);
-            }
-
             System.out.println("Y/N");
             char ans = console.next().charAt(0);
 
@@ -27,19 +21,51 @@ public class LibrarySystem {
                 System.out.println("Please select the book from the list");
                 int existingBook = console.nextInt();
                 Book tempbook = booksFound.get(existingBook);
+                tempbook= LibraryDatabase.getBookThroughISBN(tempbook.getISBN());
 
+                System.out.printf("%s   %s, %s, COPIES : %d [BORROWED : %d    AVAILABLE : %d]",
+                        tempbook.getISBN(), tempbook.getTitle(), tempbook.getAuthor(), tempbook.getCopies(),
+                        tempbook.getBorrowedCopies(), tempbook.getAvailableCopies());
+
+                System.out.println("Dou you wish to add copies to this book?");
+                System.out.println("Y/N");
+                ans = console.next().charAt(0);
+
+                if (ans == 'Y' || ans == 'y') {
+                    System.out.println("Please enter the number of copies to add : ");
+                    int copiesToAdd = console.nextInt();
+                    addCopiesToBook(tempbook, copiesToAdd);
+                } else {
+                    System.out.println("Nothing added.");
+                }
 
             } else if (ans == 'N' || ans == 'n') {
+                System.out.println("Create a new book?");
+                System.out.println("Y/N");
+                ans = console.next().charAt(0);
 
+                if (ans == 'Y' || ans == 'y') {
+                    LibraryDatabase.insertIntoBooks(ISBN, title, author, copies);
+                } else {
+                    System.out.println("Nothing added.");
+                }
             } else {
                 System.out.println("Invalid choice"); //TODO create exception
             }
-
         }
 
     }
 
-    public void removeBook (String ISBN) {}
+    public void addCopiesToBook (Book inputBook, int newCopiesNum) {
+        int newTotalCopies = inputBook.getCopies() + newCopiesNum;
+        inputBook.setCopies(newTotalCopies);
+        int newAvCopies = newTotalCopies - inputBook.getBorrowedCopies();
+        inputBook.setAvailableCopies(newAvCopies);
+    }
+
+    public void removeBook (String ISBN) {
+
+    }
 
     public void displayCatalog () {}
 
@@ -47,9 +73,4 @@ public class LibrarySystem {
 
     public void returnBook (String ISBN) {}
 
-    public ArrayList<Book> searchBook (String ISBNFilter, String titleFilter, String authorFilter) {
-        ArrayList<Book> booksFound = new ArrayList<>();
-        LibraryDatabase.findBook(ISBNFilter, titleFilter, authorFilter); //TODO check the return type and if it needs to be changed
-        return booksFound;
-    }
 }

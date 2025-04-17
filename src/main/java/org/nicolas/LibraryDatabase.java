@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class LibraryDatabase {
 
@@ -62,9 +63,25 @@ public class LibraryDatabase {
             author TEXT NOT NULL,
             no_copies INTEGER NOT NULL,
             borrowed_books INTEGER NOT NULL,
-            available_copies INTEGER NOT NULL
+            available_copies INTEGER NOT NULL,
+            CHECK (available_copies = no_copies - borrowed_books)
         );
-        """;
+        """; //TODO check the check option : make a trigger instead?
+        /*
+        CREATE TRIGGER CheckCopies
+        ON Books
+        INSTEAD OF INSERT
+        AS
+        BEGIN
+            IF (available_copies = no_copies - borrowed_books) BEGIN
+                INSERT INTO Books VALUES (?, ?, ?, ?, ?, ?)
+            END;
+            ELSE BEGIN
+                RAISEERROR ("The number of copies doesn't match);
+                ROLLBACK TRANSACTION;
+            END;
+        END;
+         */
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
@@ -336,7 +353,7 @@ public class LibraryDatabase {
      * @param authorFilter the author filter (if no information is provided, contains '---')
      * @return
      */
-    public static String getFilteredBooks (String isbnFilter, String titleFilter, String authorFilter) {
+    public static ArrayList<Book> getFilteredBooks (String isbnFilter, String titleFilter, String authorFilter) {
         //TODO check in the library system and implement a value for null strings
         isbnFilter = (isbnFilter.isEmpty() || isbnFilter.isBlank() || isbnFilter == null) ? "---" : isbnFilter;
         titleFilter = (titleFilter.isEmpty() || titleFilter.isBlank() || titleFilter == null) ? "---" : titleFilter;
@@ -347,6 +364,7 @@ public class LibraryDatabase {
                 + "' OR author = '" + authorFilter + "'";
 
         StringBuilder builder = new StringBuilder();
+        ArrayList<Book> booksFound = new ArrayList<>();
 
         try {
             Connection conn = connect();
@@ -360,13 +378,16 @@ public class LibraryDatabase {
                 String author = rs.getString("author");
                 int copies = rs.getInt("no_copies");
 
+                Book tempBook = new Book(isbn, title, author, copies, 0, 0);
+                booksFound.add(counter, tempBook);
                 builder.append(String.format("%d.  %s  %s  %s  COPIES : %d", counter, isbn, title, author, copies));
                 counter++;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return builder.toString();
+        //return builder.toString();
+        return booksFound;
     }
 
     /**
@@ -431,9 +452,40 @@ public class LibraryDatabase {
      * @param inputISBN the book's isbn
      * @return the book's information (isbn, title, author, no_copies, borrowed_copies, available_copies)
      */
-    public static String getBookThroughISBN (String inputISBN) {
+    public static Book getBookThroughISBN (String inputISBN) {
         String sqlQuery = "SELECT * FROM Book WHERE isbn = " + inputISBN;
         StringBuilder builder = new StringBuilder();
+        Book holder = new Book("null", "null", "null", 0, 0, 0);
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            while (rs.next()) {
+                String isbn = rs.getString("isbn");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                int totalCopies = rs.getInt("no_copies");
+                int borrowedCopies = rs.getInt("borrowed_books");
+                int availableCopies = rs.getInt("available_copies");
+
+                holder = new Book(isbn, title, author, totalCopies, availableCopies, borrowedCopies);
+                builder.append(String.format("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+                        isbn, title, author, totalCopies, borrowedCopies, availableCopies));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return holder;
+        //return builder.toString();
+    }
+
+    public static String updateBookCopies (Book inputBook) {
+        String sqlQuery = "UPDATE no_copies = " + inputBook.getCopies() + ", available_copies = "
+                + inputBook.getAvailableCopies() + ") WHERE isbn = " + inputBook.getISBN();
+        StringBuilder builder = new StringBuilder();
+
 
         try {
             Connection conn = connect();
@@ -540,4 +592,5 @@ public class LibraryDatabase {
 
 //        dropTable("borrowed_books");
     }
+
 }
