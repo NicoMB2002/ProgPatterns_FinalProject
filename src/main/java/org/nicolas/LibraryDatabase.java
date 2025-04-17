@@ -568,9 +568,8 @@ public class LibraryDatabase {
             System.out.println(e.getMessage());
         }
     }
-    
-    public static void removeBookCopies (String ISBN, int newNumOfCopies) {
 
+    public static void removeBookCopies (String ISBN, int newNumOfCopies) {
         String sqlQuery = "UPDATE Book WHERE isbn = '" + ISBN + "' SET copies = " + newNumOfCopies;
         //TODO check if the update statement is correct
 

@@ -64,10 +64,15 @@ public class LibrarySystem {
     }
 
     public void removeBook (String ISBN) {
-
+        Scanner console = new Scanner(System.in);
+        System.out.print("Please enter the new total number of copies : ");
+        int newNumOfCopies = console.nextInt();
+        LibraryDatabase.removeBookCopies(ISBN, newNumOfCopies);
     }
 
-    public void displayCatalog () {}
+    public void displayCatalog () {
+        LibraryDatabase.selectAllBooks();
+    }
 
     public void borrowBook (String ISBN) {}
 
