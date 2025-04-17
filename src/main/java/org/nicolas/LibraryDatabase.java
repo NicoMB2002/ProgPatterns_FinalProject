@@ -568,6 +568,22 @@ public class LibraryDatabase {
             System.out.println(e.getMessage());
         }
     }
+    
+    public static void removeBookCopies (String ISBN, int newNumOfCopies) {
+
+        String sqlQuery = "UPDATE Book WHERE isbn = '" + ISBN + "' SET copies = " + newNumOfCopies;
+        //TODO check if the update statement is correct
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+            System.out.println("Copies updated successfully");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
 
 
