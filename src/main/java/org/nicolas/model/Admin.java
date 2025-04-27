@@ -1,6 +1,6 @@
-package org.nicolas;
+package org.nicolas.model;
 
-public class Admin extends User{
+public class Admin extends User {
     public void addUser (UserType userType, int userID, String name, String password) {}
 
     public void removeUser(int userID) {}

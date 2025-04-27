@@ -1,4 +1,6 @@
-package org.nicolas;
+package org.nicolas.database;
+
+import org.nicolas.model.Book;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

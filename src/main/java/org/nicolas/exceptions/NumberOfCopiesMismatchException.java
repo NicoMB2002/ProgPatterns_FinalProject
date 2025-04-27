@@ -1,4 +1,4 @@
-package org.nicolas;
+package org.nicolas.exceptions;
 
 public class NumberOfCopiesMismatchException extends Exception {
     public NumberOfCopiesMismatchException(String message) {

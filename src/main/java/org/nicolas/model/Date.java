@@ -1,4 +1,4 @@
-package org.nicolas;
+package org.nicolas.model;
 
 import java.util.Scanner;
 

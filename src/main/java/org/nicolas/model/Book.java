@@ -1,4 +1,6 @@
-package org.nicolas;
+package org.nicolas.model;
+
+import org.nicolas.exceptions.InvalidISBNException;
 
 public class Book {
     private String ISBN;
@@ -9,11 +11,8 @@ public class Book {
     private int borrowedCopies;
 
     public Book(String ISBN, String title, String author, int copies, int availableCopies, int borrowedCopies) {
-        try {
-            this.ISBN = ISBNChecker(ISBN);
-        } catch (InvalidISBNException e) {
-            System.out.println(e.getMessage());
-        }
+
+        this.ISBN = ISBNChecker(ISBN);
         this.title = title;
         this.author = author;
         this.copies = copies;
@@ -22,16 +21,15 @@ public class Book {
     }
 
     private String ISBNChecker(String inputISBN) throws InvalidISBNException { //TODO change the checking for '-' and remove them if there is
-        if (inputISBN.length() != 13 || inputISBN.length() != 17) {
-            throw new InvalidISBNException("ISBN must be 13 characters long. Or 17 characters long counting '-'.");
+        inputISBN = inputISBN.replace("-", ""); // remove dashes if any
+        if (inputISBN.length() != 13) {
+            throw new InvalidISBNException("ISBN must be exactly 13 characters long without dashes.");
         }
-
-        for (int i = 0; i < inputISBN.length(); i++) {
-            if (Character.isLetter(inputISBN.charAt(i))) {
+        for (char c : inputISBN.toCharArray()) {
+            if (Character.isLetter(c)) {
                 throw new InvalidISBNException("ISBN should not contain letters.");
             }
         }
-
         return inputISBN;
     }
 
@@ -40,14 +38,7 @@ public class Book {
     public void borrowCopy () {}
 
     public boolean checkTotalNumOfCopies () {
-        boolean isOk;
-        return isOk = (borrowedCopies + availableCopies == copies) ? true : false;
-    }
-
-    public int checkAvailableCopies () {
-        int numOfAvCopies;
-
-        return 0;
+        return borrowedCopies + availableCopies == copies;
     }
 
     @Override

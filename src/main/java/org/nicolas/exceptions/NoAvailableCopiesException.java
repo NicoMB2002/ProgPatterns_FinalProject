@@ -1,4 +1,4 @@
-package org.nicolas;
+package org.nicolas.exceptions;
 
 public class NoAvailableCopiesException extends RuntimeException {
     public NoAvailableCopiesException(String message) {

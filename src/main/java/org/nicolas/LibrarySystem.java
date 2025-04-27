@@ -1,5 +1,9 @@
 package org.nicolas;
 
+import org.nicolas.database.LibraryDatabase;
+import org.nicolas.model.Book;
+import org.nicolas.model.User;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
