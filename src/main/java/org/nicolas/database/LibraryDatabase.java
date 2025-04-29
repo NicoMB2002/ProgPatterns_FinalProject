@@ -1,6 +1,9 @@
 package org.nicolas.database;
 
 import org.nicolas.model.Book;
+import org.nicolas.model.Librarian;
+import org.nicolas.model.Student;
+import org.nicolas.model.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -587,10 +590,67 @@ public class LibraryDatabase {
     }
 
 
+    public static void deleteBookByIsbn(String isbn) {
+        String sql = "DELETE FROM Books WHERE isbn = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, isbn);
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("Book with ISBN " + isbn + " deleted successfully.");
+            } else {
+                System.out.println("No book found with ISBN " + isbn + ".");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error deleting book: " + e.getMessage());
+        }
+    }
+
+    public static User findUserById(int userId) {
+        String sql = "SELECT * FROM Users WHERE userID = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                // Extract fields
+                int id = rs.getInt("userID");
+                String name = rs.getString("name");
+                String password = rs.getString("password");
+                String userType = rs.getString("userType"); // assuming you have a column for type
+
+                // Depending on the userType, return the correct subclass
+                if (userType.equalsIgnoreCase("Student")) {
+                    return new Student(id, name, password); // You can set currentUser later
+                } else if (userType.equalsIgnoreCase("Librarian")) {
+                    return new Librarian(id, name, password);
+                } else {
+                    return new User(id, name, password); // default
+                }
+            } else {
+                System.out.println("No user found with ID " + userId);
+                return null;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error finding user: " + e.getMessage());
+            return null;
+        }
+    }
 
 
 
-    //Testing connectivity
+
+
+
+        //Testing connectivity
     public static void main(String[] args) {
 
 //        try {
