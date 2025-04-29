@@ -8,11 +8,10 @@ public class Student extends User {
 
     private int userId;
     private String name;
-    private ArrayList<Book> borrowedBooks;
+    private UserType typeOfUSer;
 
-    public Student(int userID, String name, String password, User currentUser, ArrayList<Book> borrowedBooks) {
-        super(userID, name, password, currentUser);
-        this.borrowedBooks = borrowedBooks;
+    public Student(int userID, String name, String password) {
+        super(userID, name, password);
     }
 
     public void seeBorrowedBooks () {}
