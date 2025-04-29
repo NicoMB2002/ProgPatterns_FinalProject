@@ -9,34 +9,26 @@ import java.util.Scanner;
 
 public class UserView {
 
-    // Main menu for the UserView
-    public void showMenu(UserController controller) {
-        System.out.println("\nWelcome to the User Management System:");
-
+    // Main menu for the User
+    public void showMainMenu(UserController controller) {
+        Scanner console = new Scanner(System.in);
         while (true) {
-            System.out.println("\n1. Login\n2. Change Name\n3. Change Password\n4. Exit");
-
-            Scanner console = new Scanner(System.in);
+            System.out.println("\nMain Menu:");
+            System.out.println("1. Login");
+            System.out.println("2. Exit");
 
             int choice = console.nextInt();
-            console.nextLine(); // Consume the newline character after the integer input
+            console.nextLine(); // clear newline
 
             switch (choice) {
                 case 1:
-                    controller.handleLogin();
-
+                    controller.handleLogin(); // Ask userID and password inside controller
                     break;
                 case 2:
-
-                    break;
-                case 3:
-
-                    break;
-                case 4:
-                    System.out.println("\nThank you for using the User Management System!");
-                    return; // Exit the program
+                    System.out.println("Goodbye!");
+                    return;
                 default:
-                    System.out.println("\nInvalid choice, please try again.");
+                    System.out.println("Invalid choice. Please try again.");
             }
         }
     }
