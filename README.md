@@ -8,9 +8,10 @@ being able to search and borrow books. We added a third user called admin, with 
 and removing users in the system. Each user type logs in with their credentials and interacts with a menu, designed to show only the actions available to their role.
 
 - Java: Core programming language.
+- SQLite: For handling database logic.
 
 ## Features
-
+Multiple users will be authenticated through their name and password. Each user has separate menus, which will be displayed to them to interact with through a console application. 
 
 
 ## How to use the application
