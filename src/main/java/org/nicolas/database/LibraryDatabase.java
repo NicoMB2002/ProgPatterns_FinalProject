@@ -666,7 +666,45 @@ public class LibraryDatabase {
     }
 
 
+    /**
+     * gets the borrowed books for a specified user
+     * @param userID the input user
+     * @return an array of borrowed book's information
+     */
+    public static ArrayList<String> getUserBorrowedBooks (int userID) {
+        String sql = "SELECT * FROM BorrowedBooks WHERE user_id = " + userID + " AND return_status != 'RETURNED'";
+        ArrayList<String> borrowedBooksList = new ArrayList<>();
+        //StringBuilder builder = new StringBuilder();
+        //using StringBuilder to build (or append) String
 
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int borrowedBookId = rs.getInt("borrowedBook_id");
+                int userId = rs.getInt("user_id");
+                String isbn = rs.getString("isbn");
+                String borrowDate = rs.getString("borrow_date");
+                String returnDate = rs.getString("return_date");
+                String returnStatus = rs.getString("return_status");
+
+                borrowedBooksList.add(String.format("Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%nBorrow Date: %s%n" +
+                                "Return Date: %s%nReturn Status: %s%n",
+                        borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
+
+//                builder.append(String.format("Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%nBorrow Date: %s%n" +
+//                                "Return Date: %s%nReturn Status: %s%n",
+//                        borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        //return builder.toString();
+        return borrowedBooksList;
+    }
 
 
 
