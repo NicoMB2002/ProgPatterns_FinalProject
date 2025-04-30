@@ -20,15 +20,6 @@ public class User {
 
     }
 
-    protected void changeName () {}
-
-    protected void changePassword () {}
-
-    public boolean login(int userID, String password) {
-        return (this.userID == userID && this.password.equals(password));
-    }
-
-
     public int getUserID() {
         return userID;
     }

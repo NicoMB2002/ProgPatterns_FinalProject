@@ -61,7 +61,7 @@ public class UserController {
                     case 2:
                         System.out.print("Enter ISBN to return: ");
                         String returnIsbn = console.nextLine();
-                        // model.returnBook(returnIsbn); // you would add this method
+                        // model.returnBook(returnIsbn); //implement this method
                         break;
                     case 3:
                         System.out.println("Logging out...");

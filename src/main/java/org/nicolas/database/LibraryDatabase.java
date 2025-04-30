@@ -178,7 +178,7 @@ public class LibraryDatabase {
      * @param password the user's password
      */
     public static void insertIntoUser(String name, String role, String password) {
-        String sql = "INSERT INTO user VALUES(?, ?, ?)"; //Insert query with '?' placeholders
+        String sql = "INSERT INTO User (name, role, password) VALUES(?, ?, ?)"; //Insert query with '?' placeholders
 
         try {
             Connection conn = connect();
@@ -187,6 +187,7 @@ public class LibraryDatabase {
             pstmt.setString(2, role);
             pstmt.setString(3, password);
             pstmt.executeUpdate(); //execute insert
+            System.out.println();
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -610,39 +611,31 @@ public class LibraryDatabase {
         }
     }
 
-    public static User findUserById(int userId) {
-        String sql = "SELECT * FROM Users WHERE userID = ?";
-
+    public static User findUserById(int id) {
+        String sql = "SELECT * FROM User WHERE user_id = ?";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, userId);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                // Extract fields
-                int id = rs.getInt("userID");
                 String name = rs.getString("name");
+                String role = rs.getString("role");
                 String password = rs.getString("password");
-                String userType = rs.getString("userType"); // assuming you have a column for type
 
-                // Depending on the userType, return the correct subclass
-                if (userType.equalsIgnoreCase("Student")) {
-                    return new Student(id, name, password); // You can set currentUser later
-                } else if (userType.equalsIgnoreCase("Librarian")) {
+                if (role.equalsIgnoreCase("student")) { // verifies if it's a student user
+                    return new Student(id, name, password);
+                } else if (role.equalsIgnoreCase("librarian")) { //verifies if it's a librarian user
                     return new Librarian(id, name, password);
                 } else {
-                    return new User(id, name, password); // default
+                    return new User(id, name, password); // fallback
                 }
-            } else {
-                System.out.println("No user found with ID " + userId);
-                return null;
             }
 
         } catch (SQLException e) {
             System.out.println("Error finding user: " + e.getMessage());
-            return null;
         }
+        return null;
     }
 
 
@@ -653,15 +646,15 @@ public class LibraryDatabase {
         //Testing connectivity
     public static void main(String[] args) {
 
-//        try {
-//            Connection conn = connect();
-//            if (conn != null) {
-//                System.out.println("Connection to SQLite has been established!");
-//            }
-//        }
-//        catch (Exception e) {
-//            System.out.println("Failed to connect: " + e.getMessage());
-//        }
+        try {
+            Connection conn = connect();
+            if (conn != null) {
+                System.out.println("Connection to SQLite has been established!");
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
 
 //        createBooksTable();
 //        dropTable("BorrowedBooks");
