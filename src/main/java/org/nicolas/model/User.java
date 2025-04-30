@@ -5,7 +5,7 @@ import org.nicolas.exceptions.InvalidUserException;
 
 import java.util.Scanner;
 
-public class User {
+public abstract class User {
     private int userID;
     private String name;
     private String password;
@@ -16,6 +16,8 @@ public class User {
         this.password = password;
 
     }
+
+    public abstract void borrowBook(String isbn);
 
     public void changeName (String newName) {
         LibraryDatabase.updateUserName(userID, newName);

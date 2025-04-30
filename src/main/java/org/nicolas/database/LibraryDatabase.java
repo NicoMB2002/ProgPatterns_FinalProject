@@ -655,7 +655,8 @@ public class LibraryDatabase {
                 } else if (role.equalsIgnoreCase("librarian")) { //verifies if it's a librarian user
                     return new Librarian(id, name, password);
                 } else {
-                    return new User(id, name, password); // fallback
+                    System.out.println("Unknown role for user.");
+                    return null;
                 }
             }
 
