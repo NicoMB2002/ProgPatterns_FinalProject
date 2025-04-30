@@ -1,5 +1,6 @@
 package org.nicolas.model;
 
+import org.nicolas.database.LibraryDatabase;
 import org.nicolas.exceptions.InvalidUserException;
 
 import java.util.Scanner;
@@ -16,9 +17,14 @@ public class User {
 
     }
 
-    public void borrowBook(String isbn) {
-
+    public void changeName (String newName) {
+        LibraryDatabase.updateUserName(userID, newName);
     }
+
+    public void changePassword (String newPassword) {
+        LibraryDatabase.updateUserPassword(userID, newPassword);
+    }
+
     public int getUserID() {
         return userID;
     }
