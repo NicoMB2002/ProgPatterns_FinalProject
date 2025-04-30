@@ -54,7 +54,7 @@ public class UserController {
 
                 switch (choice) {
                     case 1:
-                        System.out.print("Enter ISBN to borrow: ");
+                        System.out.print("Enter ISBN to borrow a book: ");
                         String isbn = console.nextLine();
                         model.borrowBook(isbn); // model (Student) handles borrowing
                         break;

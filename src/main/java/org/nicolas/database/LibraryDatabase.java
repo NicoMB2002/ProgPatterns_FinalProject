@@ -292,7 +292,6 @@ public class LibraryDatabase {
     public static String selectAllBooks() {
         String sql = "SELECT * FROM Books";
         StringBuilder builder = new StringBuilder();
-        //using StringBuilder to build (or append) String
 
         try {
             Connection conn = connect();
@@ -307,14 +306,47 @@ public class LibraryDatabase {
                 int borrowedBooks = rs.getInt("borrowed_books");
                 int booksAvailable = noCopies - borrowedBooks;
 
-                builder.append(String.format("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+                builder.append(String.format("%s  %s,  %s  COPIES: %d  [BORROWED: %d  AVAILABLE: %d]%n",
                         isbn, title, author, noCopies, borrowedBooks, booksAvailable));
             }
-        }
-        catch (SQLException e) {
+            conn.close();
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return builder.toString();
+    }
+
+    /**
+     * Selects books from the Book table in the database
+     * @return ArrayList of all the books
+     */
+    public static ArrayList<Book> returnListOfBooks() {
+        String sql = "SELECT * FROM Books";
+        ArrayList<Book> books = new ArrayList<>();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                String isbn = rs.getString("isbn");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                int noCopies = rs.getInt("no_copies");
+                int borrowedBooks = rs.getInt("borrowed_books");
+                int availableCopies = rs.getInt("available_copies");
+
+                Book book = new Book(isbn, title, author, noCopies, availableCopies, borrowedBooks);
+                books.add(book);
+            }
+
+            conn.close(); // optional but good practice
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return books;
     }
 
     /**
@@ -487,32 +519,27 @@ public class LibraryDatabase {
         //return builder.toString();
     }
 
-    public static String updateBookCopies (Book inputBook) {
-        String sqlQuery = "UPDATE no_copies = " + inputBook.getCopies() + ", available_copies = "
-                + inputBook.getAvailableCopies() + ") WHERE isbn = " + inputBook.getISBN();
-        StringBuilder builder = new StringBuilder();
+    public static void updateBookCopies(Book inputBook) {
+        String sql = "UPDATE Books SET no_copies = ?, borrowed_books = ? WHERE isbn = ?";
 
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlQuery);
+            pstmt.setInt(1, inputBook.getCopies());
+            pstmt.setInt(2, inputBook.getBorrowedCopies());
+            pstmt.setString(3, inputBook.getISBN());
 
-            while (rs.next()) {
-                String isbn = rs.getString("isbn");
-                String title = rs.getString("title");
-                String author = rs.getString("author");
-                int totalCopies = rs.getInt("no_copies");
-                int borrowedCopies = rs.getInt("borrowed_books");
-                int availableCopies = rs.getInt("available_copies");
+            int rowsAffected = pstmt.executeUpdate();
 
-                builder.append(String.format("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
-                        isbn, title, author, totalCopies, borrowedCopies, availableCopies));
+            if (rowsAffected > 0) {
+                System.out.println("Book copy counts updated successfully.");
+            } else {
+                System.out.println("No book found with the given ISBN.");
             }
+
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error updating book: " + e.getMessage());
         }
-        return builder.toString();
     }
 
     /**
