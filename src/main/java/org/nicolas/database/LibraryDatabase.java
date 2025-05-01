@@ -230,7 +230,7 @@ public class LibraryDatabase {
      * @param isbn the book's unique identifier
      * @param borrow_date the borrow date
      */
-    public static void insertIntoBorrowedBooks(String borrowedBookID, String userID, String isbn, LocalDate borrow_date) {
+    public static void insertIntoBorrowedBooks(String borrowedBookID, int userID, String isbn, LocalDate borrow_date) {
         String sql = "INSERT INTO borrowedBooks VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
 
         LocalDate return_date = borrow_date;
