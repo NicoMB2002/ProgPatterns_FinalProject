@@ -8,6 +8,8 @@ import org.nicolas.model.Student;
 import org.nicolas.model.User;
 import org.nicolas.view.UserView;
 
+import java.awt.*;
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -23,9 +25,20 @@ public class UserController {
         this.messages = bundle;
     }
 
+    public void mainMenu () {
+        Console console = System.console();
+        console.flush(); //ensures the console is empty
+
+        //System.out.println("                                    " + messages.getString(""logoutOption"));
+        System.out.println();
+
+    }
+
     public void handleLogin() {
         Scanner console = new Scanner(System.in);
 
+        System.out.println(messages.getString("welcome") + "                     "
+                + messages.getString("logoutOption"));
         System.out.print(messages.getString("login.user_id"));
         int id = console.nextInt();
         console.nextLine();
@@ -33,6 +46,7 @@ public class UserController {
         String password = console.nextLine();
 
         User user = LibraryDatabase.findUserById(id);
+        System.out.println(messages.getString("loading"));
         if (user != null && user.getPassword().equals(password)) {
             System.out.println(messages.getString("login.success"));
             this.model = user; // Set the logged-in user
