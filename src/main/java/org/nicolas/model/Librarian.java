@@ -2,7 +2,6 @@ package org.nicolas.model;
 
 import org.nicolas.database.LibraryDatabase;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Librarian extends User {

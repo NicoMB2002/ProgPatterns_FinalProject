@@ -47,7 +47,6 @@ public class Student extends User {
         }
         Book bookToBorrow = LibraryDatabase.getBookThroughISBN(isbn);
 
-
         //Borrow the book if it's available
         if (bookToBorrow.getISBN().equals(isbn) && bookToBorrow.getAvailableCopies() > 0) {
             //If the book is available then it gets added to the 'borrowedBooks' list
