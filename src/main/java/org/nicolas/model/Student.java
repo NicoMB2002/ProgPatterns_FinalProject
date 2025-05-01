@@ -3,6 +3,7 @@ package org.nicolas.model;
 import org.nicolas.database.LibraryDatabase;
 import org.nicolas.model.User;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -52,6 +53,9 @@ public class Student extends User {
                 borrowedBooks.add(book); //If the book is available then it gets added to the 'borrowedBooks' list
 
                 // Reflect changes in the database
+
+                Date currentDate = new Date();
+                LibraryDatabase.insertIntoBorrowedBooks(userId, isbn, currentDate);
                 LibraryDatabase.updateBookCopies(book);
 
                 //Update the borrowed books count
