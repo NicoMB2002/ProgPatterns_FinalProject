@@ -26,10 +26,10 @@ public class UserView {
                     controller.handleLogin(); // Ask userID and password inside controller
                     break;
                 case 2:
-                    System.out.println("Goodbye!");
+                    System.out.println(bundle.getString("goodbye"));
                     return;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println(bundle.getString("invalid.choice"));
             }
         }
     }

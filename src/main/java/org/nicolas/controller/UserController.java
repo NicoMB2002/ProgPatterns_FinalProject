@@ -33,11 +33,11 @@ public class UserController {
 
         User user = LibraryDatabase.findUserById(id);
         if (user != null && user.getPassword().equals(password)) {
-            System.out.println("Login successful!");
+            System.out.println(messages.getString("login.success"));
             this.model = user; // Set the logged-in user
             showUserMenu(); // shows different menu based on type
         } else {
-            System.out.println("Invalid credentials.");
+            System.out.println(messages.getString("login.failure"));
         }
     }
 
@@ -47,10 +47,10 @@ public class UserController {
         if (model instanceof Student) {
             // Student menu
             while (true) {
-                System.out.println("\nStudent Menu:");
-                System.out.println("1. Borrow Book");
-                System.out.println("2. Return Book");
-                System.out.println("3. Logout");
+                System.out.println(messages.getString("menu.student.title"));
+                System.out.println(messages.getString("menu.student.borrow"));
+                System.out.println(messages.getString("menu.student.return"));
+                System.out.println(messages.getString("menu.student.logout"));
 
                 int choice = console.nextInt();
                 console.nextLine();
