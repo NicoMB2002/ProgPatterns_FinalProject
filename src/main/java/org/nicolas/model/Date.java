@@ -1,5 +1,6 @@
 package org.nicolas.model;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Date
@@ -7,14 +8,6 @@ public class Date
     private String month;
     private int day;
     private int year; //a four digit number.
-
-
-   // A constructor >>public
-   // A constructor must have the same name as the class
-   // A constructor has no type returned, not even void
-   // Constructors are typically overloaded
-   // A constructor is automatically called when an object of the class is created 
-   // Constructor is designed to initialize the instance variables for an object
     
     //constructors:
     public Date( )  //default (no-argument) constructor
@@ -84,6 +77,11 @@ public class Date
             System.out.println("Fatal Error");
             System.exit(0);
         }
+    }
+
+    public Date getCurrentDate () {
+        LocalDate systemDate = LocalDate.now();
+        return new Date(systemDate.getMonthValue(), systemDate.getDayOfMonth(), systemDate.getYear());
     }
 
     public void setDate(int year)

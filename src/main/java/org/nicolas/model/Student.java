@@ -17,6 +17,12 @@ public class Student extends User {
         super(userID, name, password);
         this.borrowedBooks = new ArrayList<>();
     }
+
+    public void seeBorrowedBooksList () {
+        ArrayList<String> borrowedBooksList = LibraryDatabase.getUserBorrowedBooks(userId);
+        borrowedBooksList.toString(); //see if it works
+    }
+
     @Override
     public void borrowBook(String isbn) {
         Scanner console = new Scanner(System.in);
