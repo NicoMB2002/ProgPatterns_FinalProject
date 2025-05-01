@@ -28,12 +28,17 @@ public class UserController {
     }
 
     protected void appHeader () {
-        System.out.println("                                             " + messages.getString("logoutOption"));
-        System.out.println("                                             " + messages.getString("menu.settings") + "\n\n");
+        System.out.println("--------------------------------------------------------------------------------------------");
+        System.out.println("                                                                     "
+                + messages.getString("logoutOption"));
+        System.out.println("                                                                             "
+                + messages.getString("menu.settings"));
     }
 
     protected void appFooter () {
-        System.out.println("\n\n                                             " + messages.getString("menu.settings.returnToMain"));
+        System.out.println("                                                                       "
+                + messages.getString("menu.settings.returnToMain"));
+        System.out.print("->  ");
     }
 
     public void handleLogout () {
@@ -83,15 +88,16 @@ public class UserController {
         console.flush();
 
         appHeader();
-        System.out.println(messages.getString("menu.settings.title") + "\n\n");
+        System.out.println(messages.getString("menu.settings.title") + "\n");
         System.out.println(messages.getString("menu.settings.changeName"));
         System.out.println(messages.getString("menu.settings.changePassword"));
         appFooter();
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
+        console.flush();
+        appHeader();
+
         while (true) {
-            console.flush();
-            appHeader();
             switch (ans) {
                 case "1":
                     System.out.println(messages.getString("prompt.newName"));
@@ -136,7 +142,10 @@ public class UserController {
                         model.changePassword(stringPassword);
                     }
                     break;
+                case "M" :
+                    return; //TODO see if it goes back to main menu of if need to call another instance of menu
                 case "X" :
+                    console.flush();
                     handleLogout();
                     break;
                 default :
@@ -149,7 +158,8 @@ public class UserController {
     protected void studentMenu (Student student) {
         Console console = System.console();
         appHeader();
-        System.out.println(messages.getString("menu.student.title") + model.getName() + "\n\n");
+        System.out.println(messages.getString("menu.title") + model.getName()
+                + messages.getString("menu.title.exclamation") + "\n\n");
         System.out.println(messages.getString("menu.student.borrow") + "               "
                 + messages.getString("menu.student.borrowedList"));
         System.out.println(messages.getString("menu.student.return") + "               "
@@ -188,6 +198,7 @@ public class UserController {
                     settingsMenu();
                     break;
                 case "X" : //exit
+                    console.flush();
                     handleLogout();
                     break;
                 default :
@@ -200,19 +211,21 @@ public class UserController {
     protected void librarianMenu (Librarian librarian) {
         Console console = System.console();
         appHeader();
-        System.out.println(messages.getString("menu.librarian.title") + model.getName() + "\n\n");
-        System.out.println(messages.getString("menu.librarian.add") + "               "
-                + messages.getString("menu.librarian.addUser") + "               "
+        System.out.println(messages.getString("menu.title") + model.getName()
+                + messages.getString("menu.title.exclamation") + "\n");
+
+        System.out.println(messages.getString("menu.librarian.add") + "                          "
+                + messages.getString("menu.librarian.addUser") + "                         "
                 + messages.getString("menu.librarian.seeBookCatalog"));
 
-        System.out.println(messages.getString("menu.librarian.remove") + "               "
-                + messages.getString("menu.librarian.removeUser") + "               "
+        System.out.println(messages.getString("menu.librarian.remove") + "                       "
+                + messages.getString("menu.librarian.removeUser") + "                     "
                 + messages.getString("menu.librarian.seeUserCatalog"));
 
-        System.out.println(messages.getString("menu.librarian.borrowForUser") + "               "
-                + messages.getString("menu.librarian.returnBookFroUser") + "               "
+        System.out.println(messages.getString("menu.librarian.borrowForUser") + "              "
+                + messages.getString("menu.librarian.returnBookFroUser") + "             "
                 + messages.getString("menu.librarian.searchBook"));
-
+        System.out.print("\n->  ");
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
         while (true) {
@@ -251,6 +264,7 @@ public class UserController {
                     settingsMenu();
                     break;
                 case "X" : //exit
+                    console.flush();
                     handleLogout();
                     break;
                 default :

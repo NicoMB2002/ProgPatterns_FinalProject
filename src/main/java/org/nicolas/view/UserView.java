@@ -23,10 +23,14 @@ public class UserView {
         System.out.println(bundle.getString("welcome") + "\n\n");
         System.out.println(bundle.getString("menu.main.login"));
         System.out.println(bundle.getString("menu.main.exit"));
+        System.out.print("\n->  ");
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
+        console.flush();
+
         switch (ans) {
             case "1" :
+                console.flush();
                 controller.handleLogin();
                 break;
             case "2" :
