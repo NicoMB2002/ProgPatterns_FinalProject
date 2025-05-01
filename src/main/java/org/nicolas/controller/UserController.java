@@ -25,6 +25,10 @@ public class UserController {
         this.messages = bundle;
     }
 
+    public void setErrorMessage (String message) {
+        System.out.println("[ERROR : " + message + "]");
+    }
+
     public void mainMenu () {
         Console console = System.console();
         console.flush(); //ensures the console is empty
@@ -35,6 +39,7 @@ public class UserController {
         System.out.println(messages.getString("menu.main.exit"));
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
+        int tryCounter = 0;
         switch (ans) {
             case "1" :
                 handleLogin();
@@ -44,7 +49,16 @@ public class UserController {
                 System.exit(0);
                 break;
             case "X" :
-
+                System.out.println(messages.getString("logout"));
+                System.exit(0);
+                break;
+            default:
+                setErrorMessage("Invalid choice, please try again");
+                if (tryCounter <= 3) {
+                    mainMenu();
+                } else {
+                    System.exit(1); //Exception Termination
+                }
         }
 
     }
