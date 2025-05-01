@@ -4,34 +4,44 @@ import org.nicolas.controller.UserController;
 import org.nicolas.model.User;
 import org.nicolas.model.UserType;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class UserView {
+    public void setErrorMessage (String message) {
+        System.out.println("[ERROR : " + message + "]");
+    }
 
     // Main menu for the User
-    public void showMainMenu(UserController controller, ResourceBundle bundle) {
-        Scanner console = new Scanner(System.in);
-        while (true) {
-            System.out.println("\n" + bundle.getString("menu.main.title"));
-            System.out.println("1. " + bundle.getString("menu.main.login"));
-            System.out.println("2. " + bundle.getString("menu.main.exit"));
+    public void mainMenu (UserController controller, ResourceBundle bundle) {
+        Console console = System.console();
+        console.flush(); //ensures the console is empty
 
-            int choice = console.nextInt();
-            console.nextLine(); // clear newline
+        //System.out.println("                                    " + messages.getString(""logoutOption"));
+        System.out.println(bundle.getString("welcome") + "\n\n");
+        System.out.println(bundle.getString("menu.main.login"));
+        System.out.println(bundle.getString("menu.main.exit"));
 
-            switch (choice) {
-                case 1:
-                    controller.handleLogin(); // Ask userID and password inside controller
-                    break;
-                case 2:
-                    System.out.println(bundle.getString("goodbye"));
-                    return;
-                default:
-                    System.out.println(bundle.getString("invalid.choice"));
-            }
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+        switch (ans) {
+            case "1" :
+                controller.handleLogin();
+                break;
+            case "2" :
+                System.out.println(bundle.getString("logout"));
+                System.exit(0);
+                break;
+            case "X" :
+                System.out.println(bundle.getString("goodbye"));
+                System.exit(0);
+                break;
+            default:
+                setErrorMessage("Invalid choice, please try again");
+                break;
         }
+
     }
 
 

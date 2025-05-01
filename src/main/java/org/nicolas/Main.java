@@ -27,8 +27,14 @@ public class Main {
         User student = new Student(1, "Nicolas", "hello");
         UserController controller = new UserController(student, view, bundle);
 
-        view.showMainMenu(controller, bundle);
+        int tryCounter = 0;
 
-
+        if (tryCounter <= 3) {
+            tryCounter++;
+            view.mainMenu(controller, bundle); //do this in the main
+        } else {
+            view.setErrorMessage("3 invalid choice. Learn how to read before using a library.");
+            System.exit(1); //Exception Termination
+        }
     }
 }
