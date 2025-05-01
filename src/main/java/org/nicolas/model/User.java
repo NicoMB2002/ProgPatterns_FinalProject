@@ -16,7 +16,16 @@ public abstract class User {
         this.password = password;
     }
 
+    @Override
+    public String toString() {
+        return name + "\n" + "{" +
+                "userID=" + userID +
+                "}";
+    }
+
     public abstract void borrowBook(String isbn, int userID);
+
+    public abstract void returnBook(String isbn);
 
     public void changeName (String newName) {
         LibraryDatabase.updateUserName(userID, newName);

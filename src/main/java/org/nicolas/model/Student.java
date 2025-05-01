@@ -5,6 +5,7 @@ import org.nicolas.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class Student extends User {
@@ -13,6 +14,7 @@ public class Student extends User {
     private String name;
     private UserType typeOfUSer;
     private ArrayList<Book> borrowedBooks;
+    private ResourceBundle messages;
 
     public Student(int userID, String name, String password) {
         super(userID, name, password);
@@ -27,21 +29,17 @@ public class Student extends User {
 
     @Override
     public void borrowBook(String isbn, int userId) {
-        Scanner console = new Scanner(System.in);
-
         // Check 'borrowedBooks' to see if the student has a maximum of 3 books
         if (borrowedBooks.size() >= 3) {
-            System.out.println("You cannot borrow more than 3 books.");
+            System.out.println(messages.getString("book.limit"));
             return;
         }
 
-        System.out.println("Enter the book ISBN to borrow a book: ");
-        int ISBN = console.nextInt();
-
         //Check if the student already borrowed the book by its ID
         for (Book borrowedBook : borrowedBooks) {
-            if (borrowedBook.getISBN() == isbn) {
-                System.out.println("\nYou already borrowed this book.");
+            if (borrowedBook.getISBN().equals(isbn)) {
+                System.out.println(messages.getString("book.owned"));
+
                 return;
             }
         }
@@ -69,9 +67,11 @@ public class Student extends User {
                     bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
             return;
         }
-        System.out.println("Book not available or no copies left.");
+        System.out.println(messages.getString("book.unavailable"));
+
     }
 
+    @Override
     public void returnBook(String isbn) {
         Book bookToReturn = null;
 
@@ -84,7 +84,7 @@ public class Student extends User {
         }
 
         if (bookToReturn == null) {
-            System.out.println("You haven't borrowed this book.");
+            System.out.println(messages.getString("book.not_borrowed"));
             return;
         }
 
@@ -98,7 +98,8 @@ public class Student extends User {
         // Remove from borrowedBooks table in DB
         LibraryDatabase.deleteFromBorrowedBooks(this.getUserId(), isbn);
 
-        System.out.println("Book returned successfully: " + bookToReturn.getTitle());
+        System.out.println(messages.getString("book.return.success" + bookToReturn.getTitle()));
+
     }
 
     public int getUserId() {

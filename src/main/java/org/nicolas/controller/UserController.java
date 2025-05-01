@@ -1,6 +1,7 @@
 package org.nicolas.controller;
 
 import org.nicolas.database.LibraryDatabase;
+import org.nicolas.exceptions.InvalidISBNException;
 import org.nicolas.exceptions.InvalidUserException;
 import org.nicolas.model.Librarian;
 import org.nicolas.model.Student;
@@ -35,6 +36,8 @@ public class UserController {
         if (user != null && user.getPassword().equals(password)) {
             System.out.println(messages.getString("login.success"));
             this.model = user; // Set the logged-in user
+            System.out.println(messages.getString("welcome") + LibraryDatabase.findUserById(id));
+
             showUserMenu(); // shows different menu based on type
         } else {
             System.out.println(messages.getString("login.failure"));
@@ -60,17 +63,21 @@ public class UserController {
                         System.out.println(messages.getString("prompt.isbn.borrow"));
 
                         String isbn = console.nextLine();
-                        model.borrowBook(isbn, model.getUserID()); // model (Student) handles borrowing
+                        try {
+                            model.borrowBook(isbn, model.getUserID()); // model (Student) handles borrowing
+                        } catch (InvalidISBNException e) {
+                            System.out.println("Invalid ISBN format: " + e.getMessage());
+                            continue;
+                        }
                         break;
                     case 2:
                         System.out.println(messages.getString("prompt.isbn.return"));
 
                         String returnIsbn = console.nextLine();
-                        // model.returnBook(returnIsbn); //implement this method
+                         model.returnBook(returnIsbn);
                         break;
                     case 3:
                         System.out.println(messages.getString("logout"));
-
                         return;
                     default:
                         System.out.println(messages.getString("invalid.choice"));
@@ -80,9 +87,9 @@ public class UserController {
         } else if (model instanceof Librarian) {
             // Librarian menu
             while (true) {
-                System.out.println(messages.getString("menu.librarian.title"));
+                System.out.println("\n" + messages.getString("menu.librarian.title"));
 
-                System.out.println(messages.getString("menu.librarian.add"));
+                System.out.println("\n" + messages.getString("menu.librarian.add"));
 
                 System.out.println(messages.getString("menu.librarian.remove"));
 
@@ -94,7 +101,7 @@ public class UserController {
 
                 switch (choice) {
                     case 1:
-                        System.out.println(messages.getString("prompt.isbn.add"));
+                        System.out.println("\n" + messages.getString("prompt.isbn.add"));
 
                         String isbn = console.nextLine();
 

@@ -13,11 +13,9 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
+//        LibraryDatabase.insertIntoUser("nicolas", "librarian", "12345"); DO NOT INSERT AGAIN
+//        LibraryDatabase.insertIntoUser("helene", "student", "54321"); DO NOT INSERT AGAIN
 
-//        LibraryDatabase.insertIntoBooks("2109312037362", "Alice in Wonderland", "J.K Rowling", 22);
-//        LibraryDatabase.createUserTable();
-//        LibraryDatabase.insertIntoUser("nicolas", "librarian", "12345");
-//        LibraryDatabase.insertIntoUser("helene", "student", "54321");
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Select language (en/fr): ");

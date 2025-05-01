@@ -66,4 +66,8 @@ public class Librarian extends User {
             System.out.println("Book not available or no copies left.");
         }
     }
+
+    public void returnBook(String isbn) {
+
+    }
 }

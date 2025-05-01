@@ -12,7 +12,7 @@ public class Book {
 
     public Book(String ISBN, String title, String author, int copies, int availableCopies, int borrowedCopies) {
 
-        this.ISBN = ISBNChecker(ISBN);
+        this.ISBN = ISBN;
         this.title = title;
         this.author = author;
         this.copies = copies;
