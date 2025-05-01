@@ -57,56 +57,72 @@ public class UserController {
 
                 switch (choice) {
                     case 1:
-                        System.out.print("Enter ISBN to borrow a book: ");
+                        System.out.println(messages.getString("prompt.isbn.borrow"));
+
                         String isbn = console.nextLine();
                         model.borrowBook(isbn, model.getUserID()); // model (Student) handles borrowing
                         break;
                     case 2:
-                        System.out.print("Enter ISBN to return: ");
+                        System.out.println(messages.getString("prompt.isbn.return"));
+
                         String returnIsbn = console.nextLine();
                         // model.returnBook(returnIsbn); //implement this method
                         break;
                     case 3:
-                        System.out.println("Logging out...");
+                        System.out.println(messages.getString("logout"));
+
                         return;
                     default:
-                        System.out.println("Invalid choice.");
+                        System.out.println(messages.getString("invalid.choice"));
+
                 }
             }
         } else if (model instanceof Librarian) {
             // Librarian menu
             while (true) {
-                System.out.println("\nLibrarian Menu:");
-                System.out.println("1. Add Book");
-                System.out.println("2. Remove Book");
-                System.out.println("3. Logout");
+                System.out.println(messages.getString("menu.librarian.title"));
+
+                System.out.println(messages.getString("menu.librarian.add"));
+
+                System.out.println(messages.getString("menu.librarian.remove"));
+
+                System.out.println(messages.getString("menu.librarian.logout"));
+
 
                 int choice = console.nextInt();
                 console.nextLine();
 
                 switch (choice) {
                     case 1:
-                        System.out.print("Enter ISBN: ");
+                        System.out.println(messages.getString("prompt.isbn.add"));
+
                         String isbn = console.nextLine();
-                        System.out.print("Enter Title: ");
+
+                        System.out.println(messages.getString("prompt.title.add"));
+
                         String title = console.nextLine();
-                        System.out.print("Enter Author: ");
+
+                        System.out.println(messages.getString("prompt.author.add"));
+
                         String author = console.nextLine();
-                        System.out.print("Enter number of copies: ");
+
+                        System.out.println(messages.getString("prompt.copies.add"));
+
                         int copies = console.nextInt();
                         console.nextLine();
                         LibraryDatabase.insertIntoBooks(isbn, title, author, copies);
                         break;
                     case 2:
-                        System.out.print("Enter ISBN to remove: ");
+                        System.out.println(messages.getString("prompt.isbn.remove"));
+
                         String removeIsbn = console.nextLine();
                         LibraryDatabase.deleteBookByIsbn(removeIsbn);
                         break;
                     case 3:
-                        System.out.println("Logging out...");
+                        System.out.println(messages.getString("menu.librarian.logout"));
                         return;
                     default:
-                        System.out.println("Invalid choice.");
+                        System.out.println(messages.getString("invalid.choice"));
                 }
             }
         } else {
