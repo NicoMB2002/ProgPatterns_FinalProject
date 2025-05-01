@@ -30,7 +30,22 @@ public class UserController {
         console.flush(); //ensures the console is empty
 
         //System.out.println("                                    " + messages.getString(""logoutOption"));
-        System.out.println();
+        System.out.println(messages.getString("welcome") + "\n\n");
+        System.out.println(messages.getString("menu.main.login"));
+        System.out.println(messages.getString("menu.main.exit"));
+
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+        switch (ans) {
+            case "1" :
+                handleLogin();
+                break;
+            case "2" :
+                System.out.println(messages.getString("logout"));
+                System.exit(0);
+                break;
+            case "X" :
+
+        }
 
     }
 
