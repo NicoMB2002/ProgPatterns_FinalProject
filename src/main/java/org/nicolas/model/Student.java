@@ -54,7 +54,11 @@ public class Student extends User {
 
                 // Reflect changes in the database
 
+
                 Date currentDate = new Date();
+                currentDate.getCurrentDate();
+
+                //update DB to reflect changes
                 LibraryDatabase.insertIntoBorrowedBooks(userId, isbn, currentDate);
                 LibraryDatabase.updateBookCopies(book);
 

@@ -1,6 +1,7 @@
 package org.nicolas.database;
 
 import org.nicolas.model.Book;
+import org.nicolas.model.Date;
 import org.nicolas.model.Librarian;
 import org.nicolas.model.Student;
 import org.nicolas.model.User;
@@ -225,27 +226,27 @@ public class LibraryDatabase {
 
     /**
      * inserts a book into the borrowed books table when a user borrows it
-     * @param borrowedBookID the borrow ID
      * @param userID the user that borrowed the book
      * @param isbn the book's unique identifier
      * @param borrow_date the borrow date
      */
-    public static void insertIntoBorrowedBooks(String borrowedBookID, int userID, String isbn, LocalDate borrow_date) {
-        String sql = "INSERT INTO borrowedBooks VALUES(?, ?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
+    public static void insertIntoBorrowedBooks(int userID, String isbn, Date borrow_date) {
+        String sql = "INSERT INTO borrowedBooks VALUES(?, ?, ?, ?, ?)"; //Insert query with '?' placeholders
 
-        LocalDate return_date = borrow_date;
-        return_date.plusWeeks(2); //automatically sets the return date to two weeks from the borrow date
+
+        Date return_date = borrow_date;
+        return_date.setDay(return_date.getDay() + 14); //automatically sets the return date to two weeks from the borrow date
         String return_status = "Borrowed";   //automatically sets the status to borrowed
 
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, borrowedBookID); //TODO check if its not already taken care of by the autoincrement
-            pstmt.setInt(2, userID);
-            pstmt.setString(3, isbn);
-            pstmt.setString(4, borrow_date.toString());
-            pstmt.setString(5, return_date.toString());
-            pstmt.setString(6, return_status);
+            //pstmt.setString(1, borrowedBookID); //TODO check if its not already taken care of by the autoincrement
+            pstmt.setInt(1, userID);
+            pstmt.setString(2, isbn);
+            pstmt.setString(3, borrow_date.toString());
+            pstmt.setString(4, return_date.toString());
+            pstmt.setString(5, return_status);
             pstmt.executeUpdate(); //execute insert
         }
         catch (SQLException e) {
