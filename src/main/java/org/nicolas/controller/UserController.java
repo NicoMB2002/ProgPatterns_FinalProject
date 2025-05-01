@@ -8,24 +8,27 @@ import org.nicolas.model.User;
 import org.nicolas.view.UserView;
 
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class UserController {
     private User model;
     private UserView view;
+    private ResourceBundle messages;
 
-    public UserController(User currentUser, UserView view) {
+    public UserController(User currentUser, UserView view, ResourceBundle bundle) {
         this.model = currentUser;
         this.view = view;
+        this.messages = bundle;
     }
 
     public void handleLogin() {
         Scanner console = new Scanner(System.in);
 
-        System.out.print("Enter User ID: ");
+        System.out.print(messages.getString("login.user_id"));
         int id = console.nextInt();
         console.nextLine();
-        System.out.print("Enter Password: ");
+        System.out.print(messages.getString("login.password"));
         String password = console.nextLine();
 
         User user = LibraryDatabase.findUserById(id);
