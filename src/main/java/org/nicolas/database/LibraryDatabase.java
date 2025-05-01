@@ -241,7 +241,7 @@ public class LibraryDatabase {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, borrowedBookID); //TODO check if its not already taken care of by the autoincrement
-            pstmt.setString(2, userID);
+            pstmt.setInt(2, userID);
             pstmt.setString(3, isbn);
             pstmt.setString(4, borrow_date.toString());
             pstmt.setString(5, return_date.toString());
