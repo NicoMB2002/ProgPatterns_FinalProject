@@ -27,6 +27,15 @@ public class UserController {
         this.messages = bundle;
     }
 
+    protected void appHeader () {
+        System.out.println("                                             " + messages.getString("logoutOption"));
+        System.out.println("                                             " + messages.getString("menu.settings") + "\n\n");
+    }
+
+    protected void appFooter () {
+        System.out.println("\n\n                                             " + messages.getString("menu.settings.returnToMain"));
+    }
+
     public void handleLogout () {
         System.out.println(messages.getString("logout"));
         System.out.println(messages.getString("app.Exit"));
@@ -68,20 +77,16 @@ public class UserController {
         }
     }
 
-    protected void appHeader () {
-        System.out.println("                                             " + messages.getString("logoutOption"));
-        System.out.println("                                             " + messages.getString("menu.settings"));
-    }
 
     protected void settingsMenu () {
         Console console = System.console();
         console.flush();
-        appHeader();
 
+        appHeader();
         System.out.println(messages.getString("menu.settings.title") + "\n\n");
         System.out.println(messages.getString("menu.settings.changeName"));
         System.out.println(messages.getString("menu.settings.changePassword"));
-        System.out.println(messages.getString("menu.settings.returnToMain"));
+        appFooter();
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
         while (true) {
@@ -215,6 +220,7 @@ public class UserController {
             appHeader();
             switch (ans) {
                 case "1" : //add a book
+
                     break;
                 case "2" : //remove a book
                     break;
