@@ -458,6 +458,27 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    public static Student getStudentFromId (int userId) {
+        String sqlQuery = "SELECT * FROM user WHERE user_id = " + userId + " AND role = 'STUDENT'";
+        Student returnedUser = null;
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            while (rs.next()) {
+                int userID = rs.getInt("user_id");
+                String name = rs.getString("name");
+                String password = rs.getString("password");
+                returnedUser = new Student(userID, name, password);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return returnedUser;
+    }
+
     /**
      * gets the entirety of the information for a specified user
      * @param userId the input user_id

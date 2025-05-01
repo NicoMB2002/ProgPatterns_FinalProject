@@ -56,7 +56,7 @@ public class UserController {
                     case 1:
                         System.out.print("Enter ISBN to borrow a book: ");
                         String isbn = console.nextLine();
-                        model.borrowBook(isbn); // model (Student) handles borrowing
+                        model.borrowBook(isbn, model.getUserID()); // model (Student) handles borrowing
                         break;
                     case 2:
                         System.out.print("Enter ISBN to return: ");

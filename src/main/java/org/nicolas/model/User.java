@@ -14,10 +14,9 @@ public abstract class User {
         this.userID = userID;
         this.name = name;
         this.password = password;
-
     }
 
-    public abstract void borrowBook(String isbn);
+    public abstract void borrowBook(String isbn, int userID);
 
     public void changeName (String newName) {
         LibraryDatabase.updateUserName(userID, newName);
@@ -50,4 +49,5 @@ public abstract class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

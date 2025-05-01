@@ -16,6 +16,7 @@ public class Student extends User {
 
     public Student(int userID, String name, String password) {
         super(userID, name, password);
+        this.typeOfUSer = UserType.STUDENT;
         this.borrowedBooks = new ArrayList<>();
     }
 
@@ -25,7 +26,7 @@ public class Student extends User {
     }
 
     @Override
-    public void borrowBook(String isbn) {
+    public void borrowBook(String isbn, int userId) {
         Scanner console = new Scanner(System.in);
 
         // Check 'borrowedBooks' to see if the student has a maximum of 3 books
@@ -44,32 +45,29 @@ public class Student extends User {
                 return;
             }
         }
+        Book bookToBorrow = LibraryDatabase.getBookThroughISBN(isbn);
 
-        ArrayList<Book> books = LibraryDatabase.returnListOfBooks(); //returnListOfBooks() returns Arraylist
 
         //Borrow the book if it's available
-        for (Book book : books) {
-            if (book.getISBN().equals(isbn) && book.getAvailableCopies() > 0) {
-                borrowedBooks.add(book); //If the book is available then it gets added to the 'borrowedBooks' list
+        if (bookToBorrow.getISBN().equals(isbn) && bookToBorrow.getAvailableCopies() > 0) {
+            //If the book is available then it gets added to the 'borrowedBooks' list
+            borrowedBooks.add(bookToBorrow);
 
-                // Reflect changes in the database
+            // Reflect changes in the database
+            Date currentDate = new Date();
+            currentDate.getCurrentDate();
 
+            LibraryDatabase.insertIntoBorrowedBooks(userId, isbn, currentDate);
+            LibraryDatabase.updateBookCopies(bookToBorrow);
 
-                Date currentDate = new Date();
-                currentDate.getCurrentDate();
+            //Update the borrowed books count
+            bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
 
-                //update DB to reflect changes
-                LibraryDatabase.insertIntoBorrowedBooks(userId, isbn, currentDate);
-                LibraryDatabase.updateBookCopies(book);
-
-                //Update the borrowed books count
-                book.setBorrowedCopies(book.getBorrowedCopies() + 1);
-
-                System.out.println("\nBook borrowed: " + book.getTitle());
-                System.out.println("Info:\nISBN: " + book.getISBN() + ", Title: " + book.getTitle() + ", " +
-                        "Author: " + book.getAuthor() + " Copies: " + book.getAvailableCopies() + "\n");
-                return;
-            }
+            System.out.println("\nBook borrowed: " + bookToBorrow.getTitle());
+            System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+                    isbn, bookToBorrow.getTitle(), bookToBorrow.getAuthor(), bookToBorrow.getCopies(),
+                    bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
+            return;
         }
         System.out.println("Book not available or no copies left.");
     }
