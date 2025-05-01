@@ -13,8 +13,8 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        LibraryDatabase.insertIntoUser("nicolas", "librarian", "12345"); //DO NOT INSERT AGAIN
-        LibraryDatabase.insertIntoUser("helene", "student", "54321"); //DO NOT INSERT AGAIN
+//        LibraryDatabase.insertIntoUser("nicolas", "librarian", "12345"); //DO NOT INSERT AGAIN
+//        LibraryDatabase.insertIntoUser("helene", "student", "54321"); //DO NOT INSERT AGAIN
 
         Scanner scanner = new Scanner(System.in);
 
