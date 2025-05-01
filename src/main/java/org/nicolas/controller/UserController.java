@@ -55,12 +55,11 @@ public class UserController {
         System.out.println(messages.getString("welcome"));
         System.out.print(messages.getString("login.user_id"));
         int id = Integer.parseInt(console.readLine());
-        System.out.println();
-        char[] password = console.readPassword(messages.getString("login.password"));
         String stringPassword = "";
+        char[] password = console.readPassword(messages.getString("login.password"));
         for (int i = 0; i < password.length; i++) {
             stringPassword += password[i]; //puts the password into a String for the DB
-            System.out.print("*"); //sets the characters as '*' instead of blank spaces
+            //System.out.print("*"); //sets the characters as '*' instead of blank spaces
         }
 
         User user = LibraryDatabase.findUserById(id);
@@ -81,7 +80,6 @@ public class UserController {
             view.setErrorMessage(messages.getString("login.failure"));
         }
     }
-
 
     protected void settingsMenu () {
         Console console = System.console();
