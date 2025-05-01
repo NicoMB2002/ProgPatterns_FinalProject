@@ -3,6 +3,7 @@ package org.nicolas.controller;
 import org.nicolas.database.LibraryDatabase;
 import org.nicolas.exceptions.InvalidISBNException;
 import org.nicolas.exceptions.InvalidUserException;
+import org.nicolas.model.Book;
 import org.nicolas.model.Librarian;
 import org.nicolas.model.Student;
 import org.nicolas.model.User;
@@ -11,6 +12,7 @@ import org.nicolas.view.UserView;
 import java.awt.*;
 import java.io.Console;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
@@ -25,129 +27,250 @@ public class UserController {
         this.messages = bundle;
     }
 
-    public void mainMenu () {
-        Console console = System.console();
-        console.flush(); //ensures the console is empty
+    protected void appHeader () {
+        System.out.println("--------------------------------------------------------------------------------------------");
+        System.out.println("                                                                     "
+                + messages.getString("logoutOption"));
+        System.out.println("                                                                             "
+                + messages.getString("menu.settings"));
+    }
 
-        //System.out.println("                                    " + messages.getString(""logoutOption"));
-        System.out.println();
+    protected void appFooter () {
+        System.out.println("                                                                       "
+                + messages.getString("menu.settings.returnToMain"));
+        System.out.print("->  ");
+    }
 
+    public void handleLogout () {
+        System.out.println(messages.getString("logout"));
+        System.out.println(messages.getString("app.Exit"));
+        System.out.println(messages.getString("goodbye"));
+        System.exit(0);
     }
 
     public void handleLogin() {
-        Scanner console = new Scanner(System.in);
+        Console console = System.console();
+        console.flush(); //makes the console empty for better clarity
 
-        System.out.println(messages.getString("welcome") + "                     "
-                + messages.getString("logoutOption"));
+        System.out.println(messages.getString("welcome"));
         System.out.print(messages.getString("login.user_id"));
-        int id = console.nextInt();
-        console.nextLine();
-        System.out.print(messages.getString("login.password"));
-        String password = console.nextLine();
+        int id = Integer.parseInt(console.readLine());
+        System.out.println();
+        char[] password = console.readPassword(messages.getString("login.password"));
+        String stringPassword = "";
+        for (int i = 0; i < password.length; i++) {
+            stringPassword += password[i]; //puts the password into a String for the DB
+            System.out.print("*"); //sets the characters as '*' instead of blank spaces
+        }
 
         User user = LibraryDatabase.findUserById(id);
         System.out.println(messages.getString("loading"));
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && user.getPassword().equals(stringPassword)) {
             System.out.println(messages.getString("login.success"));
             this.model = user; // Set the logged-in user
-            System.out.println(messages.getString("welcome") + LibraryDatabase.findUserById(id));
+            console.flush();
 
-            showUserMenu(); // shows different menu based on type
+            if (model instanceof Librarian) {
+                Librarian librarianModel = (Librarian)model;
+                librarianMenu(librarianModel);
+            } else {
+                Student studentModel = (Student)model;
+                studentMenu(studentModel);
+            }
         } else {
-            System.out.println(messages.getString("login.failure"));
+            view.setErrorMessage(messages.getString("login.failure"));
         }
     }
 
-    private void showUserMenu() {
-        Scanner console = new Scanner(System.in);
 
-        if (model instanceof Student) {
-            // Student menu
-            while (true) {
-                System.out.println(messages.getString("menu.student.title"));
-                System.out.println(messages.getString("menu.student.borrow"));
-                System.out.println(messages.getString("menu.student.return"));
-                System.out.println(messages.getString("menu.student.logout"));
+    protected void settingsMenu () {
+        Console console = System.console();
+        console.flush();
 
-                int choice = console.nextInt();
-                console.nextLine();
+        appHeader();
+        System.out.println(messages.getString("menu.settings.title") + "\n");
+        System.out.println(messages.getString("menu.settings.changeName"));
+        System.out.println(messages.getString("menu.settings.changePassword"));
+        appFooter();
 
-                switch (choice) {
-                    case 1:
-                        System.out.println(messages.getString("prompt.isbn.borrow"));
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+        console.flush();
+        appHeader();
 
-                        String isbn = console.nextLine();
-                        try {
-                            model.borrowBook(isbn, model.getUserID()); // model (Student) handles borrowing
-                        } catch (InvalidISBNException e) {
-                            System.out.println("Invalid ISBN format: " + e.getMessage());
-                            continue;
+        while (true) {
+            switch (ans) {
+                case "1":
+                    System.out.println(messages.getString("prompt.newName"));
+                    String newName = console.readLine();
+                    model.changeName(newName);
+                    break;
+                case "2" :
+                    System.out.println(messages.getString("prompt.newPassword"));
+                    char[] password = console.readPassword(messages.getString("login.password"));
+                    String stringPassword = "";
+                    for (int i = 0; i < password.length; i++) {
+                        stringPassword += password[i]; //puts the password into a String for the DB
+                        System.out.print("*"); //sets the characters as '*' instead of blank spaces
+                    }
+                    System.out.println(messages.getString("prompt.checkNewPassword"));
+                    char[] passwordCheck = console.readPassword(messages.getString("login.password"));
+                    String stringPasswordCheck = "";
+                    for (int i = 0; i < passwordCheck.length; i++) {
+                        stringPasswordCheck += passwordCheck[i]; //puts the password into a String for the DB
+                        System.out.print("*"); //sets the characters as '*' instead of blank spaces
+                    }
+
+                    boolean isValid = (stringPassword.equals(passwordCheck)) ? true : false;
+
+                    if (isValid == false) {
+                        System.out.println(messages.getString("prompt.checkNewPassword"));
+                        char[] passwordCheck2 = console.readPassword(messages.getString("login.password"));
+                        String stringPasswordCheck2 = "";
+                        for (int i = 0; i < passwordCheck2.length; i++) {
+                            stringPasswordCheck2 += passwordCheck2[i]; //puts the password into a String for the DB
+                            System.out.print("*"); //sets the characters as '*' instead of blank spaces
                         }
-                        break;
-                    case 2:
-                        System.out.println(messages.getString("prompt.isbn.return"));
 
-                        String returnIsbn = console.nextLine();
-                         model.returnBook(returnIsbn);
-                        break;
-                    case 3:
-                        System.out.println(messages.getString("logout"));
-                        return;
-                    default:
-                        System.out.println(messages.getString("invalid.choice"));
+                        isValid = (stringPassword.equals(passwordCheck2)) ? true : false;
 
-                }
+                        if (isValid) {
+                            model.changePassword(stringPassword);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        model.changePassword(stringPassword);
+                    }
+                    break;
+                case "M" :
+                    return; //TODO see if it goes back to main menu of if need to call another instance of menu
+                case "X" :
+                    console.flush();
+                    handleLogout();
+                    break;
+                default :
+                    view.setErrorMessage("invalid choice, please try again");
+                    break;
             }
-        } else if (model instanceof Librarian) {
-            // Librarian menu
-            while (true) {
-                System.out.println("\n" + messages.getString("menu.librarian.title"));
+        }
+    }
 
-                System.out.println("\n" + messages.getString("menu.librarian.add"));
+    protected void studentMenu (Student student) {
+        Console console = System.console();
+        appHeader();
+        System.out.println(messages.getString("menu.title") + model.getName()
+                + messages.getString("menu.title.exclamation") + "\n\n");
+        System.out.println(messages.getString("menu.student.borrow") + "               "
+                + messages.getString("menu.student.borrowedList"));
+        System.out.println(messages.getString("menu.student.return") + "               "
+                + messages.getString("menu.student.searchBook"));
 
-                System.out.println(messages.getString("menu.librarian.remove"));
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+        while (true) {
+            console.flush();
+            appHeader();
+            switch (ans) {
+                case "1" : //borrow a book
+                    System.out.println(messages.getString("prompt.isbn"));
+                    String inputIsbn = console.readLine();
+                    model.borrowBook(inputIsbn, model.getUserID());
+                    break;
+                case "2" : //return a book
+                    System.out.println(messages.getString("prompt.isbn"));
+                    inputIsbn = console.readLine();
+                    model.returnBook(inputIsbn, model.getUserID());
+                    break;
+                case "3" : //see borrowed books list
+                    student.seeBorrowedBooksList();
+                    break;
+                case "4" : //search book
+                    System.out.println(messages.getString("prompt.information"));
+                    System.out.println(messages.getString("prompt.isbn"));
+                    inputIsbn = console.readLine();
+                    System.out.println(messages.getString("prompt.title"));
+                    String inputTitle = console.readLine();
+                    System.out.println(messages.getString("prompt.author"));
+                    String inputAuthor = console.readLine();
 
-                System.out.println(messages.getString("menu.librarian.logout"));
-
-
-                int choice = console.nextInt();
-                console.nextLine();
-
-                switch (choice) {
-                    case 1:
-                        System.out.println("\n" + messages.getString("prompt.isbn.add"));
-
-                        String isbn = console.nextLine();
-
-                        System.out.println(messages.getString("prompt.title.add"));
-
-                        String title = console.nextLine();
-
-                        System.out.println(messages.getString("prompt.author.add"));
-
-                        String author = console.nextLine();
-
-                        System.out.println(messages.getString("prompt.copies.add"));
-
-                        int copies = console.nextInt();
-                        console.nextLine();
-                        LibraryDatabase.insertIntoBooks(isbn, title, author, copies);
-                        break;
-                    case 2:
-                        System.out.println(messages.getString("prompt.isbn.remove"));
-
-                        String removeIsbn = console.nextLine();
-                        LibraryDatabase.deleteBookByIsbn(removeIsbn);
-                        break;
-                    case 3:
-                        System.out.println(messages.getString("menu.librarian.logout"));
-                        return;
-                    default:
-                        System.out.println(messages.getString("invalid.choice"));
-                }
+                    model.findBook(inputIsbn, inputTitle, inputAuthor);
+                    break;
+                case "S" : //settings
+                    settingsMenu();
+                    break;
+                case "X" : //exit
+                    console.flush();
+                    handleLogout();
+                    break;
+                default :
+                    view.setErrorMessage("invalid choice, please try again");
+                    break;
             }
-        } else {
-            System.out.println("Unknown user type. Cannot continue.");
+        }
+    }
+
+    protected void librarianMenu (Librarian librarian) {
+        Console console = System.console();
+        appHeader();
+        System.out.println(messages.getString("menu.title") + model.getName()
+                + messages.getString("menu.title.exclamation") + "\n");
+
+        System.out.println(messages.getString("menu.librarian.add") + "                          "
+                + messages.getString("menu.librarian.addUser") + "                         "
+                + messages.getString("menu.librarian.seeBookCatalog"));
+
+        System.out.println(messages.getString("menu.librarian.remove") + "                       "
+                + messages.getString("menu.librarian.removeUser") + "                     "
+                + messages.getString("menu.librarian.seeUserCatalog"));
+
+        System.out.println(messages.getString("menu.librarian.borrowForUser") + "              "
+                + messages.getString("menu.librarian.returnBookFroUser") + "             "
+                + messages.getString("menu.librarian.searchBook"));
+        System.out.print("\n->  ");
+
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+        while (true) {
+            console.flush();
+            appHeader();
+            switch (ans) {
+                case "1" : //add a book
+
+                    break;
+                case "2" : //remove a book
+                    break;
+                case "3" : //see book catalog
+                    break;
+                case "4" : //add a user
+                    break;
+                case "5" : //remove a user
+                    break;
+                case "6" : //see user catalog
+                    break;
+                case "7" : //borrow book for user
+                    break;
+                case "8" : //return book for user
+                    break;
+                case "9" : //find book
+                    System.out.println(messages.getString("prompt.information"));
+                    System.out.println(messages.getString("prompt.isbn"));
+                    String inputIsbn = console.readLine();
+                    System.out.println(messages.getString("prompt.title"));
+                    String inputTitle = console.readLine();
+                    System.out.println(messages.getString("prompt.author"));
+                    String inputAuthor = console.readLine();
+
+                    model.findBook(inputIsbn, inputTitle, inputAuthor);
+                    break;
+                case "S" : //settings
+                    settingsMenu();
+                    break;
+                case "X" : //exit
+                    console.flush();
+                    handleLogout();
+                    break;
+                default :
+                    view.setErrorMessage("invalid choice, please try again");
+                    break;
+            }
         }
     }
 

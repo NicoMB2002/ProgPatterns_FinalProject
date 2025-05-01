@@ -71,7 +71,7 @@ public class Student extends User {
     }
 
     @Override
-    public void returnBook(String isbn) {
+    public void returnBook(String isbn, int userId) {
         Book bookToReturn = null;
 
         // Check if the student has this book borrowed
