@@ -660,6 +660,19 @@ public class LibraryDatabase {
         }
     }
 
+    public static void deleteFromBorrowedBooks(int userId, String isbn) {
+        String sql = "DELETE FROM borrowedBooks WHERE user_id = ? AND isbn = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, isbn);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting from borrowedBooks: " + e.getMessage());
+        }
+    }
+
     public static User findUserById(int id) {
         String sql = "SELECT * FROM User WHERE user_id = ?";
         try (Connection conn = connect();

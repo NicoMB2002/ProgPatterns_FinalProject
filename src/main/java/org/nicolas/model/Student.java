@@ -72,6 +72,35 @@ public class Student extends User {
         System.out.println("Book not available or no copies left.");
     }
 
+    public void returnBook(String isbn) {
+        Book bookToReturn = null;
+
+        // Check if the student has this book borrowed
+        for (Book book : borrowedBooks) {
+            if (book.getISBN().equals(isbn)) {
+                bookToReturn = book;
+                break;
+            }
+        }
+
+        if (bookToReturn == null) {
+            System.out.println("You haven't borrowed this book.");
+            return;
+        }
+
+        // Remove from the list
+        borrowedBooks.remove(bookToReturn);
+
+        // Update available/borrowed copies in the DB
+        bookToReturn.setAvailableCopies(bookToReturn.getAvailableCopies() + 1);
+        LibraryDatabase.updateBookCopies(bookToReturn);
+
+        // Remove from borrowedBooks table in DB
+        LibraryDatabase.deleteFromBorrowedBooks(this.getUserId(), isbn);
+
+        System.out.println("Book returned successfully: " + bookToReturn.getTitle());
+    }
+
     public int getUserId() {
         return userId;
     }
