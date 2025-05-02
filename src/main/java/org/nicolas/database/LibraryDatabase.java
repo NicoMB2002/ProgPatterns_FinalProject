@@ -781,6 +781,38 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * selects all available books
+     * @return books with their isbn, title, author, no of copies total, no of borrowed copies, and no of copies available
+     */
+    public static String selectLastInsertedStudent() {
+        String sqlQuery = """
+                SET @last_id = LAST_INSERT_ID();
+                SELECT * FROM Users WHERE user_id = @last_id;
+                """;
+
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            while (rs.next()) {
+                int userID = rs.getInt("user_id");
+                String name = rs.getString("name");
+                String role = rs.getString("role");
+                String password = rs.getString("password");
+
+                builder.append(String.format("%d.  %d  %s  %s  PASSWORD : %s", userID, name, role, password));
+            }
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
 
 
         //Testing connectivity
