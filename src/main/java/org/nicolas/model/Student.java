@@ -20,7 +20,6 @@ public class Student extends User {
         super(userID, name, password);
         this.typeOfUSer = UserType.STUDENT;
         this.borrowedBooks = new ArrayList<>();
-        this.messages = ResourceBundle.getBundle("messages");
     }
 
     public void seeBorrowedBooksList () {
