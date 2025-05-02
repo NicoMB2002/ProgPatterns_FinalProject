@@ -16,7 +16,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Select language (en/fr): ");
+        System.out.print("Select language / Sélectionnez votre langue (en/fr): ");
         String lang = scanner.nextLine();
         Locale locale = new Locale(lang);
         ResourceBundle bundle = ResourceBundle.getBundle("messages.messages", locale);
@@ -24,15 +24,6 @@ public class Main {
         UserView view = new UserView();
         User student = new Student(1, "Nicolas", "hello");
         UserController controller = new UserController(student, view, bundle);
-
-        int tryCounter = 0;
-
-        if (tryCounter <= 3) {
-            tryCounter++;
-            view.mainMenu(controller, bundle); //do this in the main
-        } else {
-            view.setErrorMessage("3 invalid choice. Learn how to read before using a library.");
-            System.exit(1); //Exception Termination
-        }
+        view.mainMenu(controller, bundle); //do this in the main
     }
 }
