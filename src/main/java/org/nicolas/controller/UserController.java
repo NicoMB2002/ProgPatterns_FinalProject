@@ -285,6 +285,15 @@ public class UserController {
                 case "5" : //remove a user
                     break;
                 case "6" : //see user catalog
+                    System.out.print(messages.getString("filter.main.prompt"));
+                    ans = console.readLine().toUpperCase().charAt(0) + "";
+
+                    if (ans.equals("N")) {
+                        LibraryDatabase.selectAllUsers();
+                    } else {
+
+                    }
+
                     LibraryDatabase.selectAllUsers();
                     break;
                 case "7" : //borrow book for user
