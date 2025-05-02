@@ -16,6 +16,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
+
         System.out.print("Select language / Sélectionnez votre langue (en/fr): ");
         String lang = scanner.nextLine();
         Locale locale = new Locale(lang);
