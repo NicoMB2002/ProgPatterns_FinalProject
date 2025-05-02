@@ -293,7 +293,7 @@ public class UserController {
                 handleLogout();
                 break;
             default :
-                view.setErrorMessage("invalid choice, please try again");
+                view.setErrorMessage(messages.getString("error.message.invalidChoice"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
         }
@@ -382,7 +382,7 @@ public class UserController {
                 currentState = MenuState.EXIT;
                 break;
             default :
-                view.setErrorMessage("invalid choice, please try again");
+                view.setErrorMessage(messages.getString("error.message.invalidChoice"));
                 currentState = MenuState.LIBRARIAN_MAIN;
                 break;
         }
@@ -393,7 +393,7 @@ public class UserController {
         String studentId = console.readLine();
         for (char c : studentId.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("Student id cannot contain letters");
+                view.setErrorMessage(messages.getString("error.message.wrongStudID"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
             }
@@ -403,7 +403,7 @@ public class UserController {
         String isbn = console.readLine();
         for (char c : isbn.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("ISBN cannot contain letters");
+                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
             }
@@ -418,7 +418,7 @@ public class UserController {
         String studentId = console.readLine();
         for (char c : studentId.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("Student id cannot contain letters");
+                view.setErrorMessage(messages.getString("error.message.wrongStudID"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
             }
@@ -428,7 +428,7 @@ public class UserController {
         String isbn = console.readLine();
         for (char c : isbn.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("ISBN cannot contain letters");
+                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
             }
@@ -443,7 +443,7 @@ public class UserController {
         String isbn = console.readLine();
         for (char c : isbn.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("ISBN cannot contain letters");
+                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
                 currentState = MenuState.LIBRARIAN_MAIN;
                 return;
             }
@@ -458,7 +458,7 @@ public class UserController {
 
         for (char c : tryAns.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("The number of copies should be in a numerical format (i.e. '2')");
+                view.setErrorMessage(messages.getString("error.message.wrongNumCopies"));
                 currentState = MenuState.LIBRARIAN_MAIN;
                 return;
             }
@@ -473,7 +473,7 @@ public class UserController {
         String isbn = console.readLine();
         for (char c : isbn.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("ISBN cannot contain letters");
+                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
             }
@@ -495,7 +495,7 @@ public class UserController {
         String isbn = console.readLine();
         for (char c : isbn.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage("ISBN cannot contain letters");
+                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
             }
