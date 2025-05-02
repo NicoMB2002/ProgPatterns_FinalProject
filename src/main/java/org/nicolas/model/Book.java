@@ -21,7 +21,7 @@ public class Book {
 
     protected String ISBNChecker(String inputISBN) throws InvalidISBNException { //TODO change the checking for '-' and remove them if there is
         inputISBN = inputISBN.replace("-", ""); // remove dashes if any
-        if (inputISBN.length() != 13 || inputISBN.length() != 10) {
+        if (inputISBN.length() != 13 && inputISBN.length() != 10) {
             throw new InvalidISBNException("ISBN must be exactly 10 or 13 characters long without dashes.");
         }
         for (char c : inputISBN.toCharArray()) {
