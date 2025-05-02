@@ -163,8 +163,10 @@ public class UserController {
 
             if (model instanceof Librarian) {
                 currentState = MenuState.LIBRARIAN_MAIN;
+                return;
             } else {
                 currentState = MenuState.STUDENT_MAIN;
+                return;
             }
         } else {
             view.setErrorMessage(messages.getString("login.failure"));
