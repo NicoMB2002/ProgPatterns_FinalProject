@@ -279,6 +279,27 @@ public class UserController {
                 case "2" : //remove a book
                     break;
                 case "3" : //see book catalog
+                    System.out.print(messages.getString("filter.main.prompt"));
+                    ans = console.readLine().toUpperCase().charAt(0) + "";
+
+                    if (ans.equals("Y")) {
+                        System.out.println(messages.getString("filter.availableBooks"));
+                        System.out.println(messages.getString("filter.borrowedBooks"));
+                        ans = console.readLine().toUpperCase().charAt(0) + "";
+
+                        if (ans.equals("1")) {
+                            LibraryDatabase.selectAllAvailableBooks();
+                        } else if (ans.equals("2")) {
+                            LibraryDatabase.selectAllBorrowedBooks();
+                        } else {
+                            view.setErrorMessage("invalid choice");
+                            console.writer().print("\033[H\033[2J");
+                            console.flush(); //makes the console empty for better clarity
+                            currentState = MenuState.LIBRARIAN_MAIN;
+                            break;
+                        }
+                    }
+                    LibraryDatabase.selectAllBooks();
                     break;
                 case "4" : //add a user
                     break;
@@ -288,12 +309,23 @@ public class UserController {
                     System.out.print(messages.getString("filter.main.prompt"));
                     ans = console.readLine().toUpperCase().charAt(0) + "";
 
-                    if (ans.equals("N")) {
-                        LibraryDatabase.selectAllUsers();
-                    } else {
+                    if (ans.equals("Y")) {
+                        System.out.println(messages.getString("filter.students"));
+                        System.out.println(messages.getString("filter.librarians"));
+                        ans = console.readLine().toUpperCase().charAt(0) + "";
 
+                        if (ans.equals("1")) {
+                            LibraryDatabase.getUserListFromRole("STUDENT");
+                        } else if (ans.equals("2")) {
+                            LibraryDatabase.getUserListFromRole("LIBRARIAN");
+                        } else {
+                            view.setErrorMessage("invalid choice");
+                            console.writer().print("\033[H\033[2J");
+                            console.flush(); //makes the console empty for better clarity
+                            currentState = MenuState.LIBRARIAN_MAIN;
+                            break;
+                        }
                     }
-
                     LibraryDatabase.selectAllUsers();
                     break;
                 case "7" : //borrow book for user

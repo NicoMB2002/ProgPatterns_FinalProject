@@ -750,6 +750,37 @@ public class LibraryDatabase {
         return borrowedBooksList;
     }
 
+    /**
+     * selects all available books
+     * @return books with their isbn, title, author, no of copies total, no of borrowed copies, and no of copies available
+     */
+    public static String selectAllAvailableBooks() {
+        String sql = "SELECT * FROM Books WHERE available_copies > 0";
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            Connection conn = connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                String isbn = rs.getString("isbn");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                int noCopies = rs.getInt("no_copies");
+                int borrowedBooks = rs.getInt("borrowed_books");
+                int booksAvailable = noCopies - borrowedBooks;
+
+                builder.append(String.format("%s  %s,  %s  COPIES: %d  [BORROWED: %d  AVAILABLE: %d]%n",
+                        isbn, title, author, noCopies, borrowedBooks, booksAvailable));
+            }
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return builder.toString();
+    }
+
 
 
         //Testing connectivity

@@ -39,7 +39,6 @@ public class Student extends User {
         for (Book borrowedBook : borrowedBooks) {
             if (borrowedBook.getISBN().equals(isbn)) {
                 System.out.println(messages.getString("book.owned"));
-
                 return;
             }
         }
@@ -61,13 +60,12 @@ public class Student extends User {
             bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
 
             System.out.println("\nBook borrowed: " + bookToBorrow.getTitle());
-            System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+            System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]\n",
                     isbn, bookToBorrow.getTitle(), bookToBorrow.getAuthor(), bookToBorrow.getCopies(),
                     bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
             return;
         }
         System.out.println(messages.getString("book.unavailable"));
-
     }
 
     @Override
