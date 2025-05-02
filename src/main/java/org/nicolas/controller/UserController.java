@@ -214,7 +214,7 @@ public class UserController {
             if (isValid) {
                 model.changePassword(stringPassword);
             } else {
-                break;
+                return;
             }
         } else {
             model.changePassword(stringPassword);
