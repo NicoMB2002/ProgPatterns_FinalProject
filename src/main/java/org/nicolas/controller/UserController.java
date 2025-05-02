@@ -27,6 +27,37 @@ public class UserController {
         this.messages = bundle;
     }
 
+    private enum MenuState { //State + singleton design pattern to avoid recursive calls
+        LOGIN, STUDENT_MAIN, LIBRARIAN_MAIN, SETTINGS, EXIT
+    }
+
+    private MenuState currentState = MenuState.LOGIN;
+
+    public void runApplication() {
+        Console console = System.console();
+
+        while (currentState != MenuState.EXIT) {
+            console.writer().print("\033[H\033[2J");
+            console.flush();
+
+            switch (currentState) {
+                case LOGIN:
+                    handleLogin();
+                    break;
+                case STUDENT_MAIN:
+                    studentMenu((Student) model);
+                    break;
+                case LIBRARIAN_MAIN:
+                    librarianMenu((Librarian) model);
+                    break;
+                case SETTINGS:
+                    settingsMenu();
+                    break;
+            }
+        }
+        handleLogout();
+    }
+
     protected void appHeader () {
         System.out.println("--------------------------------------------------------------------------------------------");
         System.out.println("                                                                     "
@@ -50,6 +81,7 @@ public class UserController {
 
     public void handleLogin() {
         Console console = System.console();
+        console.writer().print("\033[H\033[2J");
         console.flush(); //makes the console empty for better clarity
 
         System.out.println(messages.getString("welcome"));
@@ -67,6 +99,7 @@ public class UserController {
         if (user != null && user.getPassword().equals(stringPassword)) {
             System.out.println(messages.getString("login.success"));
             this.model = user; // Set the logged-in user
+            console.writer().print("\033[H\033[2J");
             console.flush();
 
             if (model instanceof Librarian) {
@@ -83,6 +116,7 @@ public class UserController {
 
     protected void settingsMenu () {
         Console console = System.console();
+        console.writer().print("\033[H\033[2J");
         console.flush();
 
         appHeader();
@@ -92,6 +126,7 @@ public class UserController {
         appFooter();
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
+        console.writer().print("\033[H\033[2J");
         console.flush();
         appHeader();
 
@@ -110,6 +145,7 @@ public class UserController {
                         stringPassword += password[i]; //puts the password into a String for the DB
                         System.out.print("*"); //sets the characters as '*' instead of blank spaces
                     }
+
                     System.out.println(messages.getString("prompt.checkNewPassword"));
                     char[] passwordCheck = console.readPassword(messages.getString("login.password"));
                     String stringPasswordCheck = "";
@@ -120,7 +156,7 @@ public class UserController {
 
                     boolean isValid = (stringPassword.equals(passwordCheck)) ? true : false;
 
-                    if (isValid == false) {
+                    if (isValid == false) { //2nd chance to change password
                         System.out.println(messages.getString("prompt.checkNewPassword"));
                         char[] passwordCheck2 = console.readPassword(messages.getString("login.password"));
                         String stringPasswordCheck2 = "";
@@ -141,8 +177,10 @@ public class UserController {
                     }
                     break;
                 case "M" :
-                    return; //TODO see if it goes back to main menu of if need to call another instance of menu
+                    currentState = (model instanceof Librarian) ? MenuState.LIBRARIAN_MAIN : MenuState.SETTINGS;
+                    return;
                 case "X" :
+                    console.writer().print("\033[H\033[2J");
                     console.flush();
                     handleLogout();
                     break;
@@ -165,6 +203,7 @@ public class UserController {
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
         while (true) {
+            console.writer().print("\033[H\033[2J");
             console.flush();
             appHeader();
             switch (ans) {
@@ -193,9 +232,10 @@ public class UserController {
                     model.findBook(inputIsbn, inputTitle, inputAuthor);
                     break;
                 case "S" : //settings
-                    settingsMenu();
+                    currentState = MenuState.SETTINGS;
                     break;
                 case "X" : //exit
+                    console.writer().print("\033[H\033[2J");
                     console.flush();
                     handleLogout();
                     break;
@@ -227,6 +267,7 @@ public class UserController {
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
         while (true) {
+            console.writer().print("\033[H\033[2J");
             console.flush();
             appHeader();
             switch (ans) {
@@ -259,7 +300,8 @@ public class UserController {
                     model.findBook(inputIsbn, inputTitle, inputAuthor);
                     break;
                 case "S" : //settings
-                    settingsMenu();
+                    console.writer().print("\033[H\033[2J");
+                    currentState = MenuState.SETTINGS;
                     break;
                 case "X" : //exit
                     console.flush();

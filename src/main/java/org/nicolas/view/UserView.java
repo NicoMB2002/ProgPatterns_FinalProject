@@ -26,10 +26,12 @@ public class UserView {
         System.out.print("\n->  ");
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
+        console.writer().print("\033[H\033[2J");
         console.flush();
 
         switch (ans) {
             case "1" :
+                console.writer().print("\033[H\033[2J");
                 console.flush();
                 controller.handleLogin();
                 break;
