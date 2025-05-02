@@ -83,7 +83,7 @@ public class UserController {
                     librarianReturn((Librarian) model, console);
                     break;
                 case LIBRARIAN_ADD_BOOK:
-                    librarianAddBook(console);
+                    librarianAddBook((Librarian) model, console);
                     break;
                 case LIBRARIAN_REMOVE_BOOK:
                     librarianRemoveBook(console);
@@ -344,32 +344,12 @@ public class UserController {
         appHeader();
         switch (ans) {
             case "1" : //add a book
-
+                currentState = MenuState.LIBRARIAN_ADD_BOOK;
                 break;
             case "2" : //remove a book
                 break;
             case "3" : //see book catalog
-                System.out.print(messages.getString("filter.main.prompt"));
-                ans = console.readLine().toUpperCase().charAt(0) + "";
-
-                if (ans.equals("Y")) {
-                    System.out.println(messages.getString("filter.availableBooks"));
-                    System.out.println(messages.getString("filter.borrowedBooks"));
-                    ans = console.readLine().toUpperCase().charAt(0) + "";
-
-                    if (ans.equals("1")) {
-                        LibraryDatabase.selectAllAvailableBooks();
-                    } else if (ans.equals("2")) {
-                        LibraryDatabase.selectAllBorrowedBooks();
-                    } else {
-                        view.setErrorMessage("invalid choice");
-                        console.writer().print("\033[H\033[2J");
-                        console.flush(); //makes the console empty for better clarity
-                        currentState = MenuState.LIBRARIAN_MAIN;
-                        break;
-                    }
-                }
-                LibraryDatabase.selectAllBooks();
+                currentState = MenuState.LIBRARIAN_BOOK_CATALOG;
                 break;
             case "4" : //add a user
                 currentState = MenuState.LIBRARIAN_ADD_USER;
@@ -465,9 +445,28 @@ public class UserController {
             }
         }
 
+        System.out.print(messages.getString("prompt.title"));
+        String title = console.readLine();
+        System.out.print(messages.getString("prompt.author"));
+        String author = console.readLine();
+        System.out.print(messages.getString("prompt.title"));
+        int copies = Integer.parseInt(console.readLine());
+
+        librarian.addBook(isbn, title, author, copies);
     }
 
-    private void librarianRemoveBook (Console console) {}
+    private void librarianRemoveBook (Console console) {
+        System.out.print(messages.getString("prompt.isbn"));
+        String isbn = console.readLine();
+        for (char c : isbn.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("ISBN cannot contain letters");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
+        //TODO this
+    }
 
     private void librarianAddUser (Console console) {
         System.out.print(messages.getString("prompt.studentName"));
@@ -478,9 +477,42 @@ public class UserController {
         LibraryDatabase.selectLastInsertedStudent();
     }
 
-    private void librarianRemoveUser (Console console) {}
+    private void librarianRemoveUser (Console console) {
+        System.out.print(messages.getString("prompt.isbn"));
+        String isbn = console.readLine();
+        for (char c : isbn.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("ISBN cannot contain letters");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
+        //TODO this
+    }
 
-    private void librarianBookCatalog (Console console) {}
+    private void librarianBookCatalog (Console console) {
+        System.out.print(messages.getString("filter.main.prompt"));
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+
+        if (ans.equals("Y")) {
+            System.out.println(messages.getString("filter.availableBooks"));
+            System.out.println(messages.getString("filter.borrowedBooks"));
+            ans = console.readLine().toUpperCase().charAt(0) + "";
+
+            if (ans.equals("1")) {
+                LibraryDatabase.selectAllAvailableBooks();
+            } else if (ans.equals("2")) {
+                LibraryDatabase.selectAllBorrowedBooks();
+            } else {
+                view.setErrorMessage("invalid choice");
+                console.writer().print("\033[H\033[2J");
+                console.flush(); //makes the console empty for better clarity
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
+            }
+        }
+        LibraryDatabase.selectAllBooks();
+    }
 
     private void librarianUserCatalog (Console console) {
         System.out.print(messages.getString("filter.main.prompt"));

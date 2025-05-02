@@ -14,6 +14,11 @@ public class Librarian extends User {
         this.userType = UserType.LIBRARIAN;
     }
 
+    public void addBook (String isbn, String title, String author, int copies) {
+        Book tempBook = new Book(isbn, title, author, copies, copies, 0);
+        LibraryDatabase.insertIntoBooks(tempBook.getISBN(), tempBook.getTitle(), tempBook.getAuthor(), tempBook.getCopies());
+    }
+
     @Override
     public void borrowBook(String isbn, int studentId) {
         Student tempStudent = LibraryDatabase.getStudentFromId(studentId);
