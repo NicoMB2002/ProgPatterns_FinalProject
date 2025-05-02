@@ -27,6 +27,10 @@ public class UserController {
         this.messages = bundle;
     }
 
+    public User getLoggedInUser() {
+        return model;
+    }
+
     private enum MenuState { //State + singleton design pattern to avoid recursive calls
         LOGIN,
         FIND_BOOK,
@@ -160,7 +164,7 @@ public class UserController {
             if (model instanceof Librarian) {
                 currentState = MenuState.LIBRARIAN_MAIN;
             } else {
-                currentState = MenuState.LIBRARIAN_MAIN;
+                currentState = MenuState.STUDENT_MAIN;
             }
         } else {
             view.setErrorMessage(messages.getString("login.failure"));
@@ -440,8 +444,8 @@ public class UserController {
         for (char c : isbn.toCharArray()) {
             if (Character.isLetter(c)) {
                 view.setErrorMessage("ISBN cannot contain letters");
-                currentState = MenuState.STUDENT_MAIN;
-                break;
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
             }
         }
 
@@ -449,9 +453,18 @@ public class UserController {
         String title = console.readLine();
         System.out.print(messages.getString("prompt.author"));
         String author = console.readLine();
-        System.out.print(messages.getString("prompt.title"));
-        int copies = Integer.parseInt(console.readLine());
+        System.out.print(messages.getString("prompt.copies"));
+        String tryAns = console.readLine();
 
+        for (char c : tryAns.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("The number of copies should be in a numerical format (i.e. '2')");
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
+            }
+        }
+
+        int copies = Integer.parseInt(tryAns);
         librarian.addBook(isbn, title, author, copies);
     }
 

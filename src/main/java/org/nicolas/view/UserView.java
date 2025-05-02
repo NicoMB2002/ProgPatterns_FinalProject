@@ -37,6 +37,9 @@ public class UserView {
                     console.writer().print("\033[H\033[2J");
                     console.flush();
                     controller.handleLogin(console);
+                    if (controller.getLoggedInUser() != null) {
+                        return;
+                    }
                     break;
                 case "2" :
                     System.out.println(bundle.getString("app.Exit"));
