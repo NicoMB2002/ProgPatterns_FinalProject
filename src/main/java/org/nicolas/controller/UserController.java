@@ -90,13 +90,13 @@ public class UserController {
                     librarianAddBook((Librarian) model, console);
                     break;
                 case LIBRARIAN_REMOVE_BOOK:
-                    librarianRemoveBook(console);
+                    librarianRemoveBook((Librarian) model, console);
                     break;
                 case LIBRARIAN_ADD_USER:
-                    librarianAddUser(console);
+                    librarianAddUser((Librarian) model, console);
                     break;
                 case LIBRARIAN_REMOVE_USER:
-                    librarianRemoveUser(console);
+                    librarianRemoveUser((Librarian) model, console);
                     break;
                 case LIBRARIAN_BOOK_CATALOG:
                     librarianBookCatalog(console);
@@ -470,7 +470,7 @@ public class UserController {
         librarian.addBook(isbn, title, author, copies);
     }
 
-    private void librarianRemoveBook (Console console) {
+    private void librarianRemoveBook (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.isbn"));
         String isbn = console.readLine();
         for (char c : isbn.toCharArray()) {
@@ -480,20 +480,41 @@ public class UserController {
                 break;
             }
         }
-        //TODO this and thay
+
+        LibraryDatabase.getBookThroughISBN(isbn);
+        System.out.println(messages.getString("prompt.delete.verification"));
+        System.out.print("->  ");
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+
+        if (ans.equals("Y")) {
+            librarian.removeBook(isbn);
+        } else if (ans.equals("N")) {
+            System.out.println(messages.getString("error.message.operationAborted"));
+            console.writer().print("\033[H\033[2J");
+            console.flush(); //makes the console empty for better clarity
+            currentState = MenuState.LIBRARIAN_MAIN;
+            return;
+        } else {
+            view.setErrorMessage(messages.getString("error.message.invalidChoice"));
+            console.writer().print("\033[H\033[2J");
+            console.flush(); //makes the console empty for better clarity
+            currentState = MenuState.LIBRARIAN_MAIN;
+            return;
+        }
+        currentState = MenuState.LIBRARIAN_MAIN;
     }
 
-    private void librarianAddUser (Console console) {
+    private void librarianAddUser (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.studentName"));
         String newStudentName = console.readLine();
         System.out.print(messages.getString("prompt.studentPassword"));
         String newStudentPassword = console.readLine();
-        LibraryDatabase.insertIntoUser(newStudentName, "STUDENT", newStudentPassword);
-        LibraryDatabase.selectLastInsertedStudent();
+        librarian.addUser(newStudentName, newStudentPassword);
+        currentState = MenuState.LIBRARIAN_MAIN;
     }
 
-    private void librarianRemoveUser (Console console) {
-        System.out.print(messages.getString("prompt.isbn"));
+    private void librarianRemoveUser (Librarian librarian, Console console) {
+        System.out.print(messages.getString("prompt.student.id"));
         String studentId = console.readLine();
         for (char c : studentId.toCharArray()) {
             if (Character.isLetter(c)) {
@@ -510,7 +531,7 @@ public class UserController {
         String ans = console.readLine().toUpperCase().charAt(0) + "";
 
         if (ans.equals("Y")) {
-            LibraryDatabase.deleteStudentFromId(idToDelete);
+            librarian.removeUser(idToDelete);
         } else if (ans.equals("N")) {
             System.out.println(messages.getString("error.message.operationAborted"));
             console.writer().print("\033[H\033[2J");
@@ -524,6 +545,7 @@ public class UserController {
             currentState = MenuState.LIBRARIAN_MAIN;
             return;
         }
+        currentState = MenuState.LIBRARIAN_MAIN;
     }
 
     private void librarianBookCatalog (Console console) {
