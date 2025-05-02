@@ -29,11 +29,19 @@ public class UserController {
 
     private enum MenuState { //State + singleton design pattern to avoid recursive calls
         LOGIN,
+        FIND_BOOK,
         STUDENT_MAIN,
             STUDENT_BORROW,
             STUDENT_RETURN,
-            STUDENT_FIND_BOOK,
         LIBRARIAN_MAIN,
+            LIBRARIAN_ADD_BOOK,
+            LIBRARIAN_REMOVE_BOOK,
+            LIBRARIAN_BORROW,
+            LIBRARIAN_RETURN,
+            LIBRARIAN_ADD_USER,
+            LIBRARIAN_REMOVE_USER,
+            LIBRARIAN_BOOK_CATALOG,
+            LIBRARIAN_USER_CATALOG,
         SETTINGS,
             SETTINGS_CHANGE_PASSWORD,
             SETTINGS_CHANGE_NAME,
@@ -51,17 +59,56 @@ public class UserController {
 
             switch (currentState) {
                 case LOGIN:
-                    handleLogin();
+                    handleLogin(console);
                     break;
                 case STUDENT_MAIN:
-                    studentMenu((Student) model);
+                    studentMenu((Student) model, console);
+                    break;
+                case STUDENT_BORROW:
+                    studentBorrow(console);
+                    break;
+                case STUDENT_RETURN:
+                    studentReturn(console);
+                    break;
+                case FIND_BOOK:
+                    findBook(console);
                     break;
                 case LIBRARIAN_MAIN:
-                    librarianMenu((Librarian) model);
+                    librarianMenu((Librarian) model, console);
+                    break;
+                case LIBRARIAN_BORROW:
+                    librarianBorrow((Librarian) model, console);
+                    break;
+                case LIBRARIAN_RETURN:
+                    librarianReturn((Librarian) model, console);
+                    break;
+                case LIBRARIAN_ADD_BOOK:
+                    librarianAddBook(console);
+                    break;
+                case LIBRARIAN_REMOVE_BOOK:
+                    librarianRemoveBook(console);
+                    break;
+                case LIBRARIAN_ADD_USER:
+                    librarianAddUser(console);
+                    break;
+                case LIBRARIAN_REMOVE_USER:
+                    librarianRemoveUser(console);
+                    break;
+                case LIBRARIAN_BOOK_CATALOG:
+                    librarianBookCatalog(console);
+                    break;
+                case LIBRARIAN_USER_CATALOG:
+                    librarianUserCatalog(console);
                     break;
                 case SETTINGS:
-                    settingsMenu();
+                    settingsMenu(console);
                     break;
+                case SETTINGS_CHANGE_NAME:
+                    settingsChangeName(console);
+                    break;
+                case SETTINGS_CHANGE_PASSWORD:
+                    settingsChangePassword(console);
+                break;
             }
         }
         handleLogout();
@@ -88,8 +135,7 @@ public class UserController {
         System.exit(0);
     }
 
-    public void handleLogin() {
-        Console console = System.console();
+    public void handleLogin(Console console) {
         console.writer().print("\033[H\033[2J");
         console.flush(); //makes the console empty for better clarity
 
@@ -112,19 +158,17 @@ public class UserController {
             console.flush();
 
             if (model instanceof Librarian) {
-                Librarian librarianModel = (Librarian)model;
-                librarianMenu(librarianModel);
+                currentState = MenuState.LIBRARIAN_MAIN;
             } else {
-                Student studentModel = (Student)model;
-                studentMenu(studentModel);
+                currentState = MenuState.LIBRARIAN_MAIN;
             }
         } else {
             view.setErrorMessage(messages.getString("login.failure"));
         }
     }
 
-    protected void settingsMenu () {
-        Console console = System.console();
+//SETTINGS//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    protected void settingsMenu (Console console) {
         console.writer().print("\033[H\033[2J");
         console.flush();
 
@@ -142,48 +186,10 @@ public class UserController {
         while (true) {
             switch (ans) {
                 case "1":
-                    System.out.println(messages.getString("prompt.newName"));
-                    String newName = console.readLine();
-                    model.changeName(newName);
+                    currentState = MenuState.SETTINGS_CHANGE_NAME;
                     break;
                 case "2" :
-                    System.out.println(messages.getString("prompt.newPassword"));
-                    char[] password = console.readPassword(messages.getString("login.password"));
-                    String stringPassword = "";
-                    for (int i = 0; i < password.length; i++) {
-                        stringPassword += password[i]; //puts the password into a String for the DB
-                        System.out.print("*"); //sets the characters as '*' instead of blank spaces
-                    }
-
-                    System.out.println(messages.getString("prompt.checkNewPassword"));
-                    char[] passwordCheck = console.readPassword(messages.getString("login.password"));
-                    String stringPasswordCheck = "";
-                    for (int i = 0; i < passwordCheck.length; i++) {
-                        stringPasswordCheck += passwordCheck[i]; //puts the password into a String for the DB
-                        System.out.print("*"); //sets the characters as '*' instead of blank spaces
-                    }
-
-                    boolean isValid = (stringPassword.equals(passwordCheck)) ? true : false;
-
-                    if (isValid == false) { //2nd chance to change password
-                        System.out.println(messages.getString("prompt.checkNewPassword"));
-                        char[] passwordCheck2 = console.readPassword(messages.getString("login.password"));
-                        String stringPasswordCheck2 = "";
-                        for (int i = 0; i < passwordCheck2.length; i++) {
-                            stringPasswordCheck2 += passwordCheck2[i]; //puts the password into a String for the DB
-                            System.out.print("*"); //sets the characters as '*' instead of blank spaces
-                        }
-
-                        isValid = (stringPassword.equals(stringPasswordCheck2)) ? true : false;
-
-                        if (isValid) {
-                            model.changePassword(stringPassword);
-                        } else {
-                            break;
-                        }
-                    } else {
-                        model.changePassword(stringPassword);
-                    }
+                    currentState = MenuState.SETTINGS_CHANGE_PASSWORD;
                     break;
                 case "M" :
                     currentState = (model instanceof Librarian) ? MenuState.LIBRARIAN_MAIN : MenuState.SETTINGS;
@@ -201,8 +207,54 @@ public class UserController {
         }
     }
 
-    protected void studentMenu (Student student) {
-        Console console = System.console();
+    private void settingsChangeName (Console console) {
+        System.out.println(messages.getString("prompt.newName"));
+        String newName = console.readLine();
+        model.changeName(newName);
+    }
+
+    private void settingsChangePassword (Console console) {
+        System.out.println(messages.getString("prompt.newPassword"));
+        char[] password = console.readPassword(messages.getString("login.password"));
+        String stringPassword = "";
+        for (int i = 0; i < password.length; i++) {
+            stringPassword += password[i]; //puts the password into a String for the DB
+            System.out.print("*"); //sets the characters as '*' instead of blank spaces
+        }
+
+        System.out.println(messages.getString("prompt.checkNewPassword"));
+        char[] passwordCheck = console.readPassword(messages.getString("login.password"));
+        String stringPasswordCheck = "";
+        for (int i = 0; i < passwordCheck.length; i++) {
+            stringPasswordCheck += passwordCheck[i]; //puts the password into a String for the DB
+            System.out.print("*"); //sets the characters as '*' instead of blank spaces
+        }
+
+        boolean isValid = (stringPassword.equals(passwordCheck)) ? true : false;
+
+        if (isValid == false) { //2nd chance to change password
+            System.out.println(messages.getString("prompt.checkNewPassword"));
+            char[] passwordCheck2 = console.readPassword(messages.getString("login.password"));
+            String stringPasswordCheck2 = "";
+            for (int i = 0; i < passwordCheck2.length; i++) {
+                stringPasswordCheck2 += passwordCheck2[i]; //puts the password into a String for the DB
+                System.out.print("*"); //sets the characters as '*' instead of blank spaces
+            }
+
+            isValid = (stringPassword.equals(stringPasswordCheck2)) ? true : false;
+
+            if (isValid) {
+                model.changePassword(stringPassword);
+            } else {
+                return;
+            }
+        } else {
+            model.changePassword(stringPassword);
+        }
+    }
+
+    //STUDENT///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    protected void studentMenu (Student student, Console console) {
         appHeader();
         System.out.println(messages.getString("menu.title") + model.getName()
                 + messages.getString("menu.title.exclamation") + "\n\n");
@@ -212,53 +264,63 @@ public class UserController {
                 + messages.getString("menu.student.searchBook"));
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
-        while (true) {
-            console.writer().print("\033[H\033[2J");
-            console.flush();
-            appHeader();
-            switch (ans) {
-                case "1" : //borrow a book
-                    System.out.println(messages.getString("prompt.isbn"));
-                    String inputIsbn = console.readLine();
-                    model.borrowBook(inputIsbn, model.getUserID());
-                    break;
-                case "2" : //return a book
-                    System.out.println(messages.getString("prompt.isbn"));
-                    inputIsbn = console.readLine();
-                    model.returnBook(inputIsbn, model.getUserID());
-                    break;
-                case "3" : //see borrowed books list
-                    student.seeBorrowedBooksList();
-                    break;
-                case "4" : //search book
-                    System.out.println(messages.getString("prompt.information"));
-                    System.out.println(messages.getString("prompt.isbn"));
-                    inputIsbn = console.readLine();
-                    System.out.println(messages.getString("prompt.title"));
-                    String inputTitle = console.readLine();
-                    System.out.println(messages.getString("prompt.author"));
-                    String inputAuthor = console.readLine();
-
-                    model.findBook(inputIsbn, inputTitle, inputAuthor);
-                    break;
-                case "S" : //settings
-                    currentState = MenuState.SETTINGS;
-                    break;
-                case "X" : //exit
-                    console.writer().print("\033[H\033[2J");
-                    console.flush();
-                    handleLogout();
-                    break;
-                default :
-                    view.setErrorMessage("invalid choice, please try again");
-                    currentState = MenuState.STUDENT_MAIN;
-                    break;
-            }
+        console.writer().print("\033[H\033[2J");
+        console.flush();
+        appHeader();
+        switch (ans) {
+            case "1" : //borrow a book
+                currentState = MenuState.STUDENT_BORROW;
+                break;
+            case "2" : //return a book
+                currentState = MenuState.STUDENT_RETURN;
+                break;
+            case "3" : //see borrowed books list
+                student.seeBorrowedBooksList();
+                break;
+            case "4" : //search book
+                currentState = MenuState.FIND_BOOK;
+                break;
+            case "S" : //settings
+                currentState = MenuState.SETTINGS;
+                break;
+            case "X" : //exit
+                console.writer().print("\033[H\033[2J");
+                console.flush();
+                handleLogout();
+                break;
+            default :
+                view.setErrorMessage("invalid choice, please try again");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
         }
     }
 
-    protected void librarianMenu (Librarian librarian) {
-        Console console = System.console();
+    private void studentBorrow (Console console) {
+        System.out.println(messages.getString("prompt.isbn"));
+        String inputIsbn = console.readLine();
+        model.borrowBook(inputIsbn, model.getUserID());
+    }
+
+    private void studentReturn (Console console) {
+        System.out.println(messages.getString("prompt.isbn"));
+        String inputIsbn = console.readLine();
+        model.returnBook(inputIsbn, model.getUserID());
+    }
+
+    private void findBook (Console console) {
+        System.out.println(messages.getString("prompt.information"));
+        System.out.println(messages.getString("prompt.isbn"));
+        String inputIsbn = console.readLine();
+        System.out.println(messages.getString("prompt.title"));
+        String inputTitle = console.readLine();
+        System.out.println(messages.getString("prompt.author"));
+        String inputAuthor = console.readLine();
+
+        model.findBook(inputIsbn, inputTitle, inputAuthor);
+    }
+
+    //LIBRARIAN/////////////////////////////////////////////////////////////////////////////////////////////////////////
+    protected void librarianMenu (Librarian librarian, Console console) {
         appHeader();
         System.out.println(messages.getString("menu.title") + model.getName()
                 + messages.getString("menu.title.exclamation") + "\n");
@@ -277,118 +339,136 @@ public class UserController {
         System.out.print("\n->  ");
 
         String ans = console.readLine().toUpperCase().charAt(0) + "";
-        while (true) {
-            console.writer().print("\033[H\033[2J");
-            console.flush();
-            appHeader();
-            switch (ans) {
-                case "1" : //add a book
+        console.writer().print("\033[H\033[2J");
+        console.flush();
+        appHeader();
+        switch (ans) {
+            case "1" : //add a book
 
-                    break;
-                case "2" : //remove a book
-                    break;
-                case "3" : //see book catalog
-                    System.out.print(messages.getString("filter.main.prompt"));
+                break;
+            case "2" : //remove a book
+                break;
+            case "3" : //see book catalog
+                System.out.print(messages.getString("filter.main.prompt"));
+                ans = console.readLine().toUpperCase().charAt(0) + "";
+
+                if (ans.equals("Y")) {
+                    System.out.println(messages.getString("filter.availableBooks"));
+                    System.out.println(messages.getString("filter.borrowedBooks"));
                     ans = console.readLine().toUpperCase().charAt(0) + "";
 
-                    if (ans.equals("Y")) {
-                        System.out.println(messages.getString("filter.availableBooks"));
-                        System.out.println(messages.getString("filter.borrowedBooks"));
-                        ans = console.readLine().toUpperCase().charAt(0) + "";
-
-                        if (ans.equals("1")) {
-                            LibraryDatabase.selectAllAvailableBooks();
-                        } else if (ans.equals("2")) {
-                            LibraryDatabase.selectAllBorrowedBooks();
-                        } else {
-                            view.setErrorMessage("invalid choice");
-                            console.writer().print("\033[H\033[2J");
-                            console.flush(); //makes the console empty for better clarity
-                            currentState = MenuState.LIBRARIAN_MAIN;
-                            break;
-                        }
+                    if (ans.equals("1")) {
+                        LibraryDatabase.selectAllAvailableBooks();
+                    } else if (ans.equals("2")) {
+                        LibraryDatabase.selectAllBorrowedBooks();
+                    } else {
+                        view.setErrorMessage("invalid choice");
+                        console.writer().print("\033[H\033[2J");
+                        console.flush(); //makes the console empty for better clarity
+                        currentState = MenuState.LIBRARIAN_MAIN;
+                        break;
                     }
-                    LibraryDatabase.selectAllBooks();
-                    break;
-                case "4" : //add a user
-                    break;
-                case "5" : //remove a user
-                    break;
-                case "6" : //see user catalog
-                    System.out.print(messages.getString("filter.main.prompt"));
-                    ans = console.readLine().toUpperCase().charAt(0) + "";
+                }
+                LibraryDatabase.selectAllBooks();
+                break;
+            case "4" : //add a user
+                currentState = MenuState.LIBRARIAN_ADD_USER;
+                break;
+            case "5" : //remove a user
+                break;
+            case "6" : //see user catalog
+                currentState = MenuState.LIBRARIAN_USER_CATALOG;
+                break;
+            case "7" : //borrow book for user
 
-                    if (ans.equals("Y")) {
-                        System.out.println(messages.getString("filter.students"));
-                        System.out.println(messages.getString("filter.librarians"));
-                        ans = console.readLine().toUpperCase().charAt(0) + "";
-
-                        if (ans.equals("1")) {
-                            LibraryDatabase.getUserListFromRole("STUDENT");
-                        } else if (ans.equals("2")) {
-                            LibraryDatabase.getUserListFromRole("LIBRARIAN");
-                        } else {
-                            view.setErrorMessage("invalid choice");
-                            console.writer().print("\033[H\033[2J");
-                            console.flush(); //makes the console empty for better clarity
-                            currentState = MenuState.LIBRARIAN_MAIN;
-                            break;
-                        }
-                    }
-                    LibraryDatabase.selectAllUsers();
-                    break;
-                case "7" : //borrow book for user
-                    System.out.print(messages.getString("prompt.student.id"));
-                    String studentId = console.readLine();
-                    for (char c : studentId.toCharArray()) {
-                        if (Character.isLetter(c)) {
-                            view.setErrorMessage("Student id cannot contain letters");
-                            currentState = MenuState.STUDENT_MAIN;
-                            break;
-                        }
-                    }
-
-                    System.out.print(messages.getString("prompt.isbn"));
-                    String isbn = console.readLine();
-                    for (char c : isbn.toCharArray()) {
-                        if (Character.isLetter(c)) {
-                            view.setErrorMessage("ISBN cannot contain letters");
-                            currentState = MenuState.STUDENT_MAIN;
-                            break;
-                        }
-                    }
-
-                    int inputStudentId = Integer.parseInt(studentId);
-                    librarian.borrowBook(isbn, inputStudentId);
-                    break;
-                case "8" : //return book for user
-                    break;
-                case "9" : //find book
-                    System.out.println(messages.getString("prompt.information"));
-                    System.out.println(messages.getString("prompt.isbn"));
-                    String inputIsbn = console.readLine();
-                    System.out.println(messages.getString("prompt.title"));
-                    String inputTitle = console.readLine();
-                    System.out.println(messages.getString("prompt.author"));
-                    String inputAuthor = console.readLine();
-
-                    model.findBook(inputIsbn, inputTitle, inputAuthor);
-                    break;
-                case "S" : //settings
-                    console.writer().print("\033[H\033[2J");
-                    currentState = MenuState.SETTINGS;
-                    break;
-                case "X" : //exit
-                    console.flush();
-                    currentState = MenuState.EXIT;
-                    break;
-                default :
-                    view.setErrorMessage("invalid choice, please try again");
-                    currentState = MenuState.LIBRARIAN_MAIN;
-                    break;
-            }
+                break;
+            case "8" : //return book for user
+                currentState = MenuState.LIBRARIAN_RETURN;
+                break;
+            case "9" : //find book
+                currentState = MenuState.FIND_BOOK;
+                break;
+            case "S" : //settings
+                console.writer().print("\033[H\033[2J");
+                currentState = MenuState.SETTINGS;
+                break;
+            case "X" : //exit
+                console.flush();
+                currentState = MenuState.EXIT;
+                break;
+            default :
+                view.setErrorMessage("invalid choice, please try again");
+                currentState = MenuState.LIBRARIAN_MAIN;
+                break;
         }
     }
 
+    private void librarianBorrow (Librarian librarian, Console console) {
+        System.out.print(messages.getString("prompt.student.id"));
+        String studentId = console.readLine();
+        for (char c : studentId.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("Student id cannot contain letters");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
+
+        System.out.print(messages.getString("prompt.isbn"));
+        String isbn = console.readLine();
+        for (char c : isbn.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("ISBN cannot contain letters");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
+
+        int inputStudentId = Integer.parseInt(studentId);
+        librarian.borrowBook(isbn, inputStudentId);
+    }
+
+    private void librarianReturn (Librarian librarian, Console console) {}
+
+    private void librarianAddBook (Console console) {}
+
+    private void librarianRemoveBook (Console console) {}
+
+    private void librarianAddUser (Console console) {
+        System.out.print(messages.getString("prompt.studentName"));
+        String newStudentName = console.readLine();
+        System.out.print(messages.getString("prompt.studentPassword"));
+        String newStudentPassword = console.readLine();
+        LibraryDatabase.insertIntoUser(newStudentName, "STUDENT", newStudentPassword);
+        LibraryDatabase.selectLastInsertedStudent();
+    }
+
+    private void librarianRemoveUser (Console console) {}
+
+    private void librarianBookCatalog (Console console) {}
+
+    private void librarianUserCatalog (Console console) {
+        System.out.print(messages.getString("filter.main.prompt"));
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+
+        if (ans.equals("Y")) {
+            System.out.println(messages.getString("filter.students"));
+            System.out.println(messages.getString("filter.librarians"));
+            ans = console.readLine().toUpperCase().charAt(0) + "";
+
+            if (ans.equals("1")) {
+                LibraryDatabase.getUserListFromRole("STUDENT");
+            } else if (ans.equals("2")) {
+                LibraryDatabase.getUserListFromRole("LIBRARIAN");
+            } else {
+                view.setErrorMessage("invalid choice");
+                console.writer().print("\033[H\033[2J");
+                console.flush(); //makes the console empty for better clarity
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
+            }
+        }
+        LibraryDatabase.selectAllUsers();
+    }
 
 }
