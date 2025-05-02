@@ -265,7 +265,7 @@ public class LibraryDatabase {
      * @return the id, name, and role of the user (not their password)
      */
     public static String selectAllUsers() {
-        String sql = "SELECT * FROM User";
+        String sql = "SELECT * FROM User ORDER BY role, user_id";
         StringBuilder builder = new StringBuilder();
         //using StringBuilder to build (or append) String
 
