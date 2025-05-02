@@ -647,6 +647,25 @@ public class LibraryDatabase {
         }
     }
 
+    public static void deleteStudentFromId(int studentId) {
+        String sql = "DELETE FROM User WHERE user_id = " + studentId;
+
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, studentId + "");
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("Student " + studentId + " deleted successfully.");
+            } else {
+                System.out.println("No student found with student ID " + studentId + ".");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error deleting student: " + e.getMessage());
+        }
+    }
 
     public static void deleteBookByIsbn(String isbn) {
         String sql = "DELETE FROM Books WHERE isbn = ?";

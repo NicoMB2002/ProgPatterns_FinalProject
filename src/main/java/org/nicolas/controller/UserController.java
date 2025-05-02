@@ -293,7 +293,8 @@ public class UserController {
                 handleLogout();
                 break;
             default :
-                view.setErrorMessage(messages.getString("error.message.invalidChoice"));
+                view.setErrorMessage(messages.getString("error.message.invalidChoice")
+                        + messages.getString("error.message.tryAgain"));
                 currentState = MenuState.STUDENT_MAIN;
                 break;
         }
@@ -382,7 +383,8 @@ public class UserController {
                 currentState = MenuState.EXIT;
                 break;
             default :
-                view.setErrorMessage(messages.getString("error.message.invalidChoice"));
+                view.setErrorMessage(messages.getString("error.message.invalidChoice")
+                        + messages.getString("error.message.tryAgain"));
                 currentState = MenuState.LIBRARIAN_MAIN;
                 break;
         }
@@ -492,15 +494,36 @@ public class UserController {
 
     private void librarianRemoveUser (Console console) {
         System.out.print(messages.getString("prompt.isbn"));
-        String isbn = console.readLine();
-        for (char c : isbn.toCharArray()) {
+        String studentId = console.readLine();
+        for (char c : studentId.toCharArray()) {
             if (Character.isLetter(c)) {
-                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
-                currentState = MenuState.STUDENT_MAIN;
+                view.setErrorMessage(messages.getString("error.message.wrongStudID"));
+                currentState = MenuState.LIBRARIAN_MAIN;
                 break;
             }
         }
-        //TODO this
+
+        int idToDelete = Integer.parseInt(studentId);
+        LibraryDatabase.getStudentFromId(idToDelete);
+        System.out.println(messages.getString("prompt.delete.verification"));
+        System.out.print("->  ");
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
+
+        if (ans.equals("Y")) {
+            LibraryDatabase.deleteStudentFromId(idToDelete);
+        } else if (ans.equals("N")) {
+            System.out.println(messages.getString("error.message.operationAborted"));
+            console.writer().print("\033[H\033[2J");
+            console.flush(); //makes the console empty for better clarity
+            currentState = MenuState.LIBRARIAN_MAIN;
+            return;
+        } else {
+            view.setErrorMessage(messages.getString("error.message.invalidChoice"));
+            console.writer().print("\033[H\033[2J");
+            console.flush(); //makes the console empty for better clarity
+            currentState = MenuState.LIBRARIAN_MAIN;
+            return;
+        }
     }
 
     private void librarianBookCatalog (Console console) {
@@ -517,7 +540,7 @@ public class UserController {
             } else if (ans.equals("2")) {
                 LibraryDatabase.selectAllBorrowedBooks();
             } else {
-                view.setErrorMessage("invalid choice");
+                view.setErrorMessage(messages.getString("error.message.invalidChoice"));
                 console.writer().print("\033[H\033[2J");
                 console.flush(); //makes the console empty for better clarity
                 currentState = MenuState.LIBRARIAN_MAIN;
@@ -541,7 +564,7 @@ public class UserController {
             } else if (ans.equals("2")) {
                 LibraryDatabase.getUserListFromRole("LIBRARIAN");
             } else {
-                view.setErrorMessage("invalid choice");
+                view.setErrorMessage(messages.getString("error.message.invalidChoice"));
                 console.writer().print("\033[H\033[2J");
                 console.flush(); //makes the console empty for better clarity
                 currentState = MenuState.LIBRARIAN_MAIN;
