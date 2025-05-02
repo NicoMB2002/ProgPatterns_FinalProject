@@ -375,12 +375,13 @@ public class UserController {
                 currentState = MenuState.LIBRARIAN_ADD_USER;
                 break;
             case "5" : //remove a user
+                currentState = MenuState.LIBRARIAN_REMOVE_USER;
                 break;
             case "6" : //see user catalog
                 currentState = MenuState.LIBRARIAN_USER_CATALOG;
                 break;
             case "7" : //borrow book for user
-
+                currentState = MenuState.LIBRARIAN_BORROW;
                 break;
             case "8" : //return book for user
                 currentState = MenuState.LIBRARIAN_RETURN;
@@ -428,9 +429,43 @@ public class UserController {
         librarian.borrowBook(isbn, inputStudentId);
     }
 
-    private void librarianReturn (Librarian librarian, Console console) {}
+    private void librarianReturn (Librarian librarian, Console console) {
+        System.out.print(messages.getString("prompt.student.id"));
+        String studentId = console.readLine();
+        for (char c : studentId.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("Student id cannot contain letters");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
 
-    private void librarianAddBook (Console console) {}
+        System.out.print(messages.getString("prompt.isbn"));
+        String isbn = console.readLine();
+        for (char c : isbn.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("ISBN cannot contain letters");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
+
+        int inputStudentId = Integer.parseInt(studentId);
+        librarian.returnBook(isbn, inputStudentId);
+    }
+
+    private void librarianAddBook (Librarian librarian, Console console) {
+        System.out.print(messages.getString("prompt.isbn"));
+        String isbn = console.readLine();
+        for (char c : isbn.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage("ISBN cannot contain letters");
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
+
+    }
 
     private void librarianRemoveBook (Console console) {}
 

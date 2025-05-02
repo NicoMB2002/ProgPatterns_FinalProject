@@ -27,7 +27,7 @@ public class UserView {
             System.out.println(bundle.getString("menu.main.login"));
             System.out.println(bundle.getString("menu.main.exit"));
             System.out.print("\n->  ");
-            
+
             String ans = console.readLine().toUpperCase().charAt(0) + "";
             console.writer().print("\033[H\033[2J");
             console.flush();
@@ -36,7 +36,7 @@ public class UserView {
                 case "1" :
                     console.writer().print("\033[H\033[2J");
                     console.flush();
-                    controller.handleLogin();
+                    controller.handleLogin(console);
                     break;
                 case "2" :
                     System.out.println(bundle.getString("app.Exit"));
