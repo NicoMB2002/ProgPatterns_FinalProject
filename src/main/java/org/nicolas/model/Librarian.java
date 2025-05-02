@@ -64,7 +64,7 @@ public class Librarian extends User {
                         bookToBorrow.getCopies(), bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
                 return;
             }
-            System.out.println("Book not available or no copies left.");
+            System.out.println("Book not available or no copies left. ");
         }
     }
 
