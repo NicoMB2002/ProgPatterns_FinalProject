@@ -28,7 +28,16 @@ public class UserController {
     }
 
     private enum MenuState { //State + singleton design pattern to avoid recursive calls
-        LOGIN, STUDENT_MAIN, LIBRARIAN_MAIN, SETTINGS, EXIT
+        LOGIN,
+        STUDENT_MAIN,
+            STUDENT_BORROW,
+            STUDENT_RETURN,
+            STUDENT_FIND_BOOK,
+        LIBRARIAN_MAIN,
+        SETTINGS,
+            SETTINGS_CHANGE_PASSWORD,
+            SETTINGS_CHANGE_NAME,
+        EXIT
     }
 
     private MenuState currentState = MenuState.LOGIN;
@@ -192,40 +201,36 @@ public class UserController {
         }
     }
 
-    protected void studentMenu(Student student) {
+    protected void studentMenu (Student student) {
         Console console = System.console();
+        appHeader();
+        System.out.println(messages.getString("menu.title") + model.getName()
+                + messages.getString("menu.title.exclamation") + "\n\n");
+        System.out.println(messages.getString("menu.student.borrow") + "               "
+                + messages.getString("menu.student.borrowedList"));
+        System.out.println(messages.getString("menu.student.return") + "               "
+                + messages.getString("menu.student.searchBook"));
 
+        String ans = console.readLine().toUpperCase().charAt(0) + "";
         while (true) {
-            console.writer().print("\033[H\033[2J"); // clear screen
+            console.writer().print("\033[H\033[2J");
             console.flush();
             appHeader();
-
-            System.out.println(messages.getString("menu.title") + model.getName()
-                    + messages.getString("menu.title.exclamation") + "\n\n");
-            System.out.println(messages.getString("menu.student.borrow") + "               "
-                    + messages.getString("menu.student.borrowedList"));
-            System.out.println(messages.getString("menu.student.return") + "               "
-                    + messages.getString("menu.student.searchBook"));
-            System.out.println(messages.getString("logoutOption"));
-            System.out.println(messages.getString("menu.settings"));
-
-            String ans = console.readLine().toUpperCase().charAt(0) + "";
-
             switch (ans) {
-                case "1": // borrow a book
+                case "1" : //borrow a book
                     System.out.println(messages.getString("prompt.isbn"));
                     String inputIsbn = console.readLine();
                     model.borrowBook(inputIsbn, model.getUserID());
                     break;
-                case "2": // return a book
+                case "2" : //return a book
                     System.out.println(messages.getString("prompt.isbn"));
                     inputIsbn = console.readLine();
                     model.returnBook(inputIsbn, model.getUserID());
                     break;
-                case "3": // see borrowed books list
+                case "3" : //see borrowed books list
                     student.seeBorrowedBooksList();
                     break;
-                case "4": // search book
+                case "4" : //search book
                     System.out.println(messages.getString("prompt.information"));
                     System.out.println(messages.getString("prompt.isbn"));
                     inputIsbn = console.readLine();
@@ -233,23 +238,24 @@ public class UserController {
                     String inputTitle = console.readLine();
                     System.out.println(messages.getString("prompt.author"));
                     String inputAuthor = console.readLine();
+
                     model.findBook(inputIsbn, inputTitle, inputAuthor);
                     break;
-                case "S":
+                case "S" : //settings
                     currentState = MenuState.SETTINGS;
-                    return;
-                case "X":
+                    break;
+                case "X" : //exit
                     console.writer().print("\033[H\033[2J");
                     console.flush();
                     handleLogout();
-                    return;
-                default:
+                    break;
+                default :
                     view.setErrorMessage("invalid choice, please try again");
+                    currentState = MenuState.STUDENT_MAIN;
                     break;
             }
         }
     }
-
 
     protected void librarianMenu (Librarian librarian) {
         Console console = System.console();
