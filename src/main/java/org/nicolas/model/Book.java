@@ -11,8 +11,7 @@ public class Book {
     private int borrowedCopies;
 
     public Book(String ISBN, String title, String author, int copies, int availableCopies, int borrowedCopies) {
-
-        this.ISBN = ISBN;
+        this.ISBN = ISBNChecker(ISBN);
         this.title = title;
         this.author = author;
         this.copies = copies;
@@ -20,10 +19,10 @@ public class Book {
         this.borrowedCopies = borrowedCopies;
     }
 
-    private String ISBNChecker(String inputISBN) throws InvalidISBNException { //TODO change the checking for '-' and remove them if there is
+    protected String ISBNChecker(String inputISBN) throws InvalidISBNException { //TODO change the checking for '-' and remove them if there is
         inputISBN = inputISBN.replace("-", ""); // remove dashes if any
-        if (inputISBN.length() != 13) {
-            throw new InvalidISBNException("ISBN must be exactly 13 characters long without dashes.");
+        if (inputISBN.length() != 13 || inputISBN.length() != 10) {
+            throw new InvalidISBNException("ISBN must be exactly 10 or 13 characters long without dashes.");
         }
         for (char c : inputISBN.toCharArray()) {
             if (Character.isLetter(c)) {

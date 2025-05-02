@@ -28,9 +28,6 @@ public class Librarian extends User {
                 return;
             }
 
-            System.out.println("Enter the book ISBN to borrow a book: ");
-            int ISBN = console.nextInt();
-
             //Check if the student already borrowed the book by its ID
             for (Book borrowedBook : tempStudent.getBorrowedBooks()) {
                 if (borrowedBook.getISBN() == isbn) {
@@ -38,8 +35,8 @@ public class Librarian extends User {
                     return;
                 }
             }
-            Book bookToBorrow = LibraryDatabase.getBookThroughISBN(isbn);
 
+            Book bookToBorrow = LibraryDatabase.getBookThroughISBN(isbn);
 
             //Borrow the book if it's available
             if (bookToBorrow.getISBN().equals(isbn) && bookToBorrow.getAvailableCopies() > 0) {

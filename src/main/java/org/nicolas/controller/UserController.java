@@ -165,7 +165,7 @@ public class UserController {
                             System.out.print("*"); //sets the characters as '*' instead of blank spaces
                         }
 
-                        isValid = (stringPassword.equals(passwordCheck2)) ? true : false;
+                        isValid = (stringPassword.equals(stringPasswordCheck2)) ? true : false;
 
                         if (isValid) {
                             model.changePassword(stringPassword);
@@ -182,10 +182,11 @@ public class UserController {
                 case "X" :
                     console.writer().print("\033[H\033[2J");
                     console.flush();
-                    handleLogout();
+                    currentState = MenuState.EXIT;
                     break;
                 default :
                     view.setErrorMessage("invalid choice, please try again");
+                    currentState = MenuState.SETTINGS;
                     break;
             }
         }
@@ -241,6 +242,7 @@ public class UserController {
                     break;
                 default :
                     view.setErrorMessage("invalid choice, please try again");
+                    currentState = MenuState.STUDENT_MAIN;
                     break;
             }
         }
@@ -283,8 +285,31 @@ public class UserController {
                 case "5" : //remove a user
                     break;
                 case "6" : //see user catalog
+                    LibraryDatabase.selectAllUsers();
                     break;
                 case "7" : //borrow book for user
+                    System.out.print(messages.getString("prompt.student.id"));
+                    String studentId = console.readLine();
+                    for (char c : studentId.toCharArray()) {
+                        if (Character.isLetter(c)) {
+                            view.setErrorMessage("Student id cannot contain letters");
+                            currentState = MenuState.STUDENT_MAIN;
+                            break;
+                        }
+                    }
+
+                    System.out.print(messages.getString("prompt.isbn"));
+                    String isbn = console.readLine();
+                    for (char c : isbn.toCharArray()) {
+                        if (Character.isLetter(c)) {
+                            view.setErrorMessage("ISBN cannot contain letters");
+                            currentState = MenuState.STUDENT_MAIN;
+                            break;
+                        }
+                    }
+
+                    int inputStudentId = Integer.parseInt(studentId);
+                    librarian.borrowBook(isbn, inputStudentId);
                     break;
                 case "8" : //return book for user
                     break;
@@ -305,10 +330,11 @@ public class UserController {
                     break;
                 case "X" : //exit
                     console.flush();
-                    handleLogout();
+                    currentState = MenuState.EXIT;
                     break;
                 default :
                     view.setErrorMessage("invalid choice, please try again");
+                    currentState = MenuState.LIBRARIAN_MAIN;
                     break;
             }
         }
