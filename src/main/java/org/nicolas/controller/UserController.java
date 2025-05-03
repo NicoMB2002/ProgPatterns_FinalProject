@@ -275,7 +275,8 @@ public class UserController {
     }
 
     //STUDENT///////////////////////////////////////////////////////////////////////////////////////////////////////////
-    protected void studentMenu (Student student, Console console) {
+    protected void studentMenu (Student student, Console console) { //base studend app
+        //front end : menu display
         appHeader();
         System.out.println(messages.getString("menu.title") + model.getName()
                 + messages.getString("menu.title.exclamation") + "\n\n");
@@ -287,7 +288,9 @@ public class UserController {
         String ans = console.readLine().toUpperCase().charAt(0) + "";
         console.writer().print("\033[H\033[2J");
         console.flush();
-        appHeader();
+        appHeader(); //back end menu display
+
+        //back end
         switch (ans) {
             case "1" : //borrow a book
                 currentState = MenuState.STUDENT_BORROW;
