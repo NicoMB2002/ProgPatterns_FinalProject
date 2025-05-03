@@ -21,14 +21,16 @@ public class UserView {
         console.flush(); //ensures the console is empty
         final int MAX_ATTEMPTS = 3;
         int tryCounter = 0;
+        String ans = "";
 
-        while (tryCounter <= MAX_ATTEMPTS) {
+        //tryin got break the while() loop to remove recurence--->>>>
+        while (tryCounter <= MAX_ATTEMPTS /*&& (ans != "" || ans != 1 || ans != 2 || ans != x)*/) {
             System.out.println(bundle.getString("welcome") + "\n\n");
             System.out.println(bundle.getString("menu.main.login"));
             System.out.println(bundle.getString("menu.main.exit"));
             System.out.print("\n->  ");
 
-            String ans = console.readLine().toUpperCase().charAt(0) + "";
+            ans = console.readLine().toUpperCase().charAt(0) + "";
             console.writer().print("\033[H\033[2J");
             console.flush();
 
