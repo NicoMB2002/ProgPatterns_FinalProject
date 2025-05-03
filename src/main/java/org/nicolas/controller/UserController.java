@@ -32,6 +32,7 @@ public class UserController {
     }
 
     private enum MenuState { //State + singleton design pattern to avoid recursive calls
+        /*enum to prevent more than one state of the menu : instead of continuously calling the methods within themsleves : just changing the state of the menu*/
         LOGIN,
         FIND_BOOK,
         STUDENT_MAIN,
@@ -52,12 +53,16 @@ public class UserController {
         EXIT
     }
 
-    private MenuState currentState = MenuState.LOGIN;
+    private MenuState currentState = MenuState.LOGIN; //base menu-state : login page
 
     public void runApplication() {
-        Console console = System.console();
+        Console console = System.console(); //creates the console for the entire system
+        if (console == null) {
+            setErrorMessage("No console available");
+            System.exit(1);
+        }
 
-        while (currentState != MenuState.EXIT) {
+        while (currentState != MenuState.EXIT) { //checks the menu state, if is is exit, exits the application : this prevents recursive or infinite calls
             console.writer().print("\033[H\033[2J");
             console.flush();
 
@@ -115,11 +120,12 @@ public class UserController {
                 break;
             }
         }
-        handleLogout();
+        handleLogout(); //exit sequence
     }
 
+    
     protected void appHeader () {
-        System.out.println("--------------------------------------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------------------------------------"); 
         System.out.println("                                                                     "
                 + messages.getString("logoutOption"));
         System.out.println("                                                                             "
@@ -174,10 +180,11 @@ public class UserController {
     }
 
 //SETTINGS//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    protected void settingsMenu (Console console) {
+    protected void settingsMenu (Console console) { //base call for the settings menu
         console.writer().print("\033[H\033[2J");
         console.flush();
 
+        //settings menu display
         appHeader();
         System.out.println(messages.getString("menu.settings.title") + "\n");
         System.out.println(messages.getString("menu.settings.changeName"));
@@ -189,23 +196,29 @@ public class UserController {
         console.flush();
         appHeader();
 
+        //settings menu back-end code for next option
         while (true) {
             switch (ans) {
                 case "1":
+                    //changin the name
                     currentState = MenuState.SETTINGS_CHANGE_NAME;
                     break;
                 case "2" :
+                    //changing the password 
                     currentState = MenuState.SETTINGS_CHANGE_PASSWORD;
                     break;
                 case "M" :
+                    //going back to main menu, if the user is a librarian = librarian Main, else, student Main (student main always the default to prevent admin powers to random user
                     currentState = (model instanceof Librarian) ? MenuState.LIBRARIAN_MAIN : MenuState.SETTINGS;
                     return;
                 case "X" :
+                    //exit application completly
                     console.writer().print("\033[H\033[2J");
                     console.flush();
                     currentState = MenuState.EXIT;
                     break;
                 default :
+                    //goes back to settings base menu (this menu) again until there is a valid choice , no counter allowed 
                     view.setErrorMessage("invalid choice, please try again");
                     currentState = MenuState.SETTINGS;
                     break;
@@ -213,30 +226,30 @@ public class UserController {
         }
     }
 
-    private void settingsChangeName (Console console) {
+    private void settingsChangeName (Console console) { //menu state to change the name
         System.out.println(messages.getString("prompt.newName"));
         String newName = console.readLine();
-        model.changeName(newName);
+        model.changeName(newName); //calling the model that will call the DB : enforcing MVC desing
     }
 
     private void settingsChangePassword (Console console) {
-        System.out.println(messages.getString("prompt.newPassword"));
+        System.out.println(messages.getString("prompt.newPassword")); //first request of the new password
         char[] password = console.readPassword(messages.getString("login.password"));
         String stringPassword = "";
         for (int i = 0; i < password.length; i++) {
             stringPassword += password[i]; //puts the password into a String for the DB
-            System.out.print("*"); //sets the characters as '*' instead of blank spaces
+            //System.out.print("*"); //sets the characters as '*' instead of blank spaces
         }
 
-        System.out.println(messages.getString("prompt.checkNewPassword"));
+        System.out.println(messages.getString("prompt.checkNewPassword")); //validation of the new password (asks to input it again)
         char[] passwordCheck = console.readPassword(messages.getString("login.password"));
         String stringPasswordCheck = "";
         for (int i = 0; i < passwordCheck.length; i++) {
             stringPasswordCheck += passwordCheck[i]; //puts the password into a String for the DB
-            System.out.print("*"); //sets the characters as '*' instead of blank spaces
+            //System.out.print("*"); //sets the characters as '*' instead of blank spaces
         }
 
-        boolean isValid = (stringPassword.equals(passwordCheck)) ? true : false;
+        boolean isValid = (stringPassword.equals(passwordCheck)) ? true : false; //checks if the first password and the validation are the same
 
         if (isValid == false) { //2nd chance to change password
             System.out.println(messages.getString("prompt.checkNewPassword"));
@@ -244,18 +257,20 @@ public class UserController {
             String stringPasswordCheck2 = "";
             for (int i = 0; i < passwordCheck2.length; i++) {
                 stringPasswordCheck2 += passwordCheck2[i]; //puts the password into a String for the DB
-                System.out.print("*"); //sets the characters as '*' instead of blank spaces
+                //System.out.print("*"); //sets the characters as '*' instead of blank spaces
             }
 
-            isValid = (stringPassword.equals(stringPasswordCheck2)) ? true : false;
+            isValid = (stringPassword.equals(stringPasswordCheck2)) ? true : false; //checks if first password and 2nd validation attempt are the same
 
             if (isValid) {
-                model.changePassword(stringPassword);
+                model.changePassword(stringPassword); //call the change password method of user to enfore MVC model
             } else {
-                return;
+                System.out.println(messages.getString("error.message.operationAborted")); //operation aborted because too many attemps
+                currentState = MenuState.SETTINGS; //both attempts failed return to main settings menu
+                return; 
             }
         } else {
-            model.changePassword(stringPassword);
+            model.changePassword(stringPassword); //first attempt was ok, therefore changed password right away by calling model to enforce MVC design pattern
         }
     }
 
