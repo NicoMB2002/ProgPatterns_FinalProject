@@ -36,28 +36,28 @@ public class UserView {
 
             switch (ans) {
                 case "1" :
-                    console.writer().print("\033[H\033[2J");
+                    console.writer().print("\033[H\033[2J"); //flush sequence
                     console.flush();
-                    controller.handleLogin(console);
+                    controller.handleLogin(console); //call login
                     if (controller.getLoggedInUser() != null) {
-                        return;
+                        return; //return statement to break out of loop & method
                     }
                     break;
                 case "2" :
-                    System.out.println(bundle.getString("app.Exit"));
-                    System.exit(0);
+                    System.out.println(bundle.getString("app.Exit")); //exiting the app
+                    System.exit(0); //exit code in system out 0 ->> rightful and ok termination
                     break;
                 case "X" :
                     System.out.println(bundle.getString("goodbye"));
-                    System.exit(0);
+                    System.exit(0); //exit code in system out 0 ->> rightful and ok termination
                     break;
                 default:
-                    tryCounter++;
+                    tryCounter++; //add another try to while counter
                     setErrorMessage(bundle.getString("invalid.choice"));
-                    break;
+                    break; //break out of switch, not of loop
             }
         }
         setErrorMessage(bundle.getString("too.many.attempts"));
-        System.exit(1); //Exception Termination
+        System.exit(1); //Exception Termination -->> not good termination but still ok termination
     }
 }
