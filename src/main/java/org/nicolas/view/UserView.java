@@ -18,6 +18,10 @@ public class UserView {
     // Main menu for the User
     public void mainMenu (UserController controller, ResourceBundle bundle) {
         Console console = System.console();
+        if (console == null) {
+            setErrorMessage("No console available");
+            System.exit(1);
+        }
         console.flush(); //ensures the console is empty
         final int MAX_ATTEMPTS = 3;
         int tryCounter = 0;
