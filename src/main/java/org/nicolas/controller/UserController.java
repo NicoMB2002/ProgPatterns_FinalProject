@@ -302,10 +302,13 @@ public class UserController {
         }
     }
 
-    private void studentBorrow (Console console) {
+    private void studentBorrow(Console console) {
         System.out.println(messages.getString("prompt.isbn"));
         String inputIsbn = console.readLine();
         model.borrowBook(inputIsbn, model.getUserID());
+
+        //Go back to main menu after borrowing
+        currentState = MenuState.STUDENT_MAIN;
     }
 
     private void studentReturn (Console console) {

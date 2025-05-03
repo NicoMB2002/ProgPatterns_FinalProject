@@ -35,25 +35,20 @@ public class LibraryDatabase {
      * creates the table user if it is not already created
      */
     public static void createUserTable() {
-        // USER_ID | name | role | password
         String userTable = """
-        CREATE TABLE IF NOT EXISTS User (
-            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            role TEXT NOT NULL,
-            password TEXT NOT NULL
-        );
-        """;
+    CREATE TABLE IF NOT EXISTS User (
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL,
+        password TEXT NOT NULL
+    );
+    """;
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            //execute the Create table statement
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
             stmt.execute(userTable);
             System.out.println("\nUser Table created successfully.\n");
-            conn.close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -329,10 +324,9 @@ public class LibraryDatabase {
         String sql = "SELECT * FROM Books";
         ArrayList<Book> books = new ArrayList<>();
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 String isbn = rs.getString("isbn");
@@ -342,13 +336,10 @@ public class LibraryDatabase {
                 int borrowedBooks = rs.getInt("borrowed_books");
                 int availableCopies = rs.getInt("available_copies");
 
-                Book book = new Book(isbn, title, author, noCopies, availableCopies, borrowedBooks);
-                books.add(book);
+                books.add(new Book(isbn, title, author, noCopies, availableCopies, borrowedBooks));
             }
-
-            conn.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error retrieving book list: " + e.getMessage());
         }
 
         return books;
@@ -361,12 +352,10 @@ public class LibraryDatabase {
     public static String selectAllBorrowedBooks() {
         String sql = "SELECT * FROM BorrowedBooks";
         StringBuilder builder = new StringBuilder();
-        //using StringBuilder to build (or append) String
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 int borrowedBookId = rs.getInt("borrowedBook_id");
@@ -376,15 +365,16 @@ public class LibraryDatabase {
                 String returnDate = rs.getString("return_date");
                 String returnStatus = rs.getString("return_status");
 
-                builder.append(String.format("Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%nBorrow Date: %s%n" +
-                        "Return Date: %s%nReturn Status: %s%n",
+                builder.append(String.format(
+                        "Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%n" +
+                                "Borrow Date: %s%nReturn Date: %s%nReturn Status: %s%n%n",
                         borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
             }
-            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error retrieving borrowed books: " + e.getMessage());
+            return "Error retrieving borrowed books data";
         }
-        catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+
         return builder.toString();
     }
 
@@ -576,19 +566,21 @@ public class LibraryDatabase {
      * @param userID the user to modify
      * @param newRole the new role of the input user
      */
-    public static void updateUserRole (int userID, String newRole) {
-        String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET role = '" + newRole + "'";
-        //TODO check if the update statement is correct
+    public static void updateUserRole(int userID, String newRole) {
+        String sqlQuery = "UPDATE User SET role = ? WHERE user_id = ?";
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            stmt.executeQuery(sqlQuery);
-            System.out.println("User role update successfully");
-            conn.close();
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
 
+            pstmt.setString(1, newRole);
+            pstmt.setInt(2, userID);
+            int rowsUpdated = pstmt.executeUpdate();
+
+            System.out.println(rowsUpdated > 0 ?
+                    "User role updated successfully" :
+                    "No user found with ID " + userID);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error updating user role: " + e.getMessage());
         }
     }
 
@@ -597,18 +589,26 @@ public class LibraryDatabase {
      * @param userID the user's id
      * @param newName the new name to update
      */
-    public static void updateUserName (int userID, String newName) {
-        String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET name = '" + newName + "'";
-        //TODO check if the update statement is correct
+    public static boolean updateUserName(int userID, String newName) {
+        String sql = "UPDATE User SET name = ? WHERE user_id = ?";
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            stmt.executeQuery(sqlQuery);
-            System.out.println("User name update successfully");
-            conn.close();
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, newName);
+            pstmt.setInt(2, userID);
+
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("User name updated successfully");
+                return true;
+            } else {
+                System.out.println("No user found with ID: " + userID);
+                return false;
+            }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error updating user name: " + e.getMessage());
+            return false;
         }
     }
 
@@ -617,33 +617,44 @@ public class LibraryDatabase {
      * @param userID the input user's id
      * @param newPassword the new password to update
      */
-    public static void updateUserPassword (int userID, String newPassword) {
-        String sqlQuery = "UPDATE user WHERE user_id = " + userID + " SET password = '" + newPassword + "'";
-        //TODO check if the update statement is correct
+    public static boolean updateUserPassword(int userID, String newPassword) {
+        String sql = "UPDATE User SET password = ? WHERE user_id = ?";
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            stmt.executeQuery(sqlQuery);
-            System.out.println("User password update successfully");
-            conn.close();
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, newPassword);
+            pstmt.setInt(2, userID);
+
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("User password updated successfully");
+                return true;
+            } else {
+                System.out.println("No user found with ID: " + userID);
+                return false;
+            }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error updating user password: " + e.getMessage());
+            return false;
         }
     }
 
-    public static void removeBookCopies (String ISBN, int newNumOfCopies) {
-        String sqlQuery = "UPDATE Book WHERE isbn = '" + ISBN + "' SET copies = " + newNumOfCopies;
-        //TODO check if the update statement is correct
+    public static void removeBookCopies(String ISBN, int newNumOfCopies) {
+        String sqlQuery = "UPDATE Books SET no_copies = ? WHERE isbn = ?";
 
-        try {
-            Connection conn = connect();
-            Statement stmt = conn.createStatement();
-            stmt.executeQuery(sqlQuery);
-            System.out.println("Copies updated successfully");
-            conn.close();
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sqlQuery)) {
+
+            pstmt.setInt(1, newNumOfCopies);
+            pstmt.setString(2, ISBN);
+            int rowsUpdated = pstmt.executeUpdate();
+
+            System.out.println(rowsUpdated > 0 ?
+                    "Copies updated successfully" :
+                    "No book found with ISBN " + ISBN);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error updating copies: " + e.getMessage());
         }
     }
 
