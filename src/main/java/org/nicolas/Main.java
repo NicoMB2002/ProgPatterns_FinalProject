@@ -26,5 +26,6 @@ public class Main {
         UserController controller = new UserController(student, view, bundle);
         view.mainMenu(controller, bundle); //do this in the main
         controller.runApplication();
+
     }
 }
