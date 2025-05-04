@@ -435,7 +435,7 @@ public class UserController {
         }
 
         int inputStudentId = Integer.parseInt(studentId);
-        librarian.borrowBook(isbn, inputStudentId);
+        librarian.borrowBook(isbn, inputStudentId, console);
     }
 
     private void librarianReturn (Librarian librarian, Console console) {
