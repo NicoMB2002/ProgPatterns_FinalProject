@@ -40,6 +40,10 @@ public class Book {
         return borrowedCopies + availableCopies == copies;
     }
 
+    public int calculateNumOfAvailableCopies (int copies, int borrowedCopies, int availableCopies) {
+        return availableCopies = copies - borrowedCopies;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
