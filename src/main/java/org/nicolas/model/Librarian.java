@@ -125,13 +125,13 @@ public class Librarian extends User {
     }
 
     @Override
-    public void borrowBook(String isbn, int studentId) {
+    public void borrowBook(String isbn, int studentId, Console console) {
         Student tempStudent = LibraryDatabase.getStudentFromId(studentId);
         if (tempStudent.equals(null)) {
             System.out.println("Student not found or UserType Librarian. " +
                     "\nNote : librarians are not allowed to borrow books");
+            return; //breaking out of the method early
         } else {
-            Scanner console = new Scanner(System.in);
             // Check 'borrowedBooks' to see if the student has a maximum of 3 books
             if (tempStudent.getBorrowedBooks().size() >= 3) {
                 System.out.println("Student cannot borrow more than 3 books.");
@@ -147,6 +147,10 @@ public class Librarian extends User {
             }
 
             Book bookToBorrow = LibraryDatabase.getBookThroughISBN(isbn);
+            if (bookToBorrow == null) {
+                System.out.println("\nNo book matching the ISBN found in the system. Please check if the book exits first.");
+                return;
+            }
 
             //Borrow the book if it's available
             if (bookToBorrow.getISBN().equals(isbn) && bookToBorrow.getAvailableCopies() > 0) {
@@ -156,7 +160,11 @@ public class Librarian extends User {
                 // Reflect changes in the database
                 Date currentDate = new Date();
                 currentDate.getCurrentDate();
+                //reflect change in the borrowing ->>>> check DB if needed
+                //bookToBorrow.setAvailableCopies(getAvailableCopies() -1);
+                //bookToBorrow.setBorrowedCopies(getBorrowedCopies() + 1);
 
+                //
                 LibraryDatabase.insertIntoBorrowedBooks(studentId, isbn, currentDate);
                 LibraryDatabase.updateBookCopies(bookToBorrow);
 
