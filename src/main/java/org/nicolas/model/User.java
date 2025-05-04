@@ -6,6 +6,7 @@ import org.nicolas.exceptions.InvalidUserException;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.Console;
 
 public abstract class User {
     private int userID;
@@ -41,7 +42,7 @@ public abstract class User {
         return inputISBN;
     }
 
-    public abstract void borrowBook(String isbn, int userID);
+    public abstract void borrowBook(String isbn, int userID, Console console);
 
     public abstract void returnBook(String isbn, int userID);
 
