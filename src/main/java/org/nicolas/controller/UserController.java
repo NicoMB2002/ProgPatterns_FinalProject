@@ -138,7 +138,7 @@ public class UserController {
         System.out.print("->  ");
     }
 
-    public void handleLogout () {
+    public void handleLogout () { //exit sequence
         System.out.println(messages.getString("logout"));
         System.out.println(messages.getString("app.Exit"));
         System.out.println(messages.getString("goodbye"));
@@ -323,7 +323,7 @@ public class UserController {
     private void studentBorrow(Console console) {
         System.out.println(messages.getString("prompt.isbn"));
         String inputIsbn = console.readLine();
-        model.borrowBook(inputIsbn, model.getUserID());
+        model.borrowBook(inputIsbn, model.getUserID(), console);
 
         //Go back to main menu after borrowing
         currentState = MenuState.STUDENT_MAIN;
@@ -491,6 +491,8 @@ public class UserController {
 
         int copies = Integer.parseInt(tryAns);
         librarian.addBook(isbn, title, author, copies);
+        currentState = MenuState.LIBRARIAN_MAIN;
+        return;
     }
 
     private void librarianRemoveBook (Librarian librarian, Console console) {
