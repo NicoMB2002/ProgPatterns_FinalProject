@@ -198,19 +198,19 @@ public class UserController {
         String ans = console.readLine().toUpperCase().charAt(0) + "";
         console.writer().print("\033[H\033[2J");
         console.flush();
-        appHeader();
+        //appHeader();
 
         //settings menu back-end code for next option
         while (true) {
             switch (ans) {
                 case "1":
-                    //changin the name
+                    //changing the name
                     currentState = MenuState.SETTINGS_CHANGE_NAME;
-                    break;
+                    return;
                 case "2" :
                     //changing the password
                     currentState = MenuState.SETTINGS_CHANGE_PASSWORD;
-                    break;
+                    return;
                 case "M" :
                     //going back to main menu, if the user is a librarian = librarian Main, else, student Main
                     // (student main always the default to prevent admin powers to a random user
@@ -377,7 +377,6 @@ public class UserController {
         console.writer().print("\033[H\033[2J");
         console.flush();
         appHeader();
-        console.writer().print("IS this working please");
         System.out.println(messages.getString("prompt.newName"));
         String newName = console.readLine();
         System.out.println(newName + "  " + messages.getString("prompt.choice") + "?");
