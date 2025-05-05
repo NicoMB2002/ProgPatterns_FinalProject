@@ -462,14 +462,16 @@ public class UserController {
 
     private void findBook (Console console) {
         System.out.println(messages.getString("prompt.information"));
-        System.out.println(messages.getString("prompt.isbn"));
-        String inputIsbn = console.readLine();
-        System.out.println(messages.getString("prompt.title"));
-        String inputTitle = console.readLine();
-        System.out.println(messages.getString("prompt.author"));
-        String inputAuthor = console.readLine();
+        String inputIsbn = console.readLine(messages.getString("prompt.isbn"));
+        String inputTitle = console.readLine(messages.getString("prompt.title"));
+        String inputAuthor = console.readLine(messages.getString("prompt.author"));
 
         model.findBook(inputIsbn, inputTitle, inputAuthor);
+        /*ArrayList<Book> books = model.findBook(inputIsbn, inputTitle, inputAuthor);
+        for (Book book : books) {
+            System.out.println(book);
+        }*/
+        currentState = (model instanceof Librarian) ? MenuState.LIBRARIAN_MAIN : MenuState.STUDENT_MAIN;
     }
 
     //LIBRARIAN HELPER METHODS//////////////////////////////////////////////////////////////////////////////////////////

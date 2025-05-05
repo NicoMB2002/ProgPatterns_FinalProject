@@ -392,9 +392,8 @@ public class LibraryDatabase {
         titleFilter = (titleFilter.isEmpty() || titleFilter.isBlank() || titleFilter == null) ? "---" : titleFilter;
         authorFilter = (authorFilter.isEmpty() || authorFilter.isBlank() || authorFilter == null) ? "---" : authorFilter;
 
-        //TODO would it be select *distinct* to not have duplicates??
-        String sqlQuery = "SELECT * FROM Books WHERE isbn = '" + isbnFilter + "' OR title = '" + titleFilter
-                + "' OR author = '" + authorFilter + "'";
+        String sqlQuery = "SELECT * FROM Books WHERE isbn = '" + isbnFilter + "' OR title LIKE '%" + titleFilter
+                + "%' OR author LIKE '%" + authorFilter + "%'";
 
         StringBuilder builder = new StringBuilder();
         ArrayList<Book> booksFound = new ArrayList<>();
@@ -410,10 +409,12 @@ public class LibraryDatabase {
                 String title = rs.getString("title");
                 String author = rs.getString("author");
                 int copies = rs.getInt("no_copies");
+                int availableCopies = rs.getInt("available_copies");
 
-                Book tempBook = new Book(isbn, title, author, copies, 0, 0);
+                Book tempBook = new Book(isbn, title, author, copies, availableCopies, (copies - availableCopies));
                 booksFound.add(counter, tempBook);
-                builder.append(String.format("%d.  %s  %s  %s  COPIES : %d", counter, isbn, title, author, copies));
+                //builder.append(String.format("%d.  %s  %s  %s  COPIES : %d\n", counter, isbn, title, author, copies));
+                System.out.printf("%d.  %s  %s  %s  COPIES : %d\n", counter, isbn, title, author, copies);
                 counter++;
             }
             conn.close();

@@ -47,7 +47,7 @@ public abstract class User {
     public abstract void returnBook(String isbn, int userID);
 
     public ArrayList<Book> findBook (String isbnFilter, String titleFilter, String authorFilter) {
-        ISBNChecker(isbnFilter);
+        isbnFilter = (isbnFilter.isEmpty() || isbnFilter.isBlank() || isbnFilter == null) ? isbnFilter : ISBNChecker(isbnFilter);
         return LibraryDatabase.getFilteredBooks(isbnFilter, titleFilter, authorFilter);
     }
 
