@@ -4,7 +4,9 @@ import org.nicolas.database.LibraryDatabase;
 
 import java.io.Console;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.Scanner;
+import java.io.Console;
 
 public class Librarian extends User {
     private UserType userType;
@@ -16,54 +18,56 @@ public class Librarian extends User {
         this.userType = UserType.LIBRARIAN;
     }
 
-    public void addBook (String ISBN, String title, String author, int copies) {
-        Scanner console = new Scanner(System.in);
+    public void addBook (String ISBN, String title, String author, int copies, Console console, ResourceBundle messages) {
         ArrayList<Book> booksFound = LibraryDatabase.getFilteredBooks(ISBN, title, author); //TODO check the return type and if it needs to be changed
 
         if (booksFound.size() == 0 || booksFound.isEmpty()) {
             LibraryDatabase.insertIntoBooks(ISBN, title, author, copies);
         } else {
-            System.out.println("The book you want to add already seems to exist. Is it one of those books?");
-            System.out.println("Y/N");
-            char ans = console.next().charAt(0);
+            System.out.println(messages.getString("book.exists"));
+            String ans = console.readLine().toUpperCase().charAt(0) + "";
 
-            if (ans == 'Y' || ans == 'y') {
-                System.out.println("Please select the book from the list");
-                int existingBook = console.nextInt();
+            if (ans.equals("Y")) {
+                System.out.println(messages.getString("prompt.selectFromList"));
+                int existingBook = Integer.parseInt(console.readLine());
                 Book tempbook = booksFound.get(existingBook);
                 tempbook= LibraryDatabase.getBookThroughISBN(tempbook.getISBN());
 
-                System.out.printf("%s   %s, %s, COPIES : %d [BORROWED : %d    AVAILABLE : %d]",
+                System.out.printf("%s   %s, %s, COPIES : %d [BORROWED : %d    AVAILABLE : %d]\n",
                         tempbook.getISBN(), tempbook.getTitle(), tempbook.getAuthor(), tempbook.getCopies(),
                         tempbook.getBorrowedCopies(), tempbook.getAvailableCopies());
 
-                System.out.println("Dou you wish to add copies to this book?");
-                System.out.println("Y/N");
-                ans = console.next().charAt(0);
+                System.out.println(messages.getString("prompt.addCopies.question"));
+                ans = console.readLine().toUpperCase().charAt(0) + "";
 
-                if (ans == 'Y' || ans == 'y') {
-                    System.out.println("Please enter the number of copies to add : ");
-                    int copiesToAdd = console.nextInt();
+                if (ans.equals("Y")) {
+                    System.out.println(messages.getString("prompt.copies"));
+                    int copiesToAdd = Integer.parseInt(console.readLine());
                     addCopiesToBook(tempbook, copiesToAdd);
+                    System.out.println(messages.getString("error.message.success"));
+                    return;
                 } else {
-                    System.out.println("Nothing added.");
+                    System.out.println(messages.getString("error.message.operationAborted"));
+                    return;
                 }
 
-            } else if (ans == 'N' || ans == 'n') {
-                System.out.println("Create a new book?");
-                System.out.println("Y/N");
-                ans = console.next().charAt(0);
+            } else if (ans.equals("N")) {
+                System.out.println(messages.getString("prompt.createNewBook"));
+                ans = console.readLine().toUpperCase().charAt(0) + "";
 
-                if (ans == 'Y' || ans == 'y') {
+                if (ans.equals("Y")) {
                     LibraryDatabase.insertIntoBooks(ISBN, title, author, copies);
+                    System.out.println(messages.getString("error.message.success"));
+                    return;
                 } else {
-                    System.out.println("Nothing added.");
+                    System.out.println(messages.getString("error.message.operationAborted"));
+                    return;
                 }
             } else {
-                System.out.println("Invalid choice"); //TODO create exception
+                System.out.println(messages.getString("error.message.invalidChoice"));
+                return;
             }
         }
-
     }
 
     public void addCopiesToBook (Book inputBook, int newCopiesNum) {
@@ -73,10 +77,7 @@ public class Librarian extends User {
         inputBook.setAvailableCopies(newAvCopies);
     }
 
-    public void changeCopies (String ISBN) {
-        Scanner console = new Scanner(System.in);
-        System.out.print("Please enter the new total number of copies : ");
-        int newNumOfCopies = console.nextInt();
+    public void changeCopies (String ISBN, int newNumOfCopies) {
         LibraryDatabase.removeBookCopies(ISBN, newNumOfCopies);
     }
 
@@ -128,7 +129,7 @@ public class Librarian extends User {
     @Override
     public void borrowBook(String isbn, int studentId, Console console) {
         Student tempStudent = LibraryDatabase.getStudentFromId(studentId);
-        if (tempStudent.equals(null)) {
+        if (tempStudent == null) {
             System.out.println("Student not found or UserType Librarian. " +
                     "\nNote : librarians are not allowed to borrow books");
             return; //breaking out of the method early
@@ -162,18 +163,16 @@ public class Librarian extends User {
                 Date currentDate = new Date();
                 currentDate.getCurrentDate();
                 //reflect change in the borrowing ->>>> check DB if needed
-                //bookToBorrow.setAvailableCopies(getAvailableCopies() -1);
-                //bookToBorrow.setBorrowedCopies(getBorrowedCopies() + 1);
-
-                //
-                LibraryDatabase.insertIntoBorrowedBooks(studentId, isbn, currentDate);
-                LibraryDatabase.updateBookCopies(bookToBorrow);
-
+                bookToBorrow.setAvailableCopies(bookToBorrow.getAvailableCopies() -1);
                 //Update the borrowed books count
                 bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
 
-                System.out.println("\nBook borrowed: " + bookToBorrow.getTitle());
-                System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+                LibraryDatabase.insertIntoBorrowedBooks(studentId, isbn, currentDate);
+                LibraryDatabase.updateBookCopies(bookToBorrow);
+
+
+                System.out.println();
+                System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]\n\n",
                         isbn, bookToBorrow.getTitle(), bookToBorrow.getAuthor(),
                         bookToBorrow.getCopies(), bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
                 return;

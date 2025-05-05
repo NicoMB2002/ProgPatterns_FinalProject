@@ -3,6 +3,7 @@ package org.nicolas.model;
 import org.nicolas.database.LibraryDatabase;
 import org.nicolas.model.User;
 
+import java.io.Console;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -28,7 +29,7 @@ public class Student extends User {
     }
 
     @Override
-    public void borrowBook(String isbn, int userId) {
+    public void borrowBook(String isbn, int userId, Console console) {
         // Check 'borrowedBooks' to see if the student has a maximum of 3 books
         if (borrowedBooks.size() >= 3) {
             System.out.println(messages.getString("book.limit"));

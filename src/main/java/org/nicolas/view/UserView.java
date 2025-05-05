@@ -1,34 +1,35 @@
 package org.nicolas.view;
 
-import org.nicolas.Main;
 import org.nicolas.controller.UserController;
-import org.nicolas.model.User;
-import org.nicolas.model.UserType;
-
 import java.io.Console;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 
 public class UserView {
+
+    /**
+     * displays the same type of error messages throughout the whole system
+     * @param message the input message to be displayed
+     */
     public void setErrorMessage (String message) {
         System.out.println("[ERROR : " + message + "]");
     }
 
-    // Main menu for the User
+    /**
+     * Main menu to connect to the application
+     * @param controller the application itself
+     * @param bundle the language bundle
+     */
     public void mainMenu (UserController controller, ResourceBundle bundle) {
         Console console = System.console();
-        if (console == null) {
-            setErrorMessage("No console available");
-            System.exit(1);
-        }
+
         console.flush(); //ensures the console is empty
-        final int MAX_ATTEMPTS = 3;
+        final int MAX_ATTEMPTS = 4;
         int tryCounter = 0;
+        int loginTryCounter = 0;
         String ans = "";
 
-        //tryin got break the while() loop to remove recurence--->>>>
-        while (tryCounter <= MAX_ATTEMPTS /*&& (ans != "" || ans != 1 || ans != 2 || ans != x)*/) {
+        //trying got break the while() loop to remove recurence--->>>>
+        while (tryCounter < MAX_ATTEMPTS /*&& (ans != "" || ans != 1 || ans != 2 || ans != x)*/) {
             System.out.println(bundle.getString("welcome") + "\n\n");
             System.out.println(bundle.getString("menu.main.login"));
             System.out.println(bundle.getString("menu.main.exit"));

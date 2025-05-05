@@ -229,12 +229,11 @@ public class LibraryDatabase {
      * @param borrow_date the borrow date
      */
     public static void insertIntoBorrowedBooks(int userID, String isbn, Date borrow_date) {
-        String sql = "INSERT INTO borrowedBooks (user_id, isbn, borrow_date, return_date, return_status) VALUES (?, ?, ?, ?, ?);"; //Insert query with '?' placeholders
-
-
         Date return_date = borrow_date;
         return_date.setDay(return_date.getDay() + 14); //automatically sets the return date to two weeks from the borrow date
         String return_status = "Borrowed";   //automatically sets the status to borrowed
+
+        String sql = "INSERT INTO borrowedBooks (user_id, isbn, borrow_date, return_date, return_status) VALUES (?, ?, ?, ?, ?);"; //Insert query with '?' placeholders
 
         try {
             Connection conn = connect();
@@ -271,10 +270,10 @@ public class LibraryDatabase {
 
             int counter = 0;
             while (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("user_id");
                 String name = rs.getString("name");
                 String role = rs.getString("role");
-                builder.append(String.format("%d.  %d  %s  ROLE : %s", counter, id, name, role));
+                builder.append(String.format("%d.  %d  %s  ROLE : %s\n", counter, id, name, role));
                 counter++;
             }
             conn.close();
@@ -341,7 +340,6 @@ public class LibraryDatabase {
         } catch (SQLException e) {
             System.out.println("Error retrieving book list: " + e.getMessage());
         }
-
         return books;
     }
 
@@ -365,10 +363,8 @@ public class LibraryDatabase {
                 String returnDate = rs.getString("return_date");
                 String returnStatus = rs.getString("return_status");
 
-                builder.append(String.format(
-                        "Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%n" +
-                                "Borrow Date: %s%nReturn Date: %s%nReturn Status: %s%n%n",
-                        borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
+                builder.append(String.format("%d. Book %s, Student %d [B : %s R : %s] [STATUS : %s]\n",
+                        borrowedBookId, isbn, userId, borrowDate, returnDate, returnStatus));
             }
         } catch (SQLException e) {
             System.out.println("Error retrieving borrowed books: " + e.getMessage());
@@ -393,9 +389,8 @@ public class LibraryDatabase {
         titleFilter = (titleFilter.isEmpty() || titleFilter.isBlank() || titleFilter == null) ? "---" : titleFilter;
         authorFilter = (authorFilter.isEmpty() || authorFilter.isBlank() || authorFilter == null) ? "---" : authorFilter;
 
-        //TODO would it be select *distinct* to not have duplicates??
-        String sqlQuery = "SELECT * FROM Books WHERE isbn = '" + isbnFilter + "' OR title = '" + titleFilter
-                + "' OR author = '" + authorFilter + "'";
+        String sqlQuery = "SELECT * FROM Books WHERE isbn = '" + isbnFilter + "' OR title LIKE '%" + titleFilter
+                + "%' OR author LIKE '%" + authorFilter + "%'";
 
         StringBuilder builder = new StringBuilder();
         ArrayList<Book> booksFound = new ArrayList<>();
@@ -411,10 +406,12 @@ public class LibraryDatabase {
                 String title = rs.getString("title");
                 String author = rs.getString("author");
                 int copies = rs.getInt("no_copies");
+                int availableCopies = rs.getInt("available_copies");
 
-                Book tempBook = new Book(isbn, title, author, copies, 0, 0);
+                Book tempBook = new Book(isbn, title, author, copies, availableCopies, (copies - availableCopies));
                 booksFound.add(counter, tempBook);
-                builder.append(String.format("%d.  %s  %s  %s  COPIES : %d", counter, isbn, title, author, copies));
+                //builder.append(String.format("%d.  %s  %s  %s  COPIES : %d\n", counter, isbn, title, author, copies));
+                System.out.printf("%d.  %s  %s  %s  COPIES : %d\n", counter, isbn, title, author, copies);
                 counter++;
             }
             conn.close();
@@ -431,7 +428,7 @@ public class LibraryDatabase {
      * @return the user_id, name, and role of the filtered users
      */
     public static String getUserListFromRole (String role) {
-        String sqlQuery = "SELECT * FROM User WHERE role = '" + role.toUpperCase() + "'";
+        String sqlQuery = "SELECT * FROM User WHERE LOWER(role) = LOWER('" + role + "')";
         StringBuilder builder = new StringBuilder();
 
         try {
@@ -445,7 +442,7 @@ public class LibraryDatabase {
                 String name = rs.getString("name");
                 String role1 = rs.getString("role");
 
-                builder.append(String.format("%d.  %d  %s  %s", userID, name, role1));
+                builder.append(String.format("%d.  %d  %s  [%s]\n", counter, userID, name, role1));
                 counter++;
             }
             conn.close();
@@ -464,12 +461,12 @@ public class LibraryDatabase {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sqlQuery);
 
-            while (rs.next()) {
-                int userID = rs.getInt("user_id");
-                String name = rs.getString("name");
-                String password = rs.getString("password");
-                returnedUser = new Student(userID, name, password);
-            }
+
+            int userID = rs.getInt("user_id");
+            String name = rs.getString("name");
+            String password = rs.getString("password");
+            returnedUser = new Student(userID, name, password);
+
             conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -530,6 +527,8 @@ public class LibraryDatabase {
                     int availableCopies = rs.getInt("available_copies");
 
                     book = new Book(isbn, title, author, totalCopies, availableCopies, borrowedCopies);
+                    System.out.printf("%s  %s,  %s  COPIES: %d  [BORROWED: %d  AVAILABLE: %d]%n",
+                            isbn, title, author, totalCopies, borrowedCopies, availableCopies);
                 }
             }
         } catch (SQLException e) {
