@@ -229,12 +229,11 @@ public class LibraryDatabase {
      * @param borrow_date the borrow date
      */
     public static void insertIntoBorrowedBooks(int userID, String isbn, Date borrow_date) {
-        String sql = "INSERT INTO borrowedBooks (user_id, isbn, borrow_date, return_date, return_status) VALUES (?, ?, ?, ?, ?);"; //Insert query with '?' placeholders
-
-
         Date return_date = borrow_date;
         return_date.setDay(return_date.getDay() + 14); //automatically sets the return date to two weeks from the borrow date
         String return_status = "Borrowed";   //automatically sets the status to borrowed
+
+        String sql = "INSERT INTO borrowedBooks (user_id, isbn, borrow_date, return_date, return_status) VALUES (?, ?, ?, ?, ?);"; //Insert query with '?' placeholders
 
         try {
             Connection conn = connect();
@@ -364,10 +363,8 @@ public class LibraryDatabase {
                 String returnDate = rs.getString("return_date");
                 String returnStatus = rs.getString("return_status");
 
-                builder.append(String.format(
-                        "Borrowed Book ID: %d%nUser ID: %d%nISBN: %s%n" +
-                                "Borrow Date: %s%nReturn Date: %s%nReturn Status: %s%n%n",
-                        borrowedBookId, userId, isbn, borrowDate, returnDate, returnStatus));
+                builder.append(String.format("%d. Book %s, Student %d [B : %s R : %s] [STATUS : %s]\n",
+                        borrowedBookId, isbn, userId, borrowDate, returnDate, returnStatus));
             }
         } catch (SQLException e) {
             System.out.println("Error retrieving borrowed books: " + e.getMessage());
@@ -464,12 +461,12 @@ public class LibraryDatabase {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sqlQuery);
 
-            while (rs.next()) {
-                int userID = rs.getInt("user_id");
-                String name = rs.getString("name");
-                String password = rs.getString("password");
-                returnedUser = new Student(userID, name, password);
-            }
+
+            int userID = rs.getInt("user_id");
+            String name = rs.getString("name");
+            String password = rs.getString("password");
+            returnedUser = new Student(userID, name, password);
+
             conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

@@ -1,15 +1,11 @@
 package org.nicolas.controller;
 
 import org.nicolas.database.LibraryDatabase;
-import org.nicolas.exceptions.InvalidISBNException;
-import org.nicolas.exceptions.InvalidUserException;
-import org.nicolas.model.Book;
 import org.nicolas.model.Librarian;
 import org.nicolas.model.Student;
 import org.nicolas.model.User;
 import org.nicolas.view.UserView;
 
-import java.awt.*;
 import java.io.Console;
 import java.util.*;
 
@@ -143,10 +139,8 @@ public class UserController {
 
             if (model instanceof Librarian) {
                 currentState = MenuState.LIBRARIAN_MAIN;
-                return;
             } else {
                 currentState = MenuState.STUDENT_MAIN;
-                return;
             }
         } else {
             view.setErrorMessage(messages.getString("login.failure"));

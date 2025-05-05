@@ -128,7 +128,7 @@ public class Librarian extends User {
     @Override
     public void borrowBook(String isbn, int studentId, Console console) {
         Student tempStudent = LibraryDatabase.getStudentFromId(studentId);
-        if (tempStudent.equals(null)) {
+        if (tempStudent == null) {
             System.out.println("Student not found or UserType Librarian. " +
                     "\nNote : librarians are not allowed to borrow books");
             return; //breaking out of the method early
@@ -162,18 +162,16 @@ public class Librarian extends User {
                 Date currentDate = new Date();
                 currentDate.getCurrentDate();
                 //reflect change in the borrowing ->>>> check DB if needed
-                //bookToBorrow.setAvailableCopies(getAvailableCopies() -1);
-                //bookToBorrow.setBorrowedCopies(getBorrowedCopies() + 1);
-
-                //
-                LibraryDatabase.insertIntoBorrowedBooks(studentId, isbn, currentDate);
-                LibraryDatabase.updateBookCopies(bookToBorrow);
-
+                bookToBorrow.setAvailableCopies(bookToBorrow.getAvailableCopies() -1);
                 //Update the borrowed books count
                 bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
 
-                System.out.println("\nBook borrowed: " + bookToBorrow.getTitle());
-                System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]",
+                LibraryDatabase.insertIntoBorrowedBooks(studentId, isbn, currentDate);
+                LibraryDatabase.updateBookCopies(bookToBorrow);
+
+
+                System.out.println();
+                System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]\n\n",
                         isbn, bookToBorrow.getTitle(), bookToBorrow.getAuthor(),
                         bookToBorrow.getCopies(), bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
                 return;
