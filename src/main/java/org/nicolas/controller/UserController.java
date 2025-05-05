@@ -58,7 +58,7 @@ public class UserController {
     public void runApplication() {
         Console console = System.console(); //creates the console for the entire system
         if (console == null) {
-            setErrorMessage("No console available");
+            view.setErrorMessage("No console available");
             System.exit(1);
         }
 

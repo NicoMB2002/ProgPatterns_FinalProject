@@ -2,6 +2,7 @@ package org.nicolas.model;
 
 import org.nicolas.database.LibraryDatabase;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Scanner;
 
