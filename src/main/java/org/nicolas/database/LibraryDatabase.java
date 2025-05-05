@@ -271,10 +271,10 @@ public class LibraryDatabase {
 
             int counter = 0;
             while (rs.next()) {
-                int id = rs.getInt("id");
+                int id = rs.getInt("user_id");
                 String name = rs.getString("name");
                 String role = rs.getString("role");
-                builder.append(String.format("%d.  %d  %s  ROLE : %s", counter, id, name, role));
+                builder.append(String.format("%d.  %d  %s  ROLE : %s\n", counter, id, name, role));
                 counter++;
             }
             conn.close();
@@ -341,7 +341,6 @@ public class LibraryDatabase {
         } catch (SQLException e) {
             System.out.println("Error retrieving book list: " + e.getMessage());
         }
-
         return books;
     }
 
@@ -431,7 +430,7 @@ public class LibraryDatabase {
      * @return the user_id, name, and role of the filtered users
      */
     public static String getUserListFromRole (String role) {
-        String sqlQuery = "SELECT * FROM User WHERE role = '" + role.toUpperCase() + "'";
+        String sqlQuery = "SELECT * FROM User WHERE LOWER(role) = LOWER('" + role + "')";
         StringBuilder builder = new StringBuilder();
 
         try {
@@ -445,7 +444,7 @@ public class LibraryDatabase {
                 String name = rs.getString("name");
                 String role1 = rs.getString("role");
 
-                builder.append(String.format("%d.  %d  %s  %s", userID, name, role1));
+                builder.append(String.format("%d.  %d  %s  [%s]\n", counter, userID, name, role1));
                 counter++;
             }
             conn.close();

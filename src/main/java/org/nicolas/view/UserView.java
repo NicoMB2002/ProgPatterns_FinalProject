@@ -25,6 +25,7 @@ public class UserView {
         console.flush(); //ensures the console is empty
         final int MAX_ATTEMPTS = 4;
         int tryCounter = 0;
+        int loginTryCounter = 0;
         String ans = "";
 
         //trying got break the while() loop to remove recurence--->>>>

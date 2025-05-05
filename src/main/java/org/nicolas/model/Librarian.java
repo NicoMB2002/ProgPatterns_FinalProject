@@ -4,6 +4,7 @@ import org.nicolas.database.LibraryDatabase;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.Console;
 
 public class Librarian extends User {
     private UserType userType;

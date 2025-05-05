@@ -28,6 +28,6 @@ public class Main {
         User student = new Student(1, "Nicolas", "hello");
         UserController controller = new UserController(student, view, bundle);
         view.mainMenu(controller, bundle); //do this in the main
-        controller.runApplication();
+        controller.runApplication(console);
     }
 }
