@@ -530,6 +530,8 @@ public class LibraryDatabase {
                     int availableCopies = rs.getInt("available_copies");
 
                     book = new Book(isbn, title, author, totalCopies, availableCopies, borrowedCopies);
+                    System.out.printf("%s  %s,  %s  COPIES: %d  [BORROWED: %d  AVAILABLE: %d]%n",
+                            isbn, title, author, totalCopies, borrowedCopies, availableCopies);
                 }
             }
         } catch (SQLException e) {

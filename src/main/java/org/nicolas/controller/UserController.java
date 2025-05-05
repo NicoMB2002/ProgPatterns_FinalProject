@@ -120,13 +120,6 @@ public class UserController {
         handleLogout(); //exit sequence
     }
 
-    public void handleLogout () { //exit sequence
-        System.out.println(messages.getString("logout"));
-        System.out.println(messages.getString("app.Exit"));
-        System.out.println(messages.getString("goodbye"));
-        System.exit(0);
-    }
-
     public void handleLogin(Console console) {
         console.writer().print("\033[H\033[2J");
         console.flush(); //makes the console empty for better clarity
@@ -158,6 +151,13 @@ public class UserController {
         } else {
             view.setErrorMessage(messages.getString("login.failure"));
         }
+    }
+
+    public void handleLogout () { //exit sequence
+        System.out.println(messages.getString("logout"));
+        System.out.println(messages.getString("app.Exit"));
+        System.out.println(messages.getString("goodbye"));
+        System.exit(0);
     }
 
     //APP BASE DISPLAY//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,8 +192,7 @@ public class UserController {
 
     //BASE MENUS////////////////////////////////////////////////////////////////////////////////////////////////////////
     protected void settingsMenu (Console console) { //base call for the settings menu
-        console.writer().print("\033[H\033[2J");
-        console.flush();
+        clearScreenSequence(console);
 
         //settings menu display
         appHeader();
@@ -467,14 +466,87 @@ public class UserController {
         String inputAuthor = console.readLine(messages.getString("prompt.author"));
 
         model.findBook(inputIsbn, inputTitle, inputAuthor);
-        /*ArrayList<Book> books = model.findBook(inputIsbn, inputTitle, inputAuthor);
-        for (Book book : books) {
-            System.out.println(book);
-        }*/
         currentState = (model instanceof Librarian) ? MenuState.LIBRARIAN_MAIN : MenuState.STUDENT_MAIN;
     }
 
     //LIBRARIAN HELPER METHODS//////////////////////////////////////////////////////////////////////////////////////////
+
+    private void librarianAddBook (Librarian librarian, Console console) {
+        System.out.print(messages.getString("prompt.isbn"));
+        String isbn = console.readLine();
+        for (char c : isbn.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
+            }
+        }
+
+        String title = console.readLine(messages.getString("prompt.title"));
+        String author = console.readLine(messages.getString("prompt.author"));
+        String tryAns = console.readLine(messages.getString("prompt.copies"));
+
+        for (char c : tryAns.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage(messages.getString("error.message.wrongNumCopies"));
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
+            }
+        }
+
+        int copies = Integer.parseInt(tryAns);
+        librarian.addBook(isbn, title, author, copies, console, messages);
+
+        currentState = MenuState.LIBRARIAN_MAIN;
+        return;
+    }
+
+    private void librarianRemoveBook (Librarian librarian, Console console) {
+        System.out.print(messages.getString("prompt.isbn"));
+        String isbn = console.readLine();
+        for (char c : isbn.toCharArray()) {
+            if (Character.isLetter(c)) {
+                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
+                currentState = MenuState.STUDENT_MAIN;
+                break;
+            }
+        }
+
+        LibraryDatabase.getBookThroughISBN(isbn);
+        System.out.println("\n" + messages.getString("prompt.removeCopiesOption"));
+        System.out.println(messages.getString("prompt.deleteOption"));
+        int ans = Integer.parseInt(console.readLine().charAt(0) + "");
+
+        if (ans == 1) {
+            System.out.println("\n" + messages.getString("prompt.copies"));
+            ans = Integer.parseInt(console.readLine().charAt(0) + "");
+            librarian.changeCopies(isbn, ans);
+            currentState = MenuState.LIBRARIAN_MAIN;
+            return;
+        } else if (ans == 2) {
+            System.out.println(messages.getString("prompt.delete.verification"));
+            String tryAns = console.readLine().toUpperCase().charAt(0) + "";
+
+            if (tryAns.equals("Y")) {
+                librarian.removeBook(isbn);
+                System.out.println(messages.getString("error.message.success"));
+
+            } else if (tryAns.equals("N")) {
+                System.out.println(messages.getString("error.message.operationAborted"));
+                clearScreenSequence(console); //makes the console empty for better clarity
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
+            } else {
+                view.setErrorMessage(messages.getString("error.message.invalidChoice"));
+                clearScreenSequence(console); //makes the console empty for better clarity
+                currentState = MenuState.LIBRARIAN_MAIN;
+                return;
+            }
+        }
+
+
+        currentState = MenuState.LIBRARIAN_MAIN;
+    }
 
     private void librarianBorrow (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.student.id"));
@@ -525,70 +597,6 @@ public class UserController {
 
         int inputStudentId = Integer.parseInt(studentId);
         librarian.returnBook(isbn, inputStudentId);
-        currentState = MenuState.LIBRARIAN_MAIN;
-    }
-
-    private void librarianAddBook (Librarian librarian, Console console) {
-        System.out.print(messages.getString("prompt.isbn"));
-        String isbn = console.readLine();
-        for (char c : isbn.toCharArray()) {
-            if (Character.isLetter(c)) {
-                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
-                currentState = MenuState.LIBRARIAN_MAIN;
-                return;
-            }
-        }
-
-        System.out.print(messages.getString("prompt.title"));
-        String title = console.readLine();
-        System.out.print(messages.getString("prompt.author"));
-        String author = console.readLine();
-        System.out.print(messages.getString("prompt.copies"));
-        String tryAns = console.readLine();
-
-        for (char c : tryAns.toCharArray()) {
-            if (Character.isLetter(c)) {
-                view.setErrorMessage(messages.getString("error.message.wrongNumCopies"));
-                currentState = MenuState.LIBRARIAN_MAIN;
-                return;
-            }
-        }
-
-        int copies = Integer.parseInt(tryAns);
-        librarian.addBook(isbn, title, author, copies);
-        currentState = MenuState.LIBRARIAN_MAIN;
-        return;
-    }
-
-    private void librarianRemoveBook (Librarian librarian, Console console) {
-        System.out.print(messages.getString("prompt.isbn"));
-        String isbn = console.readLine();
-        for (char c : isbn.toCharArray()) {
-            if (Character.isLetter(c)) {
-                view.setErrorMessage(messages.getString("error.message.wrongISBN"));
-                currentState = MenuState.STUDENT_MAIN;
-                break;
-            }
-        }
-
-        LibraryDatabase.getBookThroughISBN(isbn);
-        System.out.println(messages.getString("prompt.delete.verification"));
-        System.out.print("->  ");
-        String ans = console.readLine().toUpperCase().charAt(0) + "";
-
-        if (ans.equals("Y")) {
-            librarian.removeBook(isbn);
-        } else if (ans.equals("N")) {
-            System.out.println(messages.getString("error.message.operationAborted"));
-            clearScreenSequence(console); //makes the console empty for better clarity
-            currentState = MenuState.LIBRARIAN_MAIN;
-            return;
-        } else {
-            view.setErrorMessage(messages.getString("error.message.invalidChoice"));
-            clearScreenSequence(console); //makes the console empty for better clarity
-            currentState = MenuState.LIBRARIAN_MAIN;
-            return;
-        }
         currentState = MenuState.LIBRARIAN_MAIN;
     }
 
