@@ -12,9 +12,7 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) {
-
         Console console = System.console();
         if (console == null) {
             //unclean and wrongful termination : there is no console on the computer, therefore the app cannot run
@@ -31,6 +29,5 @@ public class Main {
         UserController controller = new UserController(student, view, bundle);
         view.mainMenu(controller, bundle); //do this in the main
         controller.runApplication();
-
     }
 }
