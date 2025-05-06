@@ -15,12 +15,18 @@ public class UserController {
     private UserView view;
     private ResourceBundle messages;
     private MenuState currentState = MenuState.LOGIN; //base menu-state : login page
-    
+    private int loginAttempts = 0; // Track attempts at class level
+
     //CONSTRUCTOR///////////////////////////////////////////////////////////////////////////////////////////////////////
     public UserController(User currentUser, UserView view, ResourceBundle bundle) {
         this.model = currentUser;
         this.view = view;
         this.messages = bundle;
+        resetLoginAttempts();
+    }
+
+    public void resetLoginAttempts() {
+        this.loginAttempts = 0; // Reset when returning to main menu
     }
 
     public User getLoggedInUser() { return model; }
@@ -56,13 +62,12 @@ public class UserController {
      * handles the state of the application, making sure only one state is called at the time
      * @param console the console the application will run on
      */
-    public void runApplication(Console console) {
+    public void runApplication(Console console, int maxSystemAttempts) {
         while (currentState != MenuState.EXIT) { //checks the menu state, if is exit, exits the application
             clearScreenSequence(console);
-
             switch (currentState) {
                 case LOGIN:
-                    handleLogin(console);
+                    handleLogin(console, maxSystemAttempts);
                     break;
                 case STUDENT_MAIN:
                     studentMenu((Student) model, console);
@@ -117,8 +122,18 @@ public class UserController {
         handleLogout(); //exit sequence
     }
 
-    public void handleLogin(Console console) {
+    /**
+     * logins to the application by loading all the needed information from the database to the system
+     * @param console the used console
+     * @param maxAttempts the number of tries the user can have to login before a system exit
+     */
+    public void handleLogin(Console console, int maxAttempts) {
         clearScreenSequence(console); //makes the console empty for better clarity
+
+        if (loginAttempts >= maxAttempts) {
+            view.setErrorMessage("Maximum login attempts reached. Please try again later.");
+            return;
+        }
 
         System.out.println(messages.getString("welcome"));
         System.out.print(messages.getString("login.user_id"));
@@ -147,6 +162,9 @@ public class UserController {
         }
     }
 
+    /**
+     * logs out of the application in a safe manner
+     */
     public void handleLogout () { //exit sequence
         System.out.println(messages.getString("logout"));
         System.out.println(messages.getString("app.Exit"));
@@ -155,6 +173,10 @@ public class UserController {
     }
 
     //APP BASE DISPLAY//////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * the console application header
+     */
     protected void appHeader () {
         System.out.println("--------------------------------------------------------------------------------------------");
         Locale bundleLocale = messages.getLocale();
@@ -176,17 +198,29 @@ public class UserController {
                 + messages.getString("menu.title.exclamation") + "\n\n");
     }
 
+    /**
+     * the console application app footer
+     */
     protected void appFooter () {
         System.out.println("                                                                       "
                 + messages.getString("menu.settings.returnToMain"));
     }
-    
+
+    /**
+     * the sequence to clear the console (might need to be updated / changed depending on the console used)
+     * @param console the system console
+     */
     public void clearScreenSequence (Console console) {
         console.writer().print("\033[H\033[2J");
         console.flush();
     }
 
     //BASE MENUS////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * base settings menu
+     * @param console the system console
+     */
     protected void settingsMenu (Console console) { //base call for the settings menu
         clearScreenSequence(console);
 
@@ -229,6 +263,11 @@ public class UserController {
         }
     }
 
+    /**
+     * base student menu
+     * @param student the student using the application
+     * @param console the system console
+     */
     protected void studentMenu (Student student, Console console) { //base studend app
         //front end : menu display
         appHeader();
@@ -280,6 +319,11 @@ public class UserController {
         }
     }
 
+    /**
+     * base librarian menu
+     * @param librarian the librarian using the application
+     * @param console the system console
+     */
     protected void librarianMenu (Librarian librarian, Console console) {
         appHeader();
         Locale bundleLocale = messages.getLocale();
@@ -360,7 +404,10 @@ public class UserController {
     }
 
     //SETTINGS HELPER METHODS///////////////////////////////////////////////////////////////////////////////////////////
-
+    /**
+     * changes the name of the logged-in user
+     * @param console the sytsem console
+     */
     private void settingsChangeName (Console console) { //menu state to change the name
         clearScreenSequence(console);
         appHeader();
@@ -378,7 +425,10 @@ public class UserController {
         currentState = MenuState.SETTINGS;
     }
 
-    //also not displaying, like name
+    /**
+     * changes the password of the logged-in user
+     * @param console the system console
+     */
     private void settingsChangePassword (Console console) {
         //first request of the new password
         String stringPassword = console.readLine(messages.getString("prompt.newPassword"));
@@ -409,6 +459,10 @@ public class UserController {
 
     //STUDENT HELPER METHODS////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * borrows a book for the student
+     * @param console the system console
+     */
     private void studentBorrow(Console console) {
         System.out.println(messages.getString("prompt.isbn"));
         String inputIsbn = console.readLine();
@@ -418,6 +472,10 @@ public class UserController {
         currentState = MenuState.STUDENT_MAIN;
     }
 
+    /**
+     * returns a book for the student
+     * @param console the system console
+     */
     private void studentReturn (Console console) {
         System.out.println(messages.getString("prompt.isbn"));
         String inputIsbn = console.readLine();
@@ -425,6 +483,10 @@ public class UserController {
         currentState = MenuState.STUDENT_MAIN;
     }
 
+    /**
+     * allows a student to find a book through filtered search
+     * @param console the system console
+     */
     private void findBook (Console console) {
         System.out.println(messages.getString("prompt.information"));
         String inputIsbn = console.readLine(messages.getString("prompt.isbn"));
@@ -437,6 +499,11 @@ public class UserController {
 
     //LIBRARIAN HELPER METHODS//////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * adds a book to the database
+     * @param librarian the librarian adding the book
+     * @param console the system console
+     */
     private void librarianAddBook (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.isbn"));
         String isbn = console.readLine();
@@ -467,6 +534,11 @@ public class UserController {
         return;
     }
 
+    /**
+     * removes copies of a book or the book completly in the database
+     * @param librarian the librarian removing the copies / book
+     * @param console the system console
+     */
     private void librarianRemoveBook (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.isbn"));
         String isbn = console.readLine();
@@ -513,6 +585,11 @@ public class UserController {
         currentState = MenuState.LIBRARIAN_MAIN;
     }
 
+    /**
+     * allows a librarian to borrow a book for a student
+     * @param librarian the librarian performing the borrowing
+     * @param console the system console
+     */
     private void librarianBorrow (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.student.id"));
         String studentId = console.readLine();
@@ -539,6 +616,11 @@ public class UserController {
         currentState = MenuState.LIBRARIAN_MAIN;
     }
 
+    /**
+     * allows a librarian to return a book copy on behalf of a student
+     * @param librarian the libarian performing the returning
+     * @param console the system console
+     */
     private void librarianReturn (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.student.id"));
         String studentId = console.readLine();
@@ -565,6 +647,11 @@ public class UserController {
         currentState = MenuState.LIBRARIAN_MAIN;
     }
 
+    /**
+     * adds a user to the database
+     * @param librarian the librarian adding the user
+     * @param console the system console
+     */
     private void librarianAddUser (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.studentName"));
         String newStudentName = console.readLine();
@@ -574,6 +661,11 @@ public class UserController {
         currentState = MenuState.LIBRARIAN_MAIN;
     }
 
+    /**
+     * removes a user from the database
+     * @param librarian the librarian removing the user
+     * @param console the system console
+     */
     private void librarianRemoveUser (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.student.id"));
         String studentId = console.readLine();
@@ -607,6 +699,10 @@ public class UserController {
         currentState = MenuState.LIBRARIAN_MAIN;
     }
 
+    /**
+     * gets all the book from the system, with the option to see only available or borrowed books
+     * @param console the system console
+     */
     private void librarianBookCatalog (Console console) {
         System.out.println(messages.getString("filter.main.prompt"));
         String ans = console.readLine().toUpperCase().charAt(0) + "";
@@ -636,6 +732,10 @@ public class UserController {
         }
     }
 
+    /**
+     * gets all the users from the database, with the option to filter them by role
+     * @param console the system console
+     */
     private void librarianUserCatalog (Console console) {
         System.out.println(messages.getString("filter.main.prompt"));
         String ans = console.readLine().toUpperCase().charAt(0) + "";
