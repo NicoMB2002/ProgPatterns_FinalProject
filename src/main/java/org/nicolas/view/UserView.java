@@ -19,17 +19,15 @@ public class UserView {
      * @param controller the application itself
      * @param bundle the language bundle
      */
-    public void mainMenu (UserController controller, ResourceBundle bundle) {
+    public void mainMenu (UserController controller, ResourceBundle bundle, int maxSystemAttempts) {
         Console console = System.console();
 
-        console.flush(); //ensures the console is empty
-        final int MAX_ATTEMPTS = 4;
+        console.writer().print("\033[H\033[2J");
+        console.flush();
         int tryCounter = 0;
-        int loginTryCounter = 0;
         String ans = "";
 
-        //trying got break the while() loop to remove recurence--->>>>
-        while (tryCounter < MAX_ATTEMPTS /*&& (ans != "" || ans != 1 || ans != 2 || ans != x)*/) {
+        while (tryCounter <= maxSystemAttempts) {
             System.out.println(bundle.getString("welcome") + "\n\n");
             System.out.println(bundle.getString("menu.main.login"));
             System.out.println(bundle.getString("menu.main.exit"));
@@ -43,7 +41,7 @@ public class UserView {
                 case "1" :
                     console.writer().print("\033[H\033[2J"); //flush sequence
                     console.flush();
-                    controller.handleLogin(console); //call login
+                    controller.handleLogin(console, maxSystemAttempts); //call login
                     if (controller.getLoggedInUser() != null) {
                         return; //return statement to break out of loop & method
                     }
