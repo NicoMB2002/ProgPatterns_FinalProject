@@ -14,6 +14,10 @@ import java.util.ArrayList;
 
 public class LibraryDatabase {
 
+    /**
+     * tries to connect to the database
+     * @return the connection if successful
+     */
     public static Connection connect() {
         String basePath = "jdbc:sqlite:src/main/resources/LibraryDatabase/"; //created LibraryDatabase in resources
         String dbPath = basePath + "library.db";
@@ -99,6 +103,7 @@ public class LibraryDatabase {
             FOREIGN KEY(isbn) REFERENCES Books(isbn)
         );
         """;
+
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
@@ -140,9 +145,7 @@ public class LibraryDatabase {
      * @param tableName the table to remove
      */
     public static void dropTable(String tableName) {
-
         String sql = "DROP TABLE IF EXISTS " + tableName;
-
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
@@ -233,7 +236,6 @@ public class LibraryDatabase {
         catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     //SELECT * STATEMENTS///////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,7 +356,6 @@ public class LibraryDatabase {
             System.out.println("Error retrieving borrowed books: " + e.getMessage());
             return "Error retrieving borrowed books data";
         }
-
         return builder.toString();
     }
 
@@ -394,7 +395,6 @@ public class LibraryDatabase {
 
                 Book tempBook = new Book(isbn, title, author, copies, availableCopies, (copies - availableCopies));
                 booksFound.add(counter, tempBook);
-                //builder.append(String.format("%d.  %s  %s  %s  COPIES : %d\n", counter, isbn, title, author, copies));
                 System.out.printf("%d.  %s  %s  %s  COPIES : %d\n", counter, isbn, title, author, copies);
                 counter++;
             }
@@ -402,7 +402,6 @@ public class LibraryDatabase {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        //return builder.toString();
         return booksFound;
     }
 
@@ -436,6 +435,11 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    /**
+     * gets a specific user / student from their id
+     * @param userId the id of the user / student to find
+     * @return the user / student
+     */
     public static Student getStudentFromId (int userId) {
         String sqlQuery = "SELECT * FROM User WHERE user_id = " + userId + " AND role = 'STUDENT'";
         Student returnedUser = null;
@@ -444,7 +448,6 @@ public class LibraryDatabase {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sqlQuery);
-
 
             int userID = rs.getInt("user_id");
             String name = rs.getString("name");
@@ -521,6 +524,10 @@ public class LibraryDatabase {
         return book;
     }
 
+    /**
+     * updates the copies of a book in the database to match a borrow, return, adding, or deletion of copie(s)
+     * @param inputBook the book to update
+     */
     public static void updateBookCopies(Book inputBook) {
         String sql = "UPDATE Books SET no_copies = ?, borrowed_books = ? WHERE isbn = ?";
 
@@ -538,7 +545,6 @@ public class LibraryDatabase {
             } else {
                 System.out.println("No book found with the given ISBN.");
             }
-
         } catch (SQLException e) {
             System.out.println("Error updating book: " + e.getMessage());
         }
@@ -623,6 +629,11 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * removes copies from a specific book
+     * @param ISBN the id of the book to update
+     * @param newNumOfCopies the new number of copies of the book
+     */
     public static void removeBookCopies(String ISBN, int newNumOfCopies) {
         String sqlQuery = "UPDATE Books SET no_copies = ? WHERE isbn = ?";
 
@@ -641,6 +652,10 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * deletes a user simply form their id
+     * @param studentId the id of the user to remove
+     */
     public static void deleteStudentFromId(int studentId) {
         String sql = "DELETE FROM User WHERE user_id = " + studentId;
 
@@ -655,12 +670,15 @@ public class LibraryDatabase {
             } else {
                 System.out.println("No student found with student ID " + studentId + ".");
             }
-
         } catch (SQLException e) {
             System.out.println("Error deleting student: " + e.getMessage());
         }
     }
 
+    /**
+     * deletes a book from the isbn / id
+     * @param isbn the id of the book to remove
+     */
     public static void deleteBookByIsbn(String isbn) {
         String sql = "DELETE FROM Books WHERE isbn = ?";
 
@@ -681,6 +699,11 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * deletes a reference of a book in the borrowed books table (when returning a book)
+     * @param userId the user id to match the return
+     * @param isbn the book / copy of the book to remove from the table
+     */
     public static void deleteFromBorrowedBooks(int userId, String isbn) {
         String sql = "DELETE FROM borrowedBooks WHERE user_id = ? AND isbn = ?";
 
@@ -694,6 +717,11 @@ public class LibraryDatabase {
         }
     }
 
+    /**
+     * gets a user from their unique id in the database
+     * @param id the unique id of the user to find
+     * @return the user's information
+     */
     public static User findUserById(int id) {
         String sql = "SELECT * FROM User WHERE user_id = ?";
         try (Connection conn = connect();
@@ -826,11 +854,8 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
-
-
         //Testing connectivity
     public static void main(String[] args) {
-
         try {
             Connection conn = connect();
             if (conn != null) {
@@ -849,5 +874,4 @@ public class LibraryDatabase {
 
 //        dropTable("borrowed_books");
     }
-
 }
