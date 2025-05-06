@@ -1,6 +1,7 @@
 package org.nicolas.controller;
 
 import org.nicolas.database.LibraryDatabase;
+import org.nicolas.model.Book;
 import org.nicolas.model.Librarian;
 import org.nicolas.model.Student;
 import org.nicolas.model.User;
@@ -117,8 +118,7 @@ public class UserController {
     }
 
     public void handleLogin(Console console) {
-        console.writer().print("\033[H\033[2J");
-        console.flush(); //makes the console empty for better clarity
+        clearScreenSequence(console); //makes the console empty for better clarity
 
         System.out.println(messages.getString("welcome"));
         System.out.print(messages.getString("login.user_id"));
@@ -171,12 +171,14 @@ public class UserController {
             System.out.println("                                                                             "
                     + messages.getString("menu.settings"));
         }
+
+        System.out.println(messages.getString("menu.title") + model.getName()
+                + messages.getString("menu.title.exclamation") + "\n\n");
     }
 
     protected void appFooter () {
         System.out.println("                                                                       "
                 + messages.getString("menu.settings.returnToMain"));
-        System.out.print("->  ");
     }
     
     public void clearScreenSequence (Console console) {
@@ -195,47 +197,41 @@ public class UserController {
         System.out.println(messages.getString("menu.settings.changePassword"));
         appFooter();
 
-        String ans = console.readLine().toUpperCase().charAt(0) + "";
-        console.writer().print("\033[H\033[2J");
-        console.flush();
+        String ans = console.readLine("\n->  ").toUpperCase().charAt(0) + "";
+        clearScreenSequence(console);
         //appHeader();
 
         //settings menu back-end code for next option
-        while (true) {
-            switch (ans) {
-                case "1":
-                    //changing the name
-                    currentState = MenuState.SETTINGS_CHANGE_NAME;
-                    return;
-                case "2" :
-                    //changing the password
-                    currentState = MenuState.SETTINGS_CHANGE_PASSWORD;
-                    return;
-                case "M" :
-                    //going back to main menu, if the user is a librarian = librarian Main, else, student Main
-                    // (student main always the default to prevent admin powers to a random user
-                    currentState = (model instanceof Librarian) ? MenuState.LIBRARIAN_MAIN : MenuState.STUDENT_MAIN;
-                    return;
-                case "X" :
-                    //exit application completly
-                    console.writer().print("\033[H\033[2J");
-                    console.flush();
-                    currentState = MenuState.EXIT;
-                    break;
-                default :
-                    //goes back to settings base menu (this menu) again until there is a valid choice , no counter allowed
-                    view.setErrorMessage("invalid choice, please try again");
-                    currentState = MenuState.SETTINGS;
-                    break;
-            }
+        switch (ans) {
+            case "1":
+                //changing the name
+                currentState = MenuState.SETTINGS_CHANGE_NAME;
+                return;
+            case "2" :
+                //changing the password
+                currentState = MenuState.SETTINGS_CHANGE_PASSWORD;
+                return;
+            case "M" :
+                //going back to main menu, if the user is a librarian = librarian Main, else, student Main
+                // (student main always the default to prevent admin powers to a random user
+                currentState = (model instanceof Librarian) ? MenuState.LIBRARIAN_MAIN : MenuState.STUDENT_MAIN;
+                return;
+            case "X" :
+                //exit application completly
+                clearScreenSequence(console);
+                currentState = MenuState.EXIT;
+                return;
+            default :
+                //goes back to settings base menu (this menu) again until there is a valid choice , no counter allowed
+                view.setErrorMessage("invalid choice, please try again");
+                currentState = MenuState.SETTINGS;
+                return;
         }
     }
 
     protected void studentMenu (Student student, Console console) { //base studend app
         //front end : menu display
         appHeader();
-        System.out.println(messages.getString("menu.title") + model.getName()
-                + messages.getString("menu.title.exclamation") + "\n\n");
         Locale bundleLocale = messages.getLocale();
 
         // Adjusts the menu depending on the language
@@ -251,9 +247,8 @@ public class UserController {
                     + messages.getString("menu.student.searchBook"));
         }
 
-        String ans = console.readLine().toUpperCase().charAt(0) + "";
-        console.writer().print("\033[H\033[2J");
-        console.flush();
+        String ans = console.readLine("\n->  ").toUpperCase().charAt(0) + "";
+        clearScreenSequence(console);
         appHeader(); //back end menu display
 
         //back end
@@ -287,9 +282,6 @@ public class UserController {
 
     protected void librarianMenu (Librarian librarian, Console console) {
         appHeader();
-        System.out.println(messages.getString("menu.title") + model.getName()
-                + messages.getString("menu.title.exclamation") + "\n");
-
         Locale bundleLocale = messages.getLocale();
 
         // Adjusts the menu depending on the language
@@ -321,11 +313,8 @@ public class UserController {
                     + messages.getString("menu.librarian.searchBook"));
         }
 
-        System.out.print("\n->  ");
-
-        String ans = console.readLine().toUpperCase().charAt(0) + "";
-        console.writer().print("\033[H\033[2J");
-        console.flush();
+        String ans = console.readLine("\n->  ").toUpperCase().charAt(0) + "";
+        clearScreenSequence(console);
         appHeader();
         switch (ans) {
             case "1" : //add a book
@@ -372,10 +361,8 @@ public class UserController {
 
     //SETTINGS HELPER METHODS///////////////////////////////////////////////////////////////////////////////////////////
 
-    //never actually displaying > seems like a threading problem >>> cannot resolve issue
     private void settingsChangeName (Console console) { //menu state to change the name
-        console.writer().print("\033[H\033[2J");
-        console.flush();
+        clearScreenSequence(console);
         appHeader();
         System.out.println(messages.getString("prompt.newName"));
         String newName = console.readLine();
@@ -385,7 +372,7 @@ public class UserController {
         if (ans.equals("Y")) {
             model.changeName(newName); //calling the model that will call the DB : enforcing MVC design
         } else {
-            System.out.println(messages.getString("error.message.operationAborted"));
+            view.setErrorMessage(messages.getString("error.message.operationAborted"));
             currentState = MenuState.SETTINGS;
         }
         currentState = MenuState.SETTINGS;
@@ -393,41 +380,27 @@ public class UserController {
 
     //also not displaying, like name
     private void settingsChangePassword (Console console) {
-        System.out.println(messages.getString("prompt.newPassword")); //first request of the new password
-        char[] password = console.readPassword(messages.getString("login.password"));
-        String stringPassword = "";
-        for (int i = 0; i < password.length; i++) {
-            stringPassword += password[i]; //puts the password into a String for the DB
-            //System.out.print("*"); //sets the characters as '*' instead of blank spaces
-        }
+        //first request of the new password
+        String stringPassword = console.readLine(messages.getString("prompt.newPassword"));
 
-        System.out.println(messages.getString("prompt.checkNewPassword")); //validation of the new password (asks to input it again)
-        char[] passwordCheck = console.readPassword(messages.getString("login.password"));
-        String stringPasswordCheck = "";
-        for (int i = 0; i < passwordCheck.length; i++) {
-            stringPasswordCheck += passwordCheck[i]; //puts the password into a String for the DB
-            //System.out.print("*"); //sets the characters as '*' instead of blank spaces
-        }
+        //validation of the new password (asks to input it again)
+        String stringPasswordCheck = console.readLine(messages.getString("prompt.checkNewPassword"));
 
-        boolean isValid = (stringPassword.equals(passwordCheck)) ? true : false; //checks if the first password and the validation are the same
+        boolean isValid = (stringPassword.equals(stringPasswordCheck)) ? true : false; //checks if the first password and the validation are the same
 
         if (isValid == false) { //2nd chance to change password
-            System.out.println(messages.getString("prompt.checkNewPassword"));
-            char[] passwordCheck2 = console.readPassword(messages.getString("login.password"));
-            String stringPasswordCheck2 = "";
-            for (int i = 0; i < passwordCheck2.length; i++) {
-                stringPasswordCheck2 += passwordCheck2[i]; //puts the password into a String for the DB
-                //System.out.print("*"); //sets the characters as '*' instead of blank spaces
-            }
+            view.setErrorMessage(messages.getString("error.validationFailed")
+                    + messages.getString("error.message.tryAgain"));
+            String stringPasswordCheck2 = console.readLine(messages.getString("prompt.checkNewPassword"));
 
             isValid = (stringPassword.equals(stringPasswordCheck2)) ? true : false; //checks if first password and 2nd validation attempt are the same
 
             if (isValid) {
                 model.changePassword(stringPassword); //call the change password method of user to enfore MVC model
+                currentState = MenuState.SETTINGS;
             } else {
-                System.out.println(messages.getString("error.message.operationAborted")); //operation aborted because too many attemps
+                view.setErrorMessage(messages.getString("error.message.operationAborted")); //operation aborted because too many attemps
                 currentState = MenuState.SETTINGS; //both attempts failed return to main settings menu
-                return; 
             }
         } else {
             model.changePassword(stringPassword); //first attempt was ok, therefore changed password right away by calling model to enforce MVC design pattern
@@ -488,7 +461,7 @@ public class UserController {
         }
 
         int copies = Integer.parseInt(tryAns);
-        librarian.addBook(isbn, title, author, copies, console, messages);
+        librarian.addBook(isbn, title, author, copies, console);
 
         currentState = MenuState.LIBRARIAN_MAIN;
         return;
@@ -505,15 +478,16 @@ public class UserController {
             }
         }
 
-        LibraryDatabase.getBookThroughISBN(isbn);
+        Book tempBook = LibraryDatabase.getBookThroughISBN(isbn);
         System.out.println("\n" + messages.getString("prompt.removeCopiesOption"));
         System.out.println(messages.getString("prompt.deleteOption"));
         int ans = Integer.parseInt(console.readLine().charAt(0) + "");
 
         if (ans == 1) {
-            System.out.println("\n" + messages.getString("prompt.copies"));
+            System.out.println("\n" + messages.getString("prompt.copiesToRemove"));
             ans = Integer.parseInt(console.readLine().charAt(0) + "");
-            librarian.changeCopies(isbn, ans);
+            int newNumsOfCopies = tempBook.getCopies() - ans;
+            librarian.changeCopies(isbn, newNumsOfCopies);
             currentState = MenuState.LIBRARIAN_MAIN;
             return;
         } else if (ans == 2) {
@@ -536,8 +510,6 @@ public class UserController {
                 return;
             }
         }
-
-
         currentState = MenuState.LIBRARIAN_MAIN;
     }
 

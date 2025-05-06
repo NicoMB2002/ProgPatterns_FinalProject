@@ -1,7 +1,6 @@
 package org.nicolas.database;
 
 import org.nicolas.model.Book;
-import org.nicolas.model.Date;
 import org.nicolas.model.Librarian;
 import org.nicolas.model.Student;
 import org.nicolas.model.User;
@@ -68,22 +67,8 @@ public class LibraryDatabase {
             available_copies INTEGER NOT NULL,
             CHECK (available_copies = no_copies - borrowed_books)
         );
-        """; //TODO check the check option : make a trigger instead?
-        /*
-        CREATE TRIGGER CheckCopies
-        ON Books
-        INSTEAD OF INSERT
-        AS
-        BEGIN
-            IF (available_copies = no_copies - borrowed_books) BEGIN
-                INSERT INTO Books VALUES (?, ?, ?, ?, ?, ?)
-            END;
-            ELSE BEGIN
-                RAISEERROR ("The number of copies doesn't match);
-                ROLLBACK TRANSACTION;
-            END;
-        END;
-         */
+        """;
+
         try {
             Connection conn = connect();
             Statement stmt = conn.createStatement();
@@ -228,9 +213,8 @@ public class LibraryDatabase {
      * @param isbn the book's unique identifier
      * @param borrow_date the borrow date
      */
-    public static void insertIntoBorrowedBooks(int userID, String isbn, Date borrow_date) {
-        Date return_date = borrow_date;
-        return_date.setDay(return_date.getDay() + 14); //automatically sets the return date to two weeks from the borrow date
+    public static void insertIntoBorrowedBooks(int userID, String isbn, LocalDate borrow_date) {
+        LocalDate return_date = borrow_date.plusDays(14); //automatically sets the return date to two weeks from the borrow date
         String return_status = "Borrowed";   //automatically sets the status to borrowed
 
         String sql = "INSERT INTO borrowedBooks (user_id, isbn, borrow_date, return_date, return_status) VALUES (?, ?, ?, ?, ?);"; //Insert query with '?' placeholders

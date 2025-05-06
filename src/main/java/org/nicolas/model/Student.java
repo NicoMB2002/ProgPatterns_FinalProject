@@ -1,31 +1,37 @@
 package org.nicolas.model;
 
 import org.nicolas.database.LibraryDatabase;
-import org.nicolas.model.User;
 
 import java.io.Console;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 
 public class Student extends User {
-
-    private int userId;
-    private String name;
-    private UserType typeOfUSer;
+    private UserType userType;
     private ArrayList<Book> borrowedBooks;
     private ResourceBundle messages;
 
     public Student(int userID, String name, String password) {
         super(userID, name, password);
-        this.typeOfUSer = UserType.STUDENT;
+        this.userType = UserType.STUDENT;
         this.borrowedBooks = new ArrayList<>();
     }
 
     public void seeBorrowedBooksList () {
-        ArrayList<String> borrowedBooksList = LibraryDatabase.getUserBorrowedBooks(userId);
-        borrowedBooksList.toString(); //see if it works
+        ArrayList<String> borrowedBooksList = LibraryDatabase.getUserBorrowedBooks(getUserID());
+        if (borrowedBooksList.isEmpty()) {
+            System.out.println("List Empty");
+        } else {
+            int counter = 0;
+            for (String bookInfo : borrowedBooksList) {
+                System.out.println(counter + ". " + bookInfo);
+            }
+
+            while (counter < 2) {
+                System.out.println(counter);
+            }
+        }
     }
 
     @Override
@@ -43,27 +49,33 @@ public class Student extends User {
                 return;
             }
         }
+
         Book bookToBorrow = LibraryDatabase.getBookThroughISBN(isbn);
+        if (bookToBorrow == null) {
+            System.out.println(messages.getString("book.notFound"));
+            return;
+        }
 
         //Borrow the book if it's available
         if (bookToBorrow.getISBN().equals(isbn) && bookToBorrow.getAvailableCopies() > 0) {
             //If the book is available then it gets added to the 'borrowedBooks' list
-            borrowedBooks.add(bookToBorrow);
+            getBorrowedBooks().add(bookToBorrow);
 
             // Reflect changes in the database
-            Date currentDate = new Date();
-            currentDate.getCurrentDate();
+            LocalDate currentDate = LocalDate.now();
+            //reflect change in the borrowing ->>>> check DB if needed
+            bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
+            bookToBorrow.setAvailableCopies(bookToBorrow.getCopies() - bookToBorrow.getBorrowedCopies());
+            //Update the borrowed books count
 
-            LibraryDatabase.insertIntoBorrowedBooks(userId, isbn, currentDate);
+            LibraryDatabase.insertIntoBorrowedBooks(getUserID(), isbn, currentDate);
             LibraryDatabase.updateBookCopies(bookToBorrow);
 
-            //Update the borrowed books count
-            bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
 
-            System.out.println("\nBook borrowed: " + bookToBorrow.getTitle());
-            System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]\n",
-                    isbn, bookToBorrow.getTitle(), bookToBorrow.getAuthor(), bookToBorrow.getCopies(),
-                    bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
+            System.out.println();
+            System.out.printf("%s  %s,  %s  COPIES : %d  [BORROWED : %d    AVAILABLE : %d]\n\n",
+                    isbn, bookToBorrow.getTitle(), bookToBorrow.getAuthor(),
+                    bookToBorrow.getCopies(), bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
             return;
         }
         System.out.println(messages.getString("book.unavailable"));
@@ -94,36 +106,18 @@ public class Student extends User {
         LibraryDatabase.updateBookCopies(bookToReturn);
 
         // Remove from borrowedBooks table in DB
-        LibraryDatabase.deleteFromBorrowedBooks(this.getUserId(), isbn);
+        LibraryDatabase.deleteFromBorrowedBooks(getUserID(), isbn);
 
-        System.out.println(messages.getString("book.return.success" + bookToReturn.getTitle()));
+        System.out.println(messages.getString("book.return.success") + bookToReturn.getTitle());
 
     }
 
-    public int getUserId() {
-        return userId;
+    public UserType getUserType() {
+        return userType;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public UserType getTypeOfUSer() {
-        return typeOfUSer;
-    }
-
-    public void setTypeOfUSer(UserType typeOfUSer) {
-        this.typeOfUSer = typeOfUSer;
+    public void setUserType(UserType userType) {
+        this.userType = userType;
     }
 
     public ArrayList<Book> getBorrowedBooks() {

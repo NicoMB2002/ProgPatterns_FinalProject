@@ -2,13 +2,14 @@ package org.nicolas.model;
 
 import org.nicolas.database.LibraryDatabase;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Scanner;
 import java.io.Console;
 
 public class Librarian extends User {
     private UserType userType;
+    private ResourceBundle messages;
 
     //-------PROPOSING THIS CLASS AS THE ADMIN CLASS-------
 
@@ -17,7 +18,7 @@ public class Librarian extends User {
         this.userType = UserType.LIBRARIAN;
     }
 
-    public void addBook (String ISBN, String title, String author, int copies, Console console, ResourceBundle messages) {
+    public void addBook (String ISBN, String title, String author, int copies, Console console) {
         ArrayList<Book> booksFound = LibraryDatabase.getFilteredBooks(ISBN, title, author); //TODO check the return type and if it needs to be changed
 
         if (booksFound.size() == 0 || booksFound.isEmpty()) {
@@ -82,47 +83,6 @@ public class Librarian extends User {
 
     public void removeBook (String ISBN) {
         LibraryDatabase.deleteBookByIsbn(ISBN);
-//        Scanner console = new Scanner(System.in);
-//        ArrayList<Book> booksFound = LibraryDatabase.getFilteredBooks(ISBN, title, author); //TODO check the return type and if it needs to be changed
-//
-//        if (booksFound.size() == 0 || booksFound.isEmpty()) {
-//            System.out.println("No book to remove");
-//        } else  if (booksFound.size() > 1) {
-//            System.out.println("There seem to be multiple books matching your search. Select the one you wish to remove");
-//
-//            int existingBook = console.nextInt();
-//            Book tempbook = booksFound.get(existingBook);
-//            tempbook= LibraryDatabase.getBookThroughISBN(tempbook.getISBN());
-//
-//            System.out.printf("%s   %s, %s, COPIES : %d [BORROWED : %d    AVAILABLE : %d]",
-//                    tempbook.getISBN(), tempbook.getTitle(), tempbook.getAuthor(), tempbook.getCopies(),
-//                    tempbook.getBorrowedCopies(), tempbook.getAvailableCopies());
-//
-//            System.out.println("Do you wish to remove this book?");
-//            System.out.println("Y/N");
-//            ans = console.next().charAt(0);
-//
-//            if (ans == 'Y' || ans == 'y') {
-//                System.out.println("Please enter the number of copies to add : ");
-//                int copiesToAdd = console.nextInt();
-//                addCopiesToBook(tempbook, copiesToAdd);
-//            } else {
-//                System.out.println("Nothing added.");
-//            }
-//
-//        } else if (ans == 'N' || ans == 'n') {
-//            System.out.println("Create a new book?");
-//            System.out.println("Y/N");
-//            ans = console.next().charAt(0);
-//
-//            if (ans == 'Y' || ans == 'y') {
-//                LibraryDatabase.insertIntoBooks(ISBN, title, author, copies);
-//            } else {
-//                System.out.println("Nothing added.");
-//            }
-//        } else {
-//            System.out.println("Invalid choice"); //TODO create exception
-//        }
     }
 
     @Override
@@ -159,12 +119,11 @@ public class Librarian extends User {
                 tempStudent.getBorrowedBooks().add(bookToBorrow);
 
                 // Reflect changes in the database
-                Date currentDate = new Date();
-                currentDate.getCurrentDate();
+                LocalDate currentDate = LocalDate.now();
                 //reflect change in the borrowing ->>>> check DB if needed
-                bookToBorrow.setAvailableCopies(bookToBorrow.getAvailableCopies() -1);
-                //Update the borrowed books count
                 bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
+                bookToBorrow.setAvailableCopies(bookToBorrow.getCopies() - bookToBorrow.getBorrowedCopies());
+                //Update the borrowed books count
 
                 LibraryDatabase.insertIntoBorrowedBooks(studentId, isbn, currentDate);
                 LibraryDatabase.updateBookCopies(bookToBorrow);
@@ -176,7 +135,7 @@ public class Librarian extends User {
                         bookToBorrow.getCopies(), bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
                 return;
             }
-            System.out.println("Book not available or no copies left. ");
+            System.out.println(messages.getString("book.unavailable"));
         }
     }
 
@@ -192,8 +151,4 @@ public class Librarian extends User {
     public void removeUser (int userId) {
         LibraryDatabase.deleteStudentFromId(userId);
     }
-
-
-
-
 }
