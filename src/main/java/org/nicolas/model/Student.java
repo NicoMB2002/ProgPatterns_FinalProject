@@ -32,10 +32,12 @@ public class Student extends User {
             int counter = 0;
             for (String bookInfo : borrowedBooksList) {
                 System.out.println(counter + ". " + bookInfo);
+                counter++;
             }
 
             while (counter < 2) {
                 System.out.println(counter);
+                counter++;
             }
         }
     }
