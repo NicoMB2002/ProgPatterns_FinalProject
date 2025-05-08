@@ -19,7 +19,7 @@ public class LibraryDatabase {
      * @return the connection if successful
      */
     public static Connection connect() {
-        String basePath = "jdbc:sqlite:"; //created LibraryDatabase in resources
+        String basePath = "jdbc:sqlite:src/main/resources/LibraryDatabase/"; //created LibraryDatabase in resources
         String dbPath = basePath + "library.db";
 
         Connection connection;
