@@ -19,7 +19,7 @@ public class LibraryDatabase {
      * @return the connection if successful
      */
     public static Connection connect() {
-        String basePath = "jdbc:sqlite:src/main/resources/LibraryDatabase/"; //created LibraryDatabase in resources
+        String basePath = "jdbc:sqlite:"; //created LibraryDatabase in resources
         String dbPath = basePath + "library.db";
 
         Connection connection;
@@ -854,24 +854,4 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
-        //Testing connectivity
-    public static void main(String[] args) {
-        try {
-            Connection conn = connect();
-            if (conn != null) {
-                System.out.println("Connection to SQLite has been established!");
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Failed to connect: " + e.getMessage());
-        }
-
-//        createBooksTable();
-//        dropTable("BorrowedBooks");
-
-//        insertIntoBooks("9781566199094", "Alice in Wonderland", "Lewis Carrol", 10, 0, 10);
-        System.out.println(selectAllBooks());
-
-//        dropTable("borrowed_books");
-    }
 }
