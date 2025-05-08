@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ProgPattern_FinalProject:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ProgPattern_FinalProject_jar</output-path>
+    <root id="archive" name="ProgPattern_FinalProject.jar">
+      <element id="module-output" name="ProgPattern_FinalProject" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/xerial/sqlite-jdbc/3.49.1.0/sqlite-jdbc-3.49.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
