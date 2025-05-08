@@ -39,13 +39,13 @@ public class LibraryDatabase {
      */
     public static void createUserTable() {
         String userTable = """
-    CREATE TABLE IF NOT EXISTS User (
-        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        role TEXT NOT NULL,
-        password TEXT NOT NULL
-    );
-    """;
+        CREATE TABLE IF NOT EXISTS User (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL,
+            password TEXT NOT NULL
+        );
+        """;
 
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
