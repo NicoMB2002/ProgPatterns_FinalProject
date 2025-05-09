@@ -55,6 +55,7 @@ public class Librarian extends User {
                 System.out.println(messages.getString("prompt.copies"));
                 int copiesToAdd = Integer.parseInt(console.readLine());
                 addCopiesToBook(tempbook, copiesToAdd);
+                LibraryDatabase.updateBookCopies(tempbook);
                 System.out.println(messages.getString("error.message.success"));
                 return;
             } else {
