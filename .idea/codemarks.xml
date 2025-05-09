@@ -3,14 +3,16 @@
   <component name="CodeMarkSettings">
     <option name="lastScanState">
       <map>
-        <entry key="$APPLICATION_CONFIG_DIR$/workspace/2wSRkRgoFcxTCATl2293iM7xYKM.xml" value="1746767685363" />
+        <entry key="$USER_HOME$/AppData/Local/Temp/MicrosoftEdgeUpdate.log" value="1746796259512" />
+        <entry key="$USER_HOME$/AppData/Local/Temp/cv_debug.log" value="1746765652105" />
+        <entry key="$APPLICATION_CONFIG_DIR$/workspace/2wSRkRgoFcxTCATl2293iM7xYKM.xml" value="1746799584429" />
         <entry key="$PROJECT_DIR$/.git/AUTO_MERGE" value="1746767705693" />
-        <entry key="$PROJECT_DIR$/.git/COMMIT_EDITMSG" value="1746767702103" />
+        <entry key="$PROJECT_DIR$/.git/COMMIT_EDITMSG" value="1746767754349" />
         <entry key="$PROJECT_DIR$/.git/FETCH_HEAD" value="1746767705615" />
         <entry key="$PROJECT_DIR$/.git/HEAD" value="1746158174658" />
-        <entry key="$PROJECT_DIR$/.git/MERGE_HEAD" value="1746767705695" />
-        <entry key="$PROJECT_DIR$/.git/MERGE_MODE" value="1746767705695" />
-        <entry key="$PROJECT_DIR$/.git/MERGE_MSG" value="1746767705695" />
+        <entry key="$PROJECT_DIR$/.git/MERGE_HEAD" value="1746767770122" />
+        <entry key="$PROJECT_DIR$/.git/MERGE_MODE" value="1746767770122" />
+        <entry key="$PROJECT_DIR$/.git/MERGE_MSG" value="1746767770123" />
         <entry key="$PROJECT_DIR$/.git/ORIG_HEAD" value="1746767705655" />
         <entry key="$PROJECT_DIR$/.git/config" value="1746144499756" />
         <entry key="$PROJECT_DIR$/.git/description" value="1746033037619" />
@@ -29,26 +31,26 @@
         <entry key="$PROJECT_DIR$/.git/hooks/sendemail-validate.sample" value="1746033037640" />
         <entry key="$PROJECT_DIR$/.git/hooks/update.sample" value="1746033037641" />
         <entry key="$PROJECT_DIR$/.git/info/exclude" value="1746033037642" />
-        <entry key="$PROJECT_DIR$/.git/logs/HEAD" value="1746767702109" />
-        <entry key="$PROJECT_DIR$/.git/logs/refs/heads/master" value="1746767702109" />
+        <entry key="$PROJECT_DIR$/.git/logs/HEAD" value="1746767754352" />
+        <entry key="$PROJECT_DIR$/.git/logs/refs/heads/master" value="1746767754352" />
         <entry key="$PROJECT_DIR$/.git/logs/refs/remotes/origin/HEAD" value="1746033038680" />
-        <entry key="$PROJECT_DIR$/.git/logs/refs/remotes/origin/master" value="1746767705614" />
+        <entry key="$PROJECT_DIR$/.git/logs/refs/remotes/origin/master" value="1746767760424" />
         <entry key="$PROJECT_DIR$/.git/packed-refs" value="1746033038674" />
-        <entry key="$PROJECT_DIR$/.git/refs/heads/master" value="1746767702108" />
+        <entry key="$PROJECT_DIR$/.git/refs/heads/master" value="1746767754352" />
         <entry key="$PROJECT_DIR$/.git/refs/remotes/origin/HEAD" value="1746033038678" />
-        <entry key="$PROJECT_DIR$/.git/refs/remotes/origin/master" value="1746767705613" />
+        <entry key="$PROJECT_DIR$/.git/refs/remotes/origin/master" value="1746767760423" />
         <entry key="$PROJECT_DIR$/.gitignore" value="1746033038699" />
         <entry key="$PROJECT_DIR$/.idea/.gitignore" value="1746033038700" />
         <entry key="$PROJECT_DIR$/.idea/artifacts/ProgPattern_FinalProject_jar.xml" value="1746745224735" />
         <entry key="$PROJECT_DIR$/.idea/codeStyles/Project.xml" value="1746033038701" />
         <entry key="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" value="1746033038702" />
-        <entry key="$PROJECT_DIR$/.idea/codemarks.xml" value="1746767685366" />
+        <entry key="$PROJECT_DIR$/.idea/codemarks.xml" value="1746799584423" />
         <entry key="$PROJECT_DIR$/.idea/compiler.xml" value="1746033176035" />
         <entry key="$PROJECT_DIR$/.idea/discord.xml" value="1746123721559" />
         <entry key="$PROJECT_DIR$/.idea/encodings.xml" value="1746033038704" />
         <entry key="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" value="1746033038705" />
         <entry key="$PROJECT_DIR$/.idea/jarRepositories.xml" value="1746033176053" />
-        <entry key="$PROJECT_DIR$/.idea/misc.xml" value="1746767705688" />
+        <entry key="$PROJECT_DIR$/.idea/misc.xml" value="1746767734856" />
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-04-30_8_09_p_m__[Changes]/shelved.patch" value="1746058193641" />
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-04-30_8_09_p_m___Changes_.xml" value="1746058234534" />
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-05-01_11_09_p_m__[Changes]/shelved.patch" value="1746155341389" />
@@ -65,7 +67,7 @@
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-05-01_9_05_p_m___Changes_.xml" value="1746147994638" />
         <entry key="$PROJECT_DIR$/.idea/uiDesigner.xml" value="1746033038707" />
         <entry key="$PROJECT_DIR$/.idea/vcs.xml" value="1746745224735" />
-        <entry key="$PROJECT_DIR$/.idea/workspace.xml" value="1746767685359" />
+        <entry key="$PROJECT_DIR$/.idea/workspace.xml" value="1746799584419" />
         <entry key="$PROJECT_DIR$/README.md" value="1746033038710" />
         <entry key="$PROJECT_DIR$/library.db" value="1746745224735" />
         <entry key="$PROJECT_DIR$/pom.xml" value="1746752892164" />
@@ -112,6 +114,8 @@
         <entry key="$PROJECT_DIR$/target/classes/org/nicolas/model/User.class" value="1746428999608" />
         <entry key="$PROJECT_DIR$/target/classes/org/nicolas/model/UserType.class" value="1746124417288" />
         <entry key="$PROJECT_DIR$/target/classes/org/nicolas/view/UserView.class" value="1746423721057" />
+        <entry key="$USER_HOME$/ntuser.dat.LOG1" value="1737149651442" />
+        <entry key="$USER_HOME$/ntuser.dat.LOG2" value="1737149651443" />
       </map>
     </option>
   </component>
