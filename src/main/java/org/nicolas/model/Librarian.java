@@ -1,6 +1,7 @@
 package org.nicolas.model;
 
 import org.nicolas.database.LibraryDatabase;
+import org.nicolas.util.LocalizationManager;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,11 +36,11 @@ public class Librarian extends User {
             return;
         }
 
-        System.out.println(messages.getString("book.exists"));
+        System.out.println(LocalizationManager.getMessage("book.exists"));
         String ans = console.readLine().toUpperCase().charAt(0) + "";
 
         if (ans.equals("Y")) {
-            System.out.println(messages.getString("prompt.selectFromList"));
+            System.out.println(LocalizationManager.getMessage("prompt.selectFromList"));
             int existingBook = Integer.parseInt(console.readLine());
             Book tempbook = booksFound.get(existingBook);
             tempbook= LibraryDatabase.getBookThroughISBN(tempbook.getISBN());
@@ -48,35 +49,35 @@ public class Librarian extends User {
                     tempbook.getISBN(), tempbook.getTitle(), tempbook.getAuthor(), tempbook.getCopies(),
                     tempbook.getBorrowedCopies(), tempbook.getAvailableCopies());
 
-            System.out.println(messages.getString("prompt.addCopies.question"));
+            System.out.println(LocalizationManager.getMessage("prompt.addCopies.question"));
             ans = console.readLine().toUpperCase().charAt(0) + "";
 
             if (ans.equals("Y")) {
-                System.out.println(messages.getString("prompt.copies"));
+                System.out.println(LocalizationManager.getMessage("prompt.copies"));
                 int copiesToAdd = Integer.parseInt(console.readLine());
                 addCopiesToBook(tempbook, copiesToAdd);
                 LibraryDatabase.updateBookCopies(tempbook);
-                System.out.println(messages.getString("error.message.success"));
+                System.out.println(LocalizationManager.getMessage("error.message.success"));
                 return;
             } else {
-                System.out.println(messages.getString("error.message.operationAborted"));
+                System.out.println(LocalizationManager.getMessage("error.message.operationAborted"));
                 return;
             }
 
         } else if (ans.equals("N")) {
-            System.out.println(messages.getString("prompt.createNewBook"));
+            System.out.println(LocalizationManager.getMessage("prompt.createNewBook"));
             ans = console.readLine().toUpperCase().charAt(0) + "";
 
             if (ans.equals("Y")) {
                 LibraryDatabase.insertIntoBooks(ISBN, title, author, copies);
-                System.out.println(messages.getString("error.message.success"));
+                System.out.println(LocalizationManager.getMessage("error.message.success"));
                 return;
             } else {
-                System.out.println(messages.getString("error.message.operationAborted"));
+                System.out.println(LocalizationManager.getMessage("error.message.operationAborted"));
                 return;
             }
         } else {
-            System.out.println(messages.getString("error.message.invalidChoice"));
+            System.out.println(LocalizationManager.getMessage("error.message.invalidChoice"));
             return;
         }
     }
@@ -168,7 +169,7 @@ public class Librarian extends User {
                         bookToBorrow.getCopies(), bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
                 return;
             }
-            System.out.println(messages.getString("book.unavailable"));
+            System.out.println(LocalizationManager.getMessage("book.unavailable"));
         }
     }
 
@@ -189,7 +190,7 @@ public class Librarian extends User {
         }
 
         if (bookToReturn == null) {
-            System.out.println(messages.getString("book.not_borrowed"));
+            System.out.println(LocalizationManager.getMessage("book.not_borrowed"));
             return;
         }
 
@@ -203,7 +204,7 @@ public class Librarian extends User {
         // Remove from borrowedBooks table in DB
         LibraryDatabase.deleteFromBorrowedBooks(userID, isbn);
 
-        System.out.println(messages.getString("book.return.success") + bookToReturn.getTitle());
+        System.out.println(LocalizationManager.getMessage("book.return.success") + bookToReturn.getTitle());
     }
 
     /**
