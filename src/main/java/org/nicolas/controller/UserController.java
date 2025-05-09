@@ -11,11 +11,11 @@ import java.io.Console;
 import java.util.*;
 
 public class UserController {
-    private User model;
-    private UserView view;
-    private ResourceBundle messages;
-    private MenuState currentState = MenuState.LOGIN; //base menu-state : login page
-    private int loginAttempts = 0; // Track attempts at class level
+    public User model;
+    public UserView view;
+    public ResourceBundle messages;
+    public MenuState currentState = MenuState.LOGIN; //base menu-state : login page
+    public int loginAttempts = 0; // Track attempts at class level
 
     //CONSTRUCTOR///////////////////////////////////////////////////////////////////////////////////////////////////////
     public UserController(User currentUser, UserView view, ResourceBundle bundle) {
@@ -35,7 +35,7 @@ public class UserController {
      * State + singleton design pattern to avoid recursive calls enum to prevent more than one state of the menu : 
      * instead of continuously calling the methods within themselves : just changing the state of the menu
      */
-    private enum MenuState {
+    public enum MenuState {
             LOGIN,
             FIND_BOOK,
             STUDENT_MAIN,
@@ -408,7 +408,7 @@ public class UserController {
      * changes the name of the logged-in user
      * @param console the sytsem console
      */
-    private void settingsChangeName (Console console) { //menu state to change the name
+    public void settingsChangeName (Console console) { //menu state to change the name
         clearScreenSequence(console);
         appHeader();
         System.out.println(messages.getString("prompt.newName"));
@@ -429,7 +429,7 @@ public class UserController {
      * changes the password of the logged-in user
      * @param console the system console
      */
-    private void settingsChangePassword (Console console) {
+    public void settingsChangePassword (Console console) {
         //first request of the new password
         String stringPassword = console.readLine(messages.getString("prompt.newPassword"));
 
@@ -463,7 +463,7 @@ public class UserController {
      * borrows a book for the student
      * @param console the system console
      */
-    private void studentBorrow(Console console) {
+    public void studentBorrow(Console console) {
         System.out.println(messages.getString("prompt.isbn"));
         String inputIsbn = console.readLine();
         model.borrowBook(inputIsbn, model.getUserID(), console);
@@ -476,7 +476,7 @@ public class UserController {
      * returns a book for the student
      * @param console the system console
      */
-    private void studentReturn (Console console) {
+    public void studentReturn (Console console) {
         System.out.println(messages.getString("prompt.isbn"));
         String inputIsbn = console.readLine();
         model.returnBook(inputIsbn, model.getUserID());
@@ -487,7 +487,7 @@ public class UserController {
      * allows a student to find a book through filtered search
      * @param console the system console
      */
-    private void findBook (Console console) {
+    public void findBook (Console console) {
         System.out.println(messages.getString("prompt.information"));
         String inputIsbn = console.readLine(messages.getString("prompt.isbn"));
         String inputTitle = console.readLine(messages.getString("prompt.title"));
@@ -504,9 +504,24 @@ public class UserController {
      * @param librarian the librarian adding the book
      * @param console the system console
      */
-    private void librarianAddBook (Librarian librarian, Console console) {
-        System.out.print(messages.getString("prompt.isbn"));
-        String isbn = console.readLine();
+    public void librarianAddBook (Librarian librarian, Console console) {
+        String isbn = console.readLine(messages.getString("prompt.isbn"));
+        String title = console.readLine(messages.getString("prompt.title"));
+        String author = console.readLine(messages.getString("prompt.author"));
+        String tryAns = console.readLine(messages.getString("prompt.copies"));
+        if (isbn.isBlank() || isbn.isEmpty() || isbn == null) {
+            view.setErrorMessage(messages.getString("error.message.wrongISBN"));
+            currentState = MenuState.LIBRARIAN_MAIN;
+            return;
+        } else if (tryAns.isBlank() || tryAns.isEmpty() || tryAns == null || tryAns.equals("0")
+                || title.isBlank() || title.isEmpty() || title == null
+                || author.isBlank() || author.isEmpty() || author == null) {
+
+            view.setErrorMessage(messages.getString("error.message.wrongNumCopies"));
+            currentState = MenuState.LIBRARIAN_MAIN;
+            return;
+        }
+
         for (char c : isbn.toCharArray()) {
             if (Character.isLetter(c)) {
                 view.setErrorMessage(messages.getString("error.message.wrongISBN"));
@@ -514,10 +529,6 @@ public class UserController {
                 return;
             }
         }
-
-        String title = console.readLine(messages.getString("prompt.title"));
-        String author = console.readLine(messages.getString("prompt.author"));
-        String tryAns = console.readLine(messages.getString("prompt.copies"));
 
         for (char c : tryAns.toCharArray()) {
             if (Character.isLetter(c)) {
@@ -539,7 +550,7 @@ public class UserController {
      * @param librarian the librarian removing the copies / book
      * @param console the system console
      */
-    private void librarianRemoveBook (Librarian librarian, Console console) {
+    public void librarianRemoveBook (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.isbn"));
         String isbn = console.readLine();
         for (char c : isbn.toCharArray()) {
@@ -590,7 +601,7 @@ public class UserController {
      * @param librarian the librarian performing the borrowing
      * @param console the system console
      */
-    private void librarianBorrow (Librarian librarian, Console console) {
+    public void librarianBorrow (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.student.id"));
         String studentId = console.readLine();
         for (char c : studentId.toCharArray()) {
@@ -621,7 +632,7 @@ public class UserController {
      * @param librarian the libarian performing the returning
      * @param console the system console
      */
-    private void librarianReturn (Librarian librarian, Console console) {
+    public void librarianReturn (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.student.id"));
         String studentId = console.readLine();
         for (char c : studentId.toCharArray()) {
@@ -652,7 +663,7 @@ public class UserController {
      * @param librarian the librarian adding the user
      * @param console the system console
      */
-    private void librarianAddUser (Librarian librarian, Console console) {
+    public void librarianAddUser (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.studentName"));
         String newStudentName = console.readLine();
         System.out.print(messages.getString("prompt.studentPassword"));
@@ -666,7 +677,7 @@ public class UserController {
      * @param librarian the librarian removing the user
      * @param console the system console
      */
-    private void librarianRemoveUser (Librarian librarian, Console console) {
+    public void librarianRemoveUser (Librarian librarian, Console console) {
         System.out.print(messages.getString("prompt.student.id"));
         String studentId = console.readLine();
         for (char c : studentId.toCharArray()) {
@@ -703,7 +714,7 @@ public class UserController {
      * gets all the book from the system, with the option to see only available or borrowed books
      * @param console the system console
      */
-    private void librarianBookCatalog (Console console) {
+    public void librarianBookCatalog (Console console) {
         System.out.println(messages.getString("filter.main.prompt"));
         String ans = console.readLine().toUpperCase().charAt(0) + "";
 
@@ -736,7 +747,7 @@ public class UserController {
      * gets all the users from the database, with the option to filter them by role
      * @param console the system console
      */
-    private void librarianUserCatalog (Console console) {
+    public void librarianUserCatalog (Console console) {
         System.out.println(messages.getString("filter.main.prompt"));
         String ans = console.readLine().toUpperCase().charAt(0) + "";
 
@@ -764,5 +775,45 @@ public class UserController {
         }
         console.writer().println(LibraryDatabase.selectAllUsers());
         currentState = MenuState.LIBRARIAN_MAIN;
+    }
+
+    public User getModel() {
+        return model;
+    }
+
+    public void setModel(User model) {
+        this.model = model;
+    }
+
+    public UserView getView() {
+        return view;
+    }
+
+    public void setView(UserView view) {
+        this.view = view;
+    }
+
+    public ResourceBundle getMessages() {
+        return messages;
+    }
+
+    public void setMessages(ResourceBundle messages) {
+        this.messages = messages;
+    }
+
+    public MenuState getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(MenuState currentState) {
+        this.currentState = currentState;
+    }
+
+    public int getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    public void setLoginAttempts(int loginAttempts) {
+        this.loginAttempts = loginAttempts;
     }
 }
