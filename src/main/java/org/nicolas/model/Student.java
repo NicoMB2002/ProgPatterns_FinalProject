@@ -1,6 +1,7 @@
 package org.nicolas.model;
 
 import org.nicolas.database.LibraryDatabase;
+import org.nicolas.util.LocalizationManager;
 
 import java.io.Console;
 import java.time.LocalDate;
@@ -51,7 +52,7 @@ public class Student extends User {
     private boolean isAlreadyBorrowed (ArrayList<Book> borrowedBooks, String isbn) {
         for (Book borrowedBook : borrowedBooks) {
             if (borrowedBook.getISBN().equals(isbn)) {
-                System.out.println(messages.getString("book.owned"));
+                System.out.println(LocalizationManager.getMessage("book.owned"));
                 return true;
             }
         }
@@ -70,7 +71,7 @@ public class Student extends User {
     public void borrowBook(String isbn, int userId, Console console) {
         // Check 'borrowedBooks' to see if the student has a maximum of 3 books
         if (borrowedBooks.size() >= 3) {
-            System.out.println(messages.getString("book.limit"));
+            System.out.println(LocalizationManager.getMessage("book.limit"));
             return;
         }
 
@@ -81,7 +82,7 @@ public class Student extends User {
 
         Book bookToBorrow = LibraryDatabase.getBookThroughISBN(isbn);
         if (bookToBorrow == null) {
-            System.out.println(messages.getString("book.notFound"));
+            System.out.println(LocalizationManager.getMessage("book.notFound"));
             return;
         }
 
@@ -93,7 +94,7 @@ public class Student extends User {
             //reflect change in the borrowing & DB
             LocalDate currentDate = LocalDate.now();
             bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
-            bookToBorrow.setAvailableCopies(bookToBorrow.getCopies() - bookToBorrow.getBorrowedCopies());
+            bookToBorrow.setAvailableCopies(bookToBorrow.getAvailableCopies() - 1);
             LibraryDatabase.insertIntoBorrowedBooks(getUserID(), isbn, currentDate);
             LibraryDatabase.updateBookCopies(bookToBorrow);
 
@@ -103,7 +104,7 @@ public class Student extends User {
                     bookToBorrow.getCopies(), bookToBorrow.getBorrowedCopies(), bookToBorrow.getAvailableCopies());
             return;
         }
-        System.out.println(messages.getString("book.unavailable"));
+        System.out.println(LocalizationManager.getMessage("book.unavailable"));
     }
 
     /**
@@ -113,6 +114,8 @@ public class Student extends User {
      */
     @Override
     public void returnBook(String isbn, int userId) {
+
+
         Book bookToReturn = null;
 
         for (Book book : borrowedBooks) { // Check if the student has this book borrowed
@@ -123,7 +126,7 @@ public class Student extends User {
         }
 
         if (bookToReturn == null) {
-            System.out.println(messages.getString("book.not_borrowed"));
+            System.out.println(LocalizationManager.getMessage("book.not_borrowed"));
             return;
         }
 
@@ -131,12 +134,13 @@ public class Student extends User {
 
         // Update available/borrowed copies in the DB
         bookToReturn.setAvailableCopies(bookToReturn.getAvailableCopies() + 1);
+        bookToReturn.setBorrowedCopies(bookToReturn.getBorrowedCopies() - 1);
         LibraryDatabase.updateBookCopies(bookToReturn);
 
         // Remove from borrowedBooks table in DB
         LibraryDatabase.deleteFromBorrowedBooks(getUserID(), isbn);
 
-        System.out.println(messages.getString("book.return.success") + bookToReturn.getTitle());
+        System.out.println(LocalizationManager.getMessage("book.return.success") + bookToReturn.getTitle());
     }
 
     //BASE METHODS//////////////////////////////////////////////////////////////////////////////////////////////////////

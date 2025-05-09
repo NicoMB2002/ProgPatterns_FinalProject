@@ -3,6 +3,7 @@ package org.nicolas;
 import org.nicolas.controller.UserController;
 import org.nicolas.model.Student;
 import org.nicolas.model.User;
+import org.nicolas.util.LocalizationManager;
 import org.nicolas.view.UserView;
 
 import java.io.Console;
@@ -23,6 +24,7 @@ public class Main {
         String lang = console.readLine();
         Locale locale = new Locale(lang);
         ResourceBundle bundle = ResourceBundle.getBundle("messages.messages", locale);
+        LocalizationManager.setMessages(bundle);
 
         UserView view = new UserView();
         User student = new Student(1, "Nicolas", "hello");

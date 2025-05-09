@@ -3,11 +3,15 @@
   <component name="CodeMarkSettings">
     <option name="lastScanState">
       <map>
-        <entry key="$APPLICATION_CONFIG_DIR$/workspace/2wSRkRgoFcxTCATl2293iM7xYKM.xml" value="1746767353530" />
-        <entry key="$PROJECT_DIR$/.git/COMMIT_EDITMSG" value="1746751387195" />
-        <entry key="$PROJECT_DIR$/.git/FETCH_HEAD" value="1746745224660" />
+        <entry key="$APPLICATION_CONFIG_DIR$/workspace/2wSRkRgoFcxTCATl2293iM7xYKM.xml" value="1746767685363" />
+        <entry key="$PROJECT_DIR$/.git/AUTO_MERGE" value="1746767705693" />
+        <entry key="$PROJECT_DIR$/.git/COMMIT_EDITMSG" value="1746767702103" />
+        <entry key="$PROJECT_DIR$/.git/FETCH_HEAD" value="1746767705615" />
         <entry key="$PROJECT_DIR$/.git/HEAD" value="1746158174658" />
-        <entry key="$PROJECT_DIR$/.git/ORIG_HEAD" value="1746745224700" />
+        <entry key="$PROJECT_DIR$/.git/MERGE_HEAD" value="1746767705695" />
+        <entry key="$PROJECT_DIR$/.git/MERGE_MODE" value="1746767705695" />
+        <entry key="$PROJECT_DIR$/.git/MERGE_MSG" value="1746767705695" />
+        <entry key="$PROJECT_DIR$/.git/ORIG_HEAD" value="1746767705655" />
         <entry key="$PROJECT_DIR$/.git/config" value="1746144499756" />
         <entry key="$PROJECT_DIR$/.git/description" value="1746033037619" />
         <entry key="$PROJECT_DIR$/.git/hooks/applypatch-msg.sample" value="1746033037621" />
@@ -25,26 +29,26 @@
         <entry key="$PROJECT_DIR$/.git/hooks/sendemail-validate.sample" value="1746033037640" />
         <entry key="$PROJECT_DIR$/.git/hooks/update.sample" value="1746033037641" />
         <entry key="$PROJECT_DIR$/.git/info/exclude" value="1746033037642" />
-        <entry key="$PROJECT_DIR$/.git/logs/HEAD" value="1746751387201" />
-        <entry key="$PROJECT_DIR$/.git/logs/refs/heads/master" value="1746751387202" />
+        <entry key="$PROJECT_DIR$/.git/logs/HEAD" value="1746767702109" />
+        <entry key="$PROJECT_DIR$/.git/logs/refs/heads/master" value="1746767702109" />
         <entry key="$PROJECT_DIR$/.git/logs/refs/remotes/origin/HEAD" value="1746033038680" />
-        <entry key="$PROJECT_DIR$/.git/logs/refs/remotes/origin/master" value="1746751392650" />
+        <entry key="$PROJECT_DIR$/.git/logs/refs/remotes/origin/master" value="1746767705614" />
         <entry key="$PROJECT_DIR$/.git/packed-refs" value="1746033038674" />
-        <entry key="$PROJECT_DIR$/.git/refs/heads/master" value="1746751387201" />
+        <entry key="$PROJECT_DIR$/.git/refs/heads/master" value="1746767702108" />
         <entry key="$PROJECT_DIR$/.git/refs/remotes/origin/HEAD" value="1746033038678" />
-        <entry key="$PROJECT_DIR$/.git/refs/remotes/origin/master" value="1746751392648" />
+        <entry key="$PROJECT_DIR$/.git/refs/remotes/origin/master" value="1746767705613" />
         <entry key="$PROJECT_DIR$/.gitignore" value="1746033038699" />
         <entry key="$PROJECT_DIR$/.idea/.gitignore" value="1746033038700" />
         <entry key="$PROJECT_DIR$/.idea/artifacts/ProgPattern_FinalProject_jar.xml" value="1746745224735" />
         <entry key="$PROJECT_DIR$/.idea/codeStyles/Project.xml" value="1746033038701" />
         <entry key="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" value="1746033038702" />
-        <entry key="$PROJECT_DIR$/.idea/codemarks.xml" value="1746767581337" />
+        <entry key="$PROJECT_DIR$/.idea/codemarks.xml" value="1746767685366" />
         <entry key="$PROJECT_DIR$/.idea/compiler.xml" value="1746033176035" />
         <entry key="$PROJECT_DIR$/.idea/discord.xml" value="1746123721559" />
         <entry key="$PROJECT_DIR$/.idea/encodings.xml" value="1746033038704" />
         <entry key="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" value="1746033038705" />
         <entry key="$PROJECT_DIR$/.idea/jarRepositories.xml" value="1746033176053" />
-        <entry key="$PROJECT_DIR$/.idea/misc.xml" value="1746745238523" />
+        <entry key="$PROJECT_DIR$/.idea/misc.xml" value="1746767705688" />
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-04-30_8_09_p_m__[Changes]/shelved.patch" value="1746058193641" />
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-04-30_8_09_p_m___Changes_.xml" value="1746058234534" />
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-05-01_11_09_p_m__[Changes]/shelved.patch" value="1746155341389" />
@@ -61,24 +65,25 @@
         <entry key="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-05-01_9_05_p_m___Changes_.xml" value="1746147994638" />
         <entry key="$PROJECT_DIR$/.idea/uiDesigner.xml" value="1746033038707" />
         <entry key="$PROJECT_DIR$/.idea/vcs.xml" value="1746745224735" />
-        <entry key="$PROJECT_DIR$/.idea/workspace.xml" value="1746764217830" />
+        <entry key="$PROJECT_DIR$/.idea/workspace.xml" value="1746767685359" />
         <entry key="$PROJECT_DIR$/README.md" value="1746033038710" />
         <entry key="$PROJECT_DIR$/library.db" value="1746745224735" />
         <entry key="$PROJECT_DIR$/pom.xml" value="1746752892164" />
-        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/Main.java" value="1746508312828" />
+        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/Main.java" value="1746767705689" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/controller/UserController.java" value="1746765309378" />
-        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/database/LibraryDatabase.java" value="1746745224787" />
+        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/database/LibraryDatabase.java" value="1746767705689" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/exceptions/InvalidISBNException.java" value="1746033038725" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/exceptions/InvalidUserException.java" value="1746033038727" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/exceptions/NoAvailableCopiesException.java" value="1746033038728" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/exceptions/NumberOfCopiesMismatchException.java" value="1746033038728" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/model/Book.java" value="1746508842821" />
-        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/model/Librarian.java" value="1746746966032" />
-        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/model/Student.java" value="1746510486255" />
+        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/model/Librarian.java" value="1746767705690" />
+        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/model/Student.java" value="1746767705691" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/model/User.java" value="1746509406353" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/model/UserType.java" value="1746033038732" />
+        <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/util/LocalizationManager.java" value="1746767705691" />
         <entry key="$PROJECT_DIR$/src/main/java/org/nicolas/view/UserView.java" value="1746508312840" />
-        <entry key="$PROJECT_DIR$/src/main/resources/messages/messages_en.properties" value="1746745164317" />
+        <entry key="$PROJECT_DIR$/src/main/resources/messages/messages_en.properties" value="1746767705692" />
         <entry key="$PROJECT_DIR$/src/main/resources/messages/messages_fr.properties" value="1746745164327" />
         <entry key="$PROJECT_DIR$/src/test/java/Controller/ControllerTest.java" value="1746767581021" />
         <entry key="$PROJECT_DIR$/src/test/java/Controller/LibrarianMenuTest.java" value="1746766821933" />

@@ -854,4 +854,63 @@ public class LibraryDatabase {
         return builder.toString();
     }
 
+    public static void renameOldBooksTable() {
+        String sql = "ALTER TABLE Books RENAME TO Books_old;";
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Renamed existing Books table to Books_old.");
+        } catch (SQLException e) {
+            System.out.println("Error renaming table: " + e.getMessage());
+        }
+    }
+
+    public static void createNewBooksTableWithoutCheck() {
+        String sql = """
+        CREATE TABLE IF NOT EXISTS Books (
+            isbn TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            author TEXT NOT NULL,
+            no_copies INTEGER NOT NULL,
+            borrowed_books INTEGER NOT NULL,
+            available_copies INTEGER NOT NULL
+        );
+        """;
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("New Books table (without CHECK constraint) created.");
+        } catch (SQLException e) {
+            System.out.println("Error creating new Books table: " + e.getMessage());
+        }
+    }
+
+    public static void copyBooksDataToNewTable() {
+        String sql = """
+        INSERT INTO Books (isbn, title, author, no_copies, borrowed_books, available_copies)
+        SELECT isbn, title, author, no_copies, borrowed_books, available_copies FROM Books_old;
+        """;
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Data copied from Books_old to Books.");
+        } catch (SQLException e) {
+            System.out.println("Error copying data: " + e.getMessage());
+        }
+    }
+
+    public static void dropOldBooksTable() {
+        String sql = "DROP TABLE IF EXISTS Books_old;";
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Books_old table dropped.");
+        } catch (SQLException e) {
+            System.out.println("Error dropping old table: " + e.getMessage());
+        }
+    }
+
+    public static void migrateBooksTable() {
+        renameOldBooksTable();
+        createNewBooksTableWithoutCheck();
+        copyBooksDataToNewTable();
+        dropOldBooksTable();
+    }
+
 }
