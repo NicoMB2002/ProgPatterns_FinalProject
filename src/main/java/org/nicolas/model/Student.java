@@ -94,7 +94,7 @@ public class Student extends User {
             //reflect change in the borrowing & DB
             LocalDate currentDate = LocalDate.now();
             bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
-            bookToBorrow.setAvailableCopies(bookToBorrow.getCopies() - bookToBorrow.getBorrowedCopies());
+            bookToBorrow.setAvailableCopies(bookToBorrow.getAvailableCopies() - 1);
             LibraryDatabase.insertIntoBorrowedBooks(getUserID(), isbn, currentDate);
             LibraryDatabase.updateBookCopies(bookToBorrow);
 
@@ -114,6 +114,8 @@ public class Student extends User {
      */
     @Override
     public void returnBook(String isbn, int userId) {
+
+
         Book bookToReturn = null;
 
         for (Book book : borrowedBooks) { // Check if the student has this book borrowed
@@ -132,6 +134,7 @@ public class Student extends User {
 
         // Update available/borrowed copies in the DB
         bookToReturn.setAvailableCopies(bookToReturn.getAvailableCopies() + 1);
+        bookToReturn.setBorrowedCopies(bookToReturn.getBorrowedCopies() - 1);
         LibraryDatabase.updateBookCopies(bookToReturn);
 
         // Remove from borrowedBooks table in DB

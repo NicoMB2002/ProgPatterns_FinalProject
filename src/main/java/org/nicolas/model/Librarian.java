@@ -134,7 +134,7 @@ public class Librarian extends User {
 
             //Check if the student already borrowed the book by its ID
             for (Book borrowedBook : tempStudent.getBorrowedBooks()) {
-                if (borrowedBook.getISBN() == isbn) {
+                if (borrowedBook.getISBN().equals(isbn)) {
                     System.out.println("\nStudent already borrowed this book.");
                     return;
                 }
@@ -155,7 +155,7 @@ public class Librarian extends User {
                 LocalDate currentDate = LocalDate.now();
                 //reflect change in the borrowing ->>>> check DB if needed
                 bookToBorrow.setBorrowedCopies(bookToBorrow.getBorrowedCopies() + 1);
-                bookToBorrow.setAvailableCopies(bookToBorrow.getCopies() - bookToBorrow.getBorrowedCopies());
+                bookToBorrow.setAvailableCopies(bookToBorrow.getAvailableCopies() - 1);
                 //Update the borrowed books count
 
                 LibraryDatabase.insertIntoBorrowedBooks(studentId, isbn, currentDate);
@@ -196,6 +196,7 @@ public class Librarian extends User {
         tempStudent.getBorrowedBooks().remove(bookToReturn); // Remove from the list
 
         // Update available/borrowed copies in the DB
+        bookToReturn.setBorrowedCopies(bookToReturn.getBorrowedCopies() - 1);
         bookToReturn.setAvailableCopies(bookToReturn.getAvailableCopies() + 1);
         LibraryDatabase.updateBookCopies(bookToReturn);
 
